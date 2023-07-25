@@ -1,0 +1,25 @@
+{
+  "id": "",
+  "version": "1.0.0",
+  "extensions": [
+    {
+      "name": "codebeamer-cards",
+      "title": "codebeamer-cards",
+      "products": [
+        "chart",
+        "spark"
+      ],
+      "codePath": "editorextensions/codebeamer-cards/bin/extension.js",
+      "scopes": [
+        "READ",
+        "WRITE",
+        "DOWNLOAD",
+        "SHOW_MODAL",
+        "CUSTOM_UI",
+        "NETWORK"
+      ]
+    }
+  ],
+  "shapeLibraries": [],
+  "oauthProviders": []
+}
