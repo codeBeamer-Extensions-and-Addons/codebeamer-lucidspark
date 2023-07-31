@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="readmeImg/logo.svg" alt="codebeamer cards" width="480px"/>
+   <img src="/readmeImg/logo.svg" alt="codebeamer cards" width="480px"/>
 </p>
 
 <p align="center">

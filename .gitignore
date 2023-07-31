@@ -3,6 +3,9 @@
 # generated documentation
 docs/
 
+# build files
+**/bin
+
 # cypress large files and env variables
 cypress/screenshots
 cypress/videos
