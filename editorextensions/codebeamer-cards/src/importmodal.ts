@@ -3,10 +3,17 @@ import {
 	CollectionProxy,
 	EditorClient,
 	ExtensionCardFieldDefinition,
+	FieldConstraintType,
+	LucidCardIntegrationRegistry,
 	Modal,
+	ScalarFieldTypeEnum,
+	SemanticKind,
 	SerializedFieldType,
+	isString,
 } from 'lucid-extension-sdk';
 import importHtml from '../resources/import.html';
+import { CodebeamerClient } from './net/codebeamerclient';
+import { CollectionName, DefaultFieldNames } from '../common/names';
 
 export interface ImportModalMessage {
 	name: string;
@@ -14,7 +21,16 @@ export interface ImportModalMessage {
 }
 
 export class CodebeamerImportModal {
+	private codebeamerClient: CodebeamerClient;
+	private readonly client: EditorClient;
+
+	private readonly searchField = 'search';
+	private readonly projectField = 'project';
+	private readonly trackerField = 'tracker';
+
 	constructor(client: EditorClient) {
+		this.client = client;
+		this.codebeamerClient = new CodebeamerClient(client);
 		// super(client, {
 		// 	title: 'Import a thing',
 		// 	width: 600,
@@ -26,7 +42,62 @@ export class CodebeamerImportModal {
 	public async getSearchFields(
 		searchSoFar: Map<string, SerializedFieldType>
 	): Promise<ExtensionCardFieldDefinition[]> {
-		throw new Error('Not implemented');
+		const projects = await this.codebeamerClient.getProjects();
+
+		const trackerOptionsCallback =
+			LucidCardIntegrationRegistry.registerFieldOptionsCallback(
+				this.client,
+				async () => {
+					return []; //TODO based on the selected project..
+				}
+			);
+
+		const searchCallback =
+			LucidCardIntegrationRegistry.registerFieldSearchCallback(
+				this.client,
+				async (searchText) => {
+					const items = await this.codebeamerClient.searchItems(
+						searchText
+					);
+
+					return items.map((item) => ({
+						label: item.name,
+						value: item.id,
+					}));
+				}
+			);
+
+		const fields: ExtensionCardFieldDefinition[] = [
+			{
+				name: this.searchField,
+				label: 'Search',
+				type: ScalarFieldTypeEnum.STRING,
+				// options: searchCallback,
+			},
+			{
+				name: this.projectField,
+				label: 'Project',
+				type: ScalarFieldTypeEnum.STRING,
+				default: projects[0]?.id,
+				constraints: [
+					{
+						type: FieldConstraintType.REQUIRED,
+					},
+				],
+				options: projects.map((project) => ({
+					label: project.name,
+					value: project.id,
+				})),
+			},
+			{
+				name: this.trackerField,
+				label: 'Tracker',
+				type: ScalarFieldTypeEnum.STRING,
+				options: trackerOptionsCallback,
+			},
+		];
+
+		return fields;
 	}
 
 	public async search(fields: Map<string, SerializedFieldType>): Promise<{
@@ -37,7 +108,99 @@ export class CodebeamerImportModal {
 			syncDataSourceId?: string;
 		};
 	}> {
-		throw new Error('Not implemented, mate');
+		let search = fields.get(this.searchField);
+		if (!isString(search)) search = '';
+
+		const projectId = fields.get(this.projectField) as string | undefined;
+		const trackerId = fields.get(this.trackerField) as string | undefined;
+
+		const items = await this.codebeamerClient.searchItems(
+			search,
+			projectId,
+			trackerId
+		);
+
+		return {
+			data: {
+				schema: {
+					fields: [
+						{
+							name: DefaultFieldNames.Id,
+							type: ScalarFieldTypeEnum.STRING,
+							mapping: [SemanticKind.Id],
+						},
+						{
+							name: DefaultFieldNames.Summary,
+							type: ScalarFieldTypeEnum.STRING,
+							mapping: [SemanticKind.Name],
+						},
+						{
+							name: DefaultFieldNames.Description,
+							type: ScalarFieldTypeEnum.STRING,
+							mapping: [SemanticKind.Description],
+						},
+						// {
+						//     name: DefaultFieldNames.Project,
+						//     type: ScalarFieldTypeEnum.STRING,
+						//     mapping: [SemanticKind.Project]
+						// },
+						{
+							name: DefaultFieldNames.Tracker,
+							type: ScalarFieldTypeEnum.STRING,
+							mapping: [SemanticKind.IssueType],
+						},
+						{
+							name: DefaultFieldNames.Status,
+							type: ScalarFieldTypeEnum.STRING,
+							mapping: [SemanticKind.Status],
+						},
+						// {
+						//     name: DefaultFieldNames.AssignedTo,
+						//     type: ScalarFieldTypeEnum.STRING,
+						//     mapping: [SemanticKind.Assignee]
+						// },
+					],
+					primaryKey: [DefaultFieldNames.Id],
+				},
+				items: new Map(
+					items.map((item) => [
+						JSON.stringify(item.id),
+						{
+							[DefaultFieldNames.Id]: item.id,
+							[DefaultFieldNames.Summary]: item.name,
+							[DefaultFieldNames.Description]: item.description,
+							[DefaultFieldNames.Tracker]: item.tracker.name,
+							[DefaultFieldNames.Status]: item.status.name,
+						},
+					])
+				),
+			},
+			fields: [
+				{
+					name: DefaultFieldNames.Summary,
+					label: DefaultFieldNames.Summary,
+					type: ScalarFieldTypeEnum.STRING,
+				},
+				{
+					name: DefaultFieldNames.Status,
+					label: DefaultFieldNames.Status,
+					type: ScalarFieldTypeEnum.STRING,
+				},
+				{
+					name: DefaultFieldNames.Tracker,
+					label: DefaultFieldNames.Tracker,
+					type: ScalarFieldTypeEnum.STRING,
+				},
+			],
+			partialImportMetadata: {
+				collectionId: CollectionName,
+				syncDataSourceId: `${projectId}${
+					trackerId ? '-' + trackerId : ''
+				}`,
+			},
+		};
+
+		throw new Error('Not implemented either, materess');
 	}
 
 	public async import(
