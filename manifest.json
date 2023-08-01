@@ -1,25 +1,15 @@
 {
-  "id": "",
-  "version": "1.0.0",
-  "extensions": [
-    {
-      "name": "codebeamer-cards",
-      "title": "codebeamer-cards",
-      "products": [
-        "chart",
-        "spark"
-      ],
-      "codePath": "editorextensions/codebeamer-cards/bin/extension.js",
-      "scopes": [
-        "READ",
-        "WRITE",
-        "DOWNLOAD",
-        "SHOW_MODAL",
-        "CUSTOM_UI",
-        "NETWORK"
-      ]
-    }
-  ],
-  "shapeLibraries": [],
-  "oauthProviders": []
+	"id": "08f8f5fc-87a9-4f1f-a0bb-f632ffbbdf49",
+	"version": "1.0.0",
+	"extensions": [
+		{
+			"name": "codebeamer-cards",
+			"title": "codebeamer-cards",
+			"products": ["chart", "spark"],
+			"codePath": "editorextensions/codebeamer-cards/bin/extension.js",
+			"scopes": ["READ", "WRITE", "SHOW_MODAL", "CUSTOM_UI", "NETWORK"]
+		}
+	],
+	"shapeLibraries": [],
+	"oauthProviders": []
 }
