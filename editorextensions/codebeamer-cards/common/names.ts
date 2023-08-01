@@ -10,9 +10,14 @@ export const CollectionName = 'Items';
  * and Stakeholder-requirements in the Retina (custom codeBeamer) Toolchains project at Roche Diagnostics were considered.
  */
 export enum DefaultFieldNames {
+	Summary = 'Summary',
+	Description = 'Description',
 	Id = 'Id',
 	Teams = 'Teams',
 	Owner = 'Owner',
+	Status = 'Status',
+	Project = 'Project',
+	Tracker = 'Tracker',
 	Versions = 'Versions',
 	Priority = 'Priority',
 	StoryPoints = 'Story points',
