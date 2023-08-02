@@ -47,8 +47,18 @@ export class CodebeamerImportModal {
 		const trackerOptionsCallback =
 			LucidCardIntegrationRegistry.registerFieldOptionsCallback(
 				this.client,
-				async () => {
-					return []; //TODO based on the selected project..
+				async (inputSoFar: Map<string, SerializedFieldType>) => {
+					const selectedProjectId = inputSoFar.get(this.projectField);
+					if (!selectedProjectId) return [];
+
+					const trackers = await this.codebeamerClient.getTrackers(
+						selectedProjectId as number
+					);
+
+					return trackers.map((tracker) => ({
+						label: tracker.name,
+						value: tracker.id,
+					}));
 				}
 			);
 
@@ -73,11 +83,12 @@ export class CodebeamerImportModal {
 				label: 'Search',
 				type: ScalarFieldTypeEnum.STRING,
 				// options: searchCallback,
+				default: 'idk',
 			},
 			{
 				name: this.projectField,
 				label: 'Project',
-				type: ScalarFieldTypeEnum.STRING,
+				type: ScalarFieldTypeEnum.NUMBER,
 				default: projects[0]?.id,
 				constraints: [
 					{
@@ -92,7 +103,7 @@ export class CodebeamerImportModal {
 			{
 				name: this.trackerField,
 				label: 'Tracker',
-				type: ScalarFieldTypeEnum.STRING,
+				type: ScalarFieldTypeEnum.NUMBER,
 				options: trackerOptionsCallback,
 			},
 		];
@@ -111,8 +122,8 @@ export class CodebeamerImportModal {
 		let search = fields.get(this.searchField);
 		if (!isString(search)) search = '';
 
-		const projectId = fields.get(this.projectField) as string | undefined;
-		const trackerId = fields.get(this.trackerField) as string | undefined;
+		const projectId = fields.get(this.projectField) as number | undefined;
+		const trackerId = fields.get(this.trackerField) as number | undefined;
 
 		const items = await this.codebeamerClient.searchItems(
 			search,
