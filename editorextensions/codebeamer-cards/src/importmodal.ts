@@ -11,7 +11,13 @@ import {
 	isString,
 } from 'lucid-extension-sdk';
 import { CodebeamerClient } from './net/codebeamerclient';
-import { CollectionName, DefaultFieldNames } from '../../../common/names';
+import {
+	CollectionName,
+	DataAction,
+	DataConnectorName,
+	DefaultFieldNames,
+} from '../../../common/names';
+import { Item } from './model/codebeamermodel';
 
 export interface ImportModalMessage {
 	name: string;
@@ -108,7 +114,7 @@ export class CodebeamerImportModal {
 			},
 			{
 				name: this.searchField,
-				label: 'Search',
+				label: 'Summary',
 				type: ScalarFieldTypeEnum.STRING,
 				// options: searchCallback,
 				default: '',
@@ -132,11 +138,16 @@ export class CodebeamerImportModal {
 		const projectId = fields.get(this.projectField) as number | undefined;
 		const trackerId = fields.get(this.trackerField) as number | undefined;
 
-		const items = await this.codebeamerClient.searchItems(
-			search,
-			projectId,
-			trackerId
-		);
+		let items: Item[];
+		if (!projectId || !trackerId) {
+			items = [];
+		} else {
+			items = await this.codebeamerClient.searchItems(
+				search,
+				projectId,
+				trackerId
+			);
+		}
 
 		return {
 			data: {
@@ -212,13 +223,9 @@ export class CodebeamerImportModal {
 			],
 			partialImportMetadata: {
 				collectionId: CollectionName,
-				syncDataSourceId: `${projectId}${
-					trackerId ? '-' + trackerId : ''
-				}`,
+				syncDataSourceId: `${projectId}-${trackerId}`,
 			},
 		};
-
-		throw new Error('Not implemented either, materess');
 	}
 
 	public async import(
@@ -228,17 +235,32 @@ export class CodebeamerImportModal {
 		collection: CollectionProxy;
 		primaryKeys: string[];
 	}> {
-		throw new Error('Not implemented either, materess');
+		const projectId = searchFields.get(this.projectField) as number;
+		const trackerId = searchFields.get(this.trackerField) as number;
+
+		if (isNaN(projectId) || isNaN(trackerId)) {
+			throw new Error('No tracker selected');
+		}
+
+		await this.client.performDataAction({
+			dataConnectorName: DataConnectorName,
+			actionName: DataAction.Import,
+			actionData: {
+				projectId,
+				trackerId,
+				itemIds: primaryKeys.map((p) => +p),
+			},
+			syncDataSourceIdNonce: `${projectId}-${trackerId}`,
+			asynchronous: true,
+		});
+
+		const collection = await this.client.awaitDataImport(
+			DataConnectorName,
+			`${projectId}-${trackerId}`,
+			CollectionName,
+			primaryKeys
+		);
+
+		return { collection, primaryKeys };
 	}
-
-	// protected frameLoaded() {
-	// 	this.sendMessage({ message: 'Successfully passed message to iframe' });
-	// }
-
-	// protected messageFromFrame(message: ImportModalMessage): void {
-	// 	console.log(message['name']);
-	// 	console.log(message['content']);
-
-	// 	this.hide();
-	// }
 }
