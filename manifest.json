@@ -11,5 +11,15 @@
 		}
 	],
 	"shapeLibraries": [],
-	"oauthProviders": []
+	"oauthProviders": [],
+	"dataConnectors": [
+		{
+			"name": "codebeamer",
+			"oauthProviderName": "",
+			"callbackBaseUrl": "http://localhost:3001?kind=action&name=",
+			"dataActions": {
+				"Import": "Import"
+			}
+		}
+	]
 }
