@@ -3,7 +3,11 @@ import {
 	HumanReadableError,
 	XHRResponse,
 } from 'lucid-extension-sdk';
-import { Item, ProjectSummary } from '../model/codebeamermodel';
+import {
+	EntityReference,
+	Item,
+	ProjectSummary,
+} from '../model/codebeamermodel';
 import axios, { AxiosResponse } from 'axios';
 
 /**
@@ -67,9 +71,17 @@ export class CodebeamerClient {
 	}
 
 	public async getProjects(): Promise<ProjectSummary[]> {
-		const rawResponse = await this.makeGetRequest(`/api/v3/projects`);
+		const rawResponse = await this.makeGetRequest(`/projects`);
 
 		return this.parseAsAny(rawResponse) as ProjectSummary[];
+	}
+
+	public async getTrackers(projectId: number): Promise<EntityReference[]> {
+		const rawResponse = await this.makeGetRequest(
+			`/projects/${projectId}/trackers`
+		);
+
+		return this.parseAsAny(rawResponse) as EntityReference[];
 	}
 
 	public async getItem(itemId: string): Promise<Item> {
@@ -80,8 +92,8 @@ export class CodebeamerClient {
 
 	public async searchItems(
 		summary: string,
-		projectId?: string,
-		trackerId?: string
+		projectId?: number,
+		trackerId?: number
 	): Promise<Item[]> {
 		const rawResponse = await this.makeGetRequest(
 			`/items/query?${this.getUrlQueryParams({
