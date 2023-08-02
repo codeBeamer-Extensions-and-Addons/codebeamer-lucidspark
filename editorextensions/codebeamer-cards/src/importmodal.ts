@@ -5,13 +5,11 @@ import {
 	ExtensionCardFieldDefinition,
 	FieldConstraintType,
 	LucidCardIntegrationRegistry,
-	Modal,
 	ScalarFieldTypeEnum,
 	SemanticKind,
 	SerializedFieldType,
 	isString,
 } from 'lucid-extension-sdk';
-import importHtml from '../resources/import.html';
 import { CodebeamerClient } from './net/codebeamerclient';
 import { CollectionName, DefaultFieldNames } from '../common/names';
 
@@ -37,6 +35,10 @@ export class CodebeamerImportModal {
 		// 	height: 400,
 		// 	content: importHtml,
 		// });
+	}
+
+	public async onSetup() {
+		console.log('onSetup');
 	}
 
 	public async getSearchFields(
