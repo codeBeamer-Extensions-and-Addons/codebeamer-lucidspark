@@ -5,7 +5,7 @@ import {
 	DataSourceProxy,
 	FieldDisplayType,
 } from 'lucid-extension-sdk';
-import { DefaultFieldNames } from '../common/names';
+import { DefaultFieldNames } from '../../../common/names';
 import { CodebeamerImportModal } from './importmodal';
 
 export class CodeBeamerCardIntegration extends LucidCardIntegration {

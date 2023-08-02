@@ -11,7 +11,7 @@ import {
 	isString,
 } from 'lucid-extension-sdk';
 import { CodebeamerClient } from './net/codebeamerclient';
-import { CollectionName, DefaultFieldNames } from '../common/names';
+import { CollectionName, DefaultFieldNames } from '../../../common/names';
 
 export interface ImportModalMessage {
 	name: string;
@@ -81,13 +81,6 @@ export class CodebeamerImportModal {
 
 		const fields: ExtensionCardFieldDefinition[] = [
 			{
-				name: this.searchField,
-				label: 'Search',
-				type: ScalarFieldTypeEnum.STRING,
-				// options: searchCallback,
-				default: 'idk',
-			},
-			{
 				name: this.projectField,
 				label: 'Project',
 				type: ScalarFieldTypeEnum.NUMBER,
@@ -107,6 +100,18 @@ export class CodebeamerImportModal {
 				label: 'Tracker',
 				type: ScalarFieldTypeEnum.NUMBER,
 				options: trackerOptionsCallback,
+				constraints: [
+					{
+						type: FieldConstraintType.REQUIRED, // this seems to also need separate enforcement in the search()
+					},
+				],
+			},
+			{
+				name: this.searchField,
+				label: 'Search',
+				type: ScalarFieldTypeEnum.STRING,
+				// options: searchCallback,
+				default: '',
 			},
 		];
 
