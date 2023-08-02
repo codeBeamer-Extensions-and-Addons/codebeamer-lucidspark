@@ -29,13 +29,13 @@ export interface Item {
 	tags: [];
 }
 
-interface EntityReference {
+export interface EntityReference {
 	id: number;
 	name: string;
 	type: string;
 }
 
-interface UserReference {
+export interface UserReference {
 	id: number;
 	name: string;
 	type: string;
