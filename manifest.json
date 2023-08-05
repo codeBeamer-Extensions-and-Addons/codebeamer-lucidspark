@@ -7,15 +7,42 @@
 			"title": "codebeamer-cards",
 			"products": ["chart", "spark"],
 			"codePath": "editorextensions/codebeamer-cards/bin/extension.js",
-			"scopes": ["READ", "WRITE", "SHOW_MODAL", "CUSTOM_UI", "NETWORK"]
+			"scopes": [
+				"READ",
+				"WRITE",
+				"SHOW_MODAL",
+				"CUSTOM_UI",
+				"NETWORK",
+				"USER_INFO"
+			]
 		}
 	],
 	"shapeLibraries": [],
-	"oauthProviders": [],
+	"oauthProviders": [
+		{
+			"name": "google",
+			"title": "google",
+			"authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+			"tokenUrl": "https://oauth2.googleapis.com/token",
+			"scopes": [
+				"https://www.googleapis.com/auth/userinfo.email",
+				"https://www.googleapis.com/auth/userinfo.profile",
+				"openid"
+			],
+			"domainWhitelist": [
+				"https://accounts.google.com",
+				"https://oauth2.googleapis.com",
+				"https://retinatest.roche.com",
+				"https://retinadev.roche.com",
+				"https://localhost"
+			],
+			"clientAuthentication": "clientParameters"
+		}
+	],
 	"dataConnectors": [
 		{
 			"name": "codebeamer",
-			"oauthProviderName": "",
+			"oauthProviderName": "google",
 			"callbackBaseUrl": "http://localhost:3001?kind=action&name=",
 			"dataActions": {
 				"Import": "Import"
