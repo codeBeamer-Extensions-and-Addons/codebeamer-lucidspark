@@ -1,6 +1,7 @@
 import {
 	CollectionDefinition,
 	CollectionProxy,
+	DocumentProxy,
 	EditorClient,
 	ExtensionCardFieldDefinition,
 	FieldConstraintType,
@@ -8,6 +9,8 @@ import {
 	ScalarFieldTypeEnum,
 	SemanticKind,
 	SerializedFieldType,
+	UserProxy,
+	isNumber,
 	isString,
 } from 'lucid-extension-sdk';
 import { CodebeamerClient } from './net/codebeamerclient';
@@ -24,27 +27,70 @@ export interface ImportModalMessage {
 	content: string;
 }
 
+interface SearchParamsCache {
+	projectId?: number;
+	trackerId?: number;
+	summary?: string;
+}
+
 export class CodebeamerImportModal {
 	private codebeamerClient: CodebeamerClient;
 	private readonly client: EditorClient;
+
+	private readonly documentProxy: DocumentProxy;
+	private readonly userProxy: UserProxy;
 
 	private readonly searchField = 'search';
 	private readonly projectField = 'project';
 	private readonly trackerField = 'tracker';
 
+	private cachedProjectId: number | undefined;
+	private cachedTrackerId: number | undefined;
+
 	constructor(client: EditorClient) {
 		this.client = client;
 		this.codebeamerClient = new CodebeamerClient(client);
-		// super(client, {
-		// 	title: 'Import a thing',
-		// 	width: 600,
-		// 	height: 400,
-		// 	content: importHtml,
-		// });
+		this.documentProxy = new DocumentProxy(this.client);
+		this.userProxy = new UserProxy(this.client);
 	}
 
 	public async onSetup() {
 		console.log('onSetup');
+		this.loadCachedSearchParams();
+	}
+
+	/**
+	 * Loads the current user's cached search params directly into the class' properties, if there are any.
+	 */
+	private loadCachedSearchParams() {
+		const userCache = this.documentProxy.properties.get(this.userProxy.id);
+		if (!isString(userCache)) return;
+
+		try {
+			const cachedParams = JSON.parse(userCache) as SearchParamsCache;
+
+			this.cachedProjectId = isNumber(cachedParams.projectId)
+				? cachedParams.projectId
+				: undefined;
+
+			this.cachedTrackerId = isNumber(cachedParams.trackerId)
+				? cachedParams.trackerId
+				: undefined;
+		} catch (error) {
+			console.warn('Failed loading cached search parameters: ', error);
+		}
+	}
+
+	/**
+	 * Caches the given {@link SearchParamsCache} for the current user
+	 *
+	 * @param params {@link SearchParamsCache} to cache
+	 */
+	private cacheSearchParams(params: SearchParamsCache) {
+		this.documentProxy.properties.set(
+			this.userProxy.id,
+			JSON.stringify(params)
+		);
 	}
 
 	public async getSearchFields(
@@ -90,7 +136,7 @@ export class CodebeamerImportModal {
 				name: this.projectField,
 				label: 'Project',
 				type: ScalarFieldTypeEnum.NUMBER,
-				default: projects[0]?.id,
+				default: this.cachedProjectId ?? projects[0]?.id,
 				constraints: [
 					{
 						type: FieldConstraintType.REQUIRED,
@@ -106,6 +152,7 @@ export class CodebeamerImportModal {
 				label: 'Tracker',
 				type: ScalarFieldTypeEnum.NUMBER,
 				options: trackerOptionsCallback,
+				default: this.cachedTrackerId,
 				constraints: [
 					{
 						type: FieldConstraintType.REQUIRED, // this seems to also need separate enforcement in the search()
@@ -137,6 +184,11 @@ export class CodebeamerImportModal {
 
 		const projectId = fields.get(this.projectField) as number | undefined;
 		const trackerId = fields.get(this.trackerField) as number | undefined;
+
+		this.cacheSearchParams({
+			projectId,
+			trackerId,
+		});
 
 		let items: Item[];
 		if (!projectId || !trackerId) {
@@ -242,17 +294,23 @@ export class CodebeamerImportModal {
 			throw new Error('No tracker selected');
 		}
 
+		console.log("Yeah, no, let's import already. Sure.");
+
+		//! probably not working because of the OAuthProvider specified in the data-connector's manifest
+		//! and you can't specify none..
 		await this.client.performDataAction({
 			dataConnectorName: DataConnectorName,
 			actionName: DataAction.Import,
 			actionData: {
 				projectId,
 				trackerId,
-				itemIds: primaryKeys.map((p) => +p),
+				itemIds: primaryKeys.map((p) => JSON.parse(p)),
 			},
 			syncDataSourceIdNonce: `${projectId}-${trackerId}`,
 			asynchronous: true,
 		});
+
+		console.log('Performed.');
 
 		const collection = await this.client.awaitDataImport(
 			DataConnectorName,
@@ -260,6 +318,8 @@ export class CodebeamerImportModal {
 			CollectionName,
 			primaryKeys
 		);
+
+		console.log('Collection noted.');
 
 		return { collection, primaryKeys };
 	}
