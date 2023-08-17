@@ -55,7 +55,6 @@ export class CodebeamerImportModal {
 	}
 
 	public async onSetup() {
-		console.log('onSetup');
 		this.loadCachedSearchParams();
 	}
 
@@ -69,6 +68,11 @@ export class CodebeamerImportModal {
 		try {
 			const cachedParams = JSON.parse(userCache) as SearchParamsCache;
 
+			if (!cachedParams) {
+				console.info('No user cache existing');
+				return;
+			}
+
 			this.cachedProjectId = isNumber(cachedParams.projectId)
 				? cachedParams.projectId
 				: undefined;
@@ -76,6 +80,7 @@ export class CodebeamerImportModal {
 			this.cachedTrackerId = isNumber(cachedParams.trackerId)
 				? cachedParams.trackerId
 				: undefined;
+			console.info('Loaded cached search parameters');
 		} catch (error) {
 			console.warn('Failed loading cached search parameters: ', error);
 		}
@@ -287,6 +292,8 @@ export class CodebeamerImportModal {
 		collection: CollectionProxy;
 		primaryKeys: string[];
 	}> {
+		console.log('Start Import ');
+
 		const projectId = searchFields.get(this.projectField) as number;
 		const trackerId = searchFields.get(this.trackerField) as number;
 

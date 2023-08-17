@@ -5,6 +5,8 @@ import {
 } from '../../../editorextensions/codebeamer-cards/src/model/codebeamermodel';
 import axios, { AxiosResponse } from 'axios';
 
+import https = require('https');
+
 /**
  * Codebeamer API client implementation
  *
@@ -14,8 +16,6 @@ import axios, { AxiosResponse } from 'axios';
  * be hosted on a separate server and hence can't use the lucid xhr requests.
  * And the actual endpoints needed may differ.
  *
- * TODO make a single cb client with either axios or lucid-xhr strategy, which then just implement
- * TODO the make{Method}Request methods
  */
 export class CodebeamerClient {
 	/**
@@ -30,9 +30,12 @@ export class CodebeamerClient {
 	private async makeGetRequest(url: string, ...params: any) {
 		try {
 			const response = await axios.get(`${this.baseUrl}${url}`, {
+				httpsAgent: new https.Agent({
+					rejectUnauthorized: false, //TODO put the trusted roche CAs here instead
+				}),
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Basic ${token}',
+					Authorization: 'Basic {token}',
 				},
 			});
 			return response;
@@ -51,7 +54,7 @@ export class CodebeamerClient {
 	}
 
 	private parseAsAny(data: AxiosResponse): any {
-		return JSON.parse(data.data) as any;
+		return data as any;
 	}
 
 	public async getItem(itemId: string): Promise<Item> {
@@ -61,7 +64,7 @@ export class CodebeamerClient {
 	}
 
 	public async getItems(
-		itemIds: number[],
+		itemIds: string[],
 		projectId?: number,
 		trackerId?: number
 	): Promise<Item[]> {
@@ -77,7 +80,7 @@ export class CodebeamerClient {
 			})}`
 		);
 
-		return this.parseAsAny(rawResponse)['items'] as Item[];
+		return this.parseAsAny(rawResponse.data['items']) as Item[];
 	}
 
 	private getUrlQueryParams(params: { [key: string]: string | number }) {

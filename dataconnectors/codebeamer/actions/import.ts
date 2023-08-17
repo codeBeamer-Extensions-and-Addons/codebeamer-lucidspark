@@ -10,8 +10,11 @@ export const importAction: (
 	const { projectId, trackerId, itemIds } = action.data as {
 		projectId: number;
 		trackerId: number;
-		itemIds: number[];
+		itemIds: string[];
 	};
+
+	console.log("Let's import then: ", projectId, trackerId, itemIds);
+	console.log('OAuth token: ', action.context.userCredential);
 
 	const codebeamerClient = new CodebeamerClient();
 
@@ -20,6 +23,8 @@ export const importAction: (
 		projectId,
 		trackerId
 	);
+
+	console.log('Items\n', items);
 
 	const formattedItems = items.map(getFormattedItem);
 

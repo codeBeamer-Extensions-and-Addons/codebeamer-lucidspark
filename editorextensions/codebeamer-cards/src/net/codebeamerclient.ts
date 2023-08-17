@@ -27,12 +27,12 @@ export class CodebeamerClient {
 
 	private async makeGetRequest(url: string, ...params: any) {
 		try {
-			const response = this.client.xhr({
+			const response = await this.client.xhr({
 				url: `${this.baseUrl}${url}`,
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: 'Basic ${token}',
+					Authorization: 'Basic {token}',
 				},
 			});
 
@@ -104,6 +104,26 @@ export class CodebeamerClient {
 				}${
 					trackerId ? 'tracker.id IN (' + trackerId + ') AND ' : ''
 				}summary LIKE '%${summary}%'`,
+			})}`
+		);
+
+		return this.parseAsAny(rawResponse)['items'] as Item[];
+	}
+
+	public async getItems(
+		itemIds: string[],
+		projectId?: number,
+		trackerId?: number
+	): Promise<Item[]> {
+		const rawResponse = await this.makeGetRequest(
+			`/items/query?${this.getUrlQueryParams({
+				page: 1,
+				pageSize: 500,
+				queryString: `${
+					projectId ? 'project.id IN (' + projectId + ') AND ' : ''
+				}${
+					trackerId ? 'tracker.id IN (' + trackerId + ') AND ' : ''
+				}item.id IN (${itemIds.join()})`,
 			})}`
 		);
 
