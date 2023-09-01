@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLazyGetItemsQuery } from '../../../../../api/codeBeamerApi';
-import { updateAppCard } from '../../../../../api/miro.api';
+import { updateAppCard } from '../../../../../api/lucidGateway';
 import getColorForFieldLabel from '../../../../../api/utils/getColorForFieldLabel';
 import {
 	DEFAULT_RESULT_PAGE,

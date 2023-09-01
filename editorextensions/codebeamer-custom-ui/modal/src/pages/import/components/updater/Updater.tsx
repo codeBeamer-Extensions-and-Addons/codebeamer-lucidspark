@@ -5,7 +5,7 @@ import {
 	useGetItemsQuery,
 	useGetTrackerDetailsQuery,
 } from '../../../../api/codeBeamerApi';
-import { updateAppCard } from '../../../../api/miro.api';
+import { updateAppCard } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,

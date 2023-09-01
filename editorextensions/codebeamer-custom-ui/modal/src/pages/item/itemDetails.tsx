@@ -8,7 +8,7 @@ import {
   useLazyGetTrackerSchemaQuery,
   useLazyUpdateItemLegacyQuery,
 } from "../../api/codeBeamerApi";
-import { updateAppCard } from "../../api/miro.api";
+import { updateAppCard } from "../../api/lucidGateway";
 import getRestResourceUri, {
   getIdFromRestResourceUri,
 } from "../../api/utils/getRestResourceUri";

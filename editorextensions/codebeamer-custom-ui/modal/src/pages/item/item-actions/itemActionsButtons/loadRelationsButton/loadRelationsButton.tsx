@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { createConnectorsForDownstreamRefsAndAssociation } from "../../../../../api/miro.api";
+import { createConnectors } from "../../../../../api/lucidGateway";
 import getAppCardIds from "../../../../../api/utils/getAppCardIds";
 import { useItemRelations } from "../../../../../hooks/useItemRelations";
 import doAllConnectorsExist from "../../../../../api/utils/doAllConnectorsExist";
@@ -26,7 +26,7 @@ export default function LoadRelationsButton(props: {
   const { relations: data, error, isLoading } = useItemRelations(props.itemId);
   const targetTooltip = useRef(null);
 
-  // get all downstreamRefs and associations and then call in the miro.api a method which creates all connectors
+  // get all downstreamRefs and associations and then call in the lucidGateway a method which creates all connectors
   React.useEffect(() => {
     async function fetchData() {
       if (
@@ -132,7 +132,7 @@ export default function LoadRelationsButton(props: {
     const boardData = await miro.board.get();
     const metadata = await getMiroMetadata(boardData);
     if (data && !buttonDisabled) {
-      await createConnectorsForDownstreamRefsAndAssociation(
+      await createConnectors(
         props.cardId.toString(),
         downstreamRefIds,
         associations,

@@ -4,7 +4,7 @@ import ProgressBar from 'react-bootstrap/ProgressBar';
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
 import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
-import { createAppCard } from '../../../../api/miro.api';
+import { createAppCard } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
