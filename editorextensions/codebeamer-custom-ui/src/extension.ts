@@ -1,17 +1,23 @@
-import {EditorClient, Menu, MenuType, Viewport} from 'lucid-extension-sdk';
-import {ImportModal} from './importmodal';
+import {
+	EditorClient,
+	Panel,
+	PanelLocation,
+	Viewport,
+} from 'lucid-extension-sdk';
 
 const client = new EditorClient();
-const menu = new Menu(client);
-const viewport = new Viewport(client);
 
-client.registerAction('test', () => {
-    const modal = new ImportModal(client);
-    modal.show();
-});
+export class RightPanel extends Panel {
+	private static icon = 'https://lucid.app/favicon.ico';
 
-menu.addMenuItem({
-    label: 'Test thing 2',
-    action: 'test',
-    menuType: MenuType.Main,
-});
+	constructor(client: EditorClient) {
+		super(client, {
+			title: 'From React',
+			url: 'modal/index.html',
+			location: PanelLocation.RightDock,
+			iconUrl: RightPanel.icon,
+		});
+	}
+}
+
+const rightPanel = new RightPanel(client);
