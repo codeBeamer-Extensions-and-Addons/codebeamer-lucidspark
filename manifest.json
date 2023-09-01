@@ -1,52 +1,72 @@
 {
-	"id": "08f8f5fc-87a9-4f1f-a0bb-f632ffbbdf49",
-	"version": "1.0.0",
-	"extensions": [
-		{
-			"name": "codebeamer-cards",
-			"title": "codebeamer-cards",
-			"products": ["chart", "spark"],
-			"codePath": "editorextensions/codebeamer-cards/bin/extension.js",
-			"scopes": [
-				"READ",
-				"WRITE",
-				"SHOW_MODAL",
-				"CUSTOM_UI",
-				"NETWORK",
-				"USER_INFO"
-			]
-		}
-	],
-	"shapeLibraries": [],
-	"oauthProviders": [
-		{
-			"name": "google",
-			"title": "google",
-			"authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-			"tokenUrl": "https://oauth2.googleapis.com/token",
-			"scopes": [
-				"https://www.googleapis.com/auth/userinfo.email",
-				"https://www.googleapis.com/auth/userinfo.profile",
-				"openid"
-			],
-			"domainWhitelist": [
-				"https://accounts.google.com",
-				"https://oauth2.googleapis.com",
-				"https://retinatest.roche.com",
-				"https://retinadev.roche.com",
-				"https://localhost"
-			],
-			"clientAuthentication": "clientParameters"
-		}
-	],
-	"dataConnectors": [
-		{
-			"name": "codebeamer",
-			"oauthProviderName": "google",
-			"callbackBaseUrl": "http://localhost:3001?kind=action&name=",
-			"dataActions": {
-				"Import": "Import"
-			}
-		}
-	]
+  "id": "08f8f5fc-87a9-4f1f-a0bb-f632ffbbdf49",
+  "version": "1.0.0",
+  "extensions": [
+    {
+      "name": "codebeamer-cards",
+      "title": "codebeamer-cards",
+      "products": [
+        "chart",
+        "spark"
+      ],
+      "codePath": "editorextensions/codebeamer-cards/bin/extension.js",
+      "scopes": [
+        "READ",
+        "WRITE",
+        "SHOW_MODAL",
+        "CUSTOM_UI",
+        "NETWORK",
+        "USER_INFO"
+      ]
+    },
+    {
+      "name": "codebeamer-custom-ui",
+      "title": "codebeamer-custom-ui",
+      "products": [
+        "chart",
+        "spark"
+      ],
+      "codePath": "editorextensions/codebeamer-custom-ui/bin/extension.js",
+      "scopes": [
+        "READ",
+        "WRITE",
+        "DOWNLOAD",
+        "SHOW_MODAL",
+        "CUSTOM_UI",
+        "NETWORK"
+      ]
+    }
+  ],
+  "shapeLibraries": [],
+  "oauthProviders": [
+    {
+      "name": "google",
+      "title": "google",
+      "authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+      "tokenUrl": "https://oauth2.googleapis.com/token",
+      "scopes": [
+        "https://www.googleapis.com/auth/userinfo.email",
+        "https://www.googleapis.com/auth/userinfo.profile",
+        "openid"
+      ],
+      "domainWhitelist": [
+        "https://accounts.google.com",
+        "https://oauth2.googleapis.com",
+        "https://retinatest.roche.com",
+        "https://retinadev.roche.com",
+        "https://localhost"
+      ],
+      "clientAuthentication": "clientParameters"
+    }
+  ],
+  "dataConnectors": [
+    {
+      "name": "codebeamer",
+      "oauthProviderName": "google",
+      "callbackBaseUrl": "http://localhost:3001?kind=action&name=",
+      "dataActions": {
+        "Import": "Import"
+      }
+    }
+  ]
 }
