@@ -11,18 +11,13 @@ import {
 	SchemaDefinition,
 	DocumentProxy,
 	UserProxy,
-	isString,
 	isNumber,
+	isString,
 	LucidCardIntegrationRegistry,
 } from 'lucid-extension-sdk';
 import { CodebeamerClient } from './net/codebeamerclient';
 import { DefaultFieldNames, CollectionName } from './name';
 import { Item } from './model/codebeamermodel';
-
-export interface ImportModalMessage {
-	name: string;
-	content: string;
-}
 
 interface SearchParamsCache {
 	projectId?: number;
@@ -37,6 +32,7 @@ const itemSchema: SchemaDefinition = {
 			name: DefaultFieldNames.Id,
 			type: ScalarFieldTypeEnum.STRING,
 			mapping: [SemanticKind.Id],
+			// constraints: [{type: FieldConstraintType.LOCKED}],
 		},
 		{
 			name: DefaultFieldNames.Summary,
@@ -48,60 +44,8 @@ const itemSchema: SchemaDefinition = {
 			type: ScalarFieldTypeEnum.STRING,
 			mapping: [SemanticKind.Description],
 		},
-		// {
-		//     name: DefaultFieldNames.Project,
-		//     type: ScalarFieldTypeEnum.STRING,
-		//     mapping: [SemanticKind.Project]
-		// },
 		{
-			name: DefaultFieldNames.Tracker,
-			type: ScalarFieldTypeEnum.STRING,
-			mapping: [SemanticKind.IssueType],
-		},
-		{
-			name: DefaultFieldNames.Status,
-			type: ScalarFieldTypeEnum.STRING,
-			mapping: [SemanticKind.Status],
-		},
-		// {
-		// 	name: DefaultFieldNames.AssignedTo,
-		// 	type: ScalarFieldTypeEnum.STRING,
-		// 	mapping: [SemanticKind.Assignee],
-		// },
-	],
-};
-
-const conradSchema: SchemaDefinition = {
-	primaryKey: [DefaultFieldNames.Id],
-	fields: [
-		{
-			name: DefaultFieldNames.Id,
-			type: ScalarFieldTypeEnum.STRING,
-			mapping: [SemanticKind.Id],
-			// constraints: [{type: FieldConstraintType.LOCKED}],
-		},
-		{
-			name: 'Completed',
-			type: ScalarFieldTypeEnum.BOOLEAN,
-			mapping: [SemanticKind.Status],
-		},
-		{
-			name: 'Content',
-			type: ScalarFieldTypeEnum.STRING,
-			mapping: [SemanticKind.Name],
-		},
-		{
-			name: DefaultFieldNames.Description,
-			type: ScalarFieldTypeEnum.STRING,
-			mapping: [SemanticKind.Description],
-		},
-		// {
-		//     name: DefaultFieldNames.Due,
-		//     type: [ScalarFieldTypeEnum.DATE, ScalarFieldTypeEnum.DATEONLY, ScalarFieldTypeEnum.NULL] as const,
-		//     mapping: [SemanticKind.EndTime],
-		// },
-		{
-			name: 'Link',
+			name: DefaultFieldNames.Link,
 			type: ScalarFieldTypeEnum.STRING,
 			mapping: [SemanticKind.URL],
 			// constraints: [{type: FieldConstraintType.LOCKED}],
@@ -291,119 +235,29 @@ export class CodebeamerImportModal {
 				fields: [
 					{
 						name: DefaultFieldNames.Id,
-						type: ScalarFieldTypeEnum.STRING,
+						type: ScalarFieldTypeEnum.NUMBER,
 						mapping: [SemanticKind.Id],
 					},
 					{
 						name: DefaultFieldNames.Summary,
 						type: ScalarFieldTypeEnum.STRING,
-						mapping: [SemanticKind.Name],
+						mapping: [SemanticKind.Title],
 					},
 					{
-						name: DefaultFieldNames.Description,
+						name: DefaultFieldNames.Content,
 						type: ScalarFieldTypeEnum.STRING,
 						mapping: [SemanticKind.Description],
-					},
-					// {
-					//     name: DefaultFieldNames.Project,
-					//     type: ScalarFieldTypeEnum.STRING,
-					//     mapping: [SemanticKind.Project]
-					// },
-					{
-						name: DefaultFieldNames.Tracker,
-						type: ScalarFieldTypeEnum.STRING,
-						mapping: [SemanticKind.IssueType],
-					},
-					{
-						name: DefaultFieldNames.Status,
-						type: ScalarFieldTypeEnum.STRING,
-						mapping: [SemanticKind.Status],
 					},
 				],
 				primaryKey: [DefaultFieldNames.Id],
 			},
 			items: new Map(
 				items.map((item) => [
-					JSON.stringify(item.id),
+					item.id.toString(),
 					{
 						[DefaultFieldNames.Id]: item.id,
 						[DefaultFieldNames.Summary]: item.name,
-						[DefaultFieldNames.Description]: item.description,
-						[DefaultFieldNames.Tracker]: item.tracker.name,
-						[DefaultFieldNames.Status]: item.status.name,
-					},
-				])
-			),
-		};
-
-		return {
-			data: data,
-			fields: [
-				{
-					name: DefaultFieldNames.Summary,
-					label: DefaultFieldNames.Summary,
-					type: ScalarFieldTypeEnum.STRING,
-				},
-				{
-					name: DefaultFieldNames.Description,
-					label: DefaultFieldNames.Description,
-					type: ScalarFieldTypeEnum.STRING,
-				},
-				{
-					name: DefaultFieldNames.Status,
-					label: DefaultFieldNames.Status,
-					type: ScalarFieldTypeEnum.STRING,
-				},
-				{
-					name: DefaultFieldNames.Tracker,
-					label: DefaultFieldNames.Tracker,
-					type: ScalarFieldTypeEnum.STRING,
-				},
-			],
-			partialImportMetadata: {
-				collectionId: CollectionName,
-			},
-		};
-	}
-
-	public async searchConrad(
-		fields: Map<string, SerializedFieldType>
-	): Promise<{
-		data: CollectionDefinition;
-		fields: ExtensionCardFieldDefinition[];
-		partialImportMetadata: {
-			collectionId: string;
-			syncDataSourceId?: string;
-		};
-	}> {
-		const rand1 = Math.floor(Math.random() * 1000);
-		const rand2 = Math.floor(Math.random() * 1000);
-		const tasks = ['t' + rand1, 't' + rand2];
-		console.log('Tasks: ' + tasks);
-
-		const data: CollectionDefinition = {
-			schema: {
-				fields: [
-					{
-						name: DefaultFieldNames.Id,
-						type: ScalarFieldTypeEnum.NUMBER,
-						mapping: [SemanticKind.Id],
-					},
-					{
-						name: 'Content',
-						type: ScalarFieldTypeEnum.STRING,
-						mapping: [SemanticKind.Title],
-					},
-				],
-				primaryKey: [DefaultFieldNames.Id],
-			},
-			items: new Map(
-				tasks.map((taskId) => [
-					taskId,
-					{
-						[DefaultFieldNames.Id]: taskId,
-						['Content']: 'content for ' + taskId,
-						['Completed']: false,
+						[DefaultFieldNames.Content]: item.description,
 					},
 				])
 			),
@@ -414,14 +268,19 @@ export class CodebeamerImportModal {
 			data: data,
 			fields: [
 				{
-					name: 'Content',
-					label: 'Content',
+					name: DefaultFieldNames.Id,
+					label: DefaultFieldNames.Id,
+					type: ScalarFieldTypeEnum.NUMBER,
+				},
+				{
+					name: DefaultFieldNames.Summary,
+					label: DefaultFieldNames.Summary,
 					type: ScalarFieldTypeEnum.STRING,
 				},
 				{
-					name: 'Completed',
-					label: 'Completed',
-					type: ScalarFieldTypeEnum.BOOLEAN,
+					name: DefaultFieldNames.Content,
+					label: DefaultFieldNames.Content,
+					type: ScalarFieldTypeEnum.STRING,
 				},
 			],
 			partialImportMetadata: {
@@ -438,80 +297,41 @@ export class CodebeamerImportModal {
 		const source =
 			data.dataSources.find(
 				(source) => source.getSourceConfig()['from'] === 'example'
-			) || data.addDataSource('example', { from: 'example' });
+			) ?? data.addDataSource('example', { from: 'example' });
 
 		// retrieve existing collection or create a new one
 		const collection =
 			source.collections.find(
 				(collection) => collection.getName() === CollectionName
-			) || source.addCollection(CollectionName, itemSchema);
-
-		const itemIds = primaryKeys.filter(
-			(itemId) => !collection.items.get(itemId).exists()
-		);
-
-		const projectId = searchFields.get(this.projectField) as number;
-		const trackerId = searchFields.get(this.trackerField) as number;
-
-		const items = await this.codebeamerClient.getItems(
-			itemIds,
-			projectId,
-			trackerId
-		);
-
-		const itemsRecord: Record<string, SerializedFieldType>[] = itemIds.map(
-			(itemId) => {
-				return {
-					Id: itemId,
-					Summary: 'content for ' + itemId,
-					Description: 'long description for task ' + itemId,
-					Tracker: 'test',
-					Status: 'test',
-				};
-			}
-		);
-		console.log('collection schema: ', collection.getSchema());
-		console.log('items being patched: ', itemsRecord);
-
-		collection.patchItems({ added: itemsRecord });
-
-		return { collection, primaryKeys: itemIds };
-	}
-
-	public async importConrad(
-		primaryKeys: string[],
-		searchFields: Map<string, SerializedFieldType>
-	): Promise<{ collection: CollectionProxy; primaryKeys: string[] }> {
-		const data = new DataProxy(this.client);
-		const source =
-			data.dataSources.find(
-				(source) => source.getSourceConfig()['from'] === 'example'
-			) || data.addDataSource('example', { from: 'example' });
-
-		// retrieve existing collection or create a new one
-		const collection =
-			source.collections.find(
-				(collection) => collection.getName() === CollectionName
-			) || source.addCollection(CollectionName, conradSchema);
+			) ?? source.addCollection(CollectionName, itemSchema);
 
 		const filteredPKs = primaryKeys.filter(
 			(taskId) => !collection.items.get(taskId).exists()
 		);
 
-		const tasks: Record<string, SerializedFieldType>[] = filteredPKs.map(
-			(taskId) => {
+		console.log('Import items: ', filteredPKs);
+		const rawItems: Item[] = await this.codebeamerClient.getItems(
+			filteredPKs,
+			searchFields.get(this.projectField) as number | undefined,
+			searchFields.get(this.trackerField) as number | undefined
+		);
+
+		const items: Record<string, SerializedFieldType>[] = rawItems.map(
+			(item) => {
 				return {
-					Id: taskId,
-					Content: 'content for ' + taskId,
-					Completed: false,
-					Description: 'long description for task ' + taskId,
-					Link: 'www.lucidchart.com',
-					Project: 'Project',
+					Id: item.id,
+					Summary: item.name,
+					Description: item.description,
+					Link: `https://retina.roche.com/cb/issue/${item.id}`,
+					Project: item.tracker.name,
 				};
 			}
 		);
+		console.log('Fetched data: ', items);
 
-		collection.patchItems({ added: tasks });
+		collection.patchItems({ added: items });
+
+		console.log('Finishing import (pre return)');
 
 		return { collection, primaryKeys: filteredPKs };
 	}

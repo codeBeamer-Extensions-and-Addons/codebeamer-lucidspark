@@ -1,5 +1,11 @@
+// common names
+
 export const DataConnectorName = 'codebeamer';
 export const CollectionName = 'Items';
+
+export enum DataAction {
+	Import = 'Import',
+}
 
 /**
  * Enumerates the "standard" ~atomic (of type number, text, choice, date, duration and user-reference) properties of any codeBeamer item.
@@ -29,4 +35,7 @@ export enum DefaultFieldNames {
 	ModifiedAt = 'Modified at',
 	ModifiedBy = 'Modified by',
 	EstimatedMillis = 'Estimated effort',
+	Content = 'Content',
+	Completed = 'Completed',
+	Link = 'Link',
 }

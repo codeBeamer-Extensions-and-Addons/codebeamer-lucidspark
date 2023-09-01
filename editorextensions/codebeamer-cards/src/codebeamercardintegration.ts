@@ -32,7 +32,7 @@ export class CodeBeamerCardIntegration extends LucidCardIntegration {
 						DefaultFieldNames.Id,
 						{
 							stencilConfig: {
-								displayType: FieldDisplayType.BasicTextBadge,
+								displayType: FieldDisplayType.SquareImageBadge,
 								tooltipFormula: 'Open in codebeamer',
 								valueFormula:
 									'=https://retina.roche.com/cb/issue/@"Id"',
@@ -53,17 +53,30 @@ export class CodeBeamerCardIntegration extends LucidCardIntegration {
 			},
 			cardDetailsPanelConfig: {
 				fields: [
+					// {
+					// 	name: DefaultFieldNames.Id,
+					// 	locked: true,
+					// },
+					// {
+					// 	name: DefaultFieldNames.Subject,
+					// 	locked: false,
+					// },
+					// {
+					// 	name: DefaultFieldNames.AssignedTo,
+					// 	locked: false,
+					// },
+					//-----------------------------------
 					{
 						name: DefaultFieldNames.Id,
 						locked: true,
 					},
 					{
-						name: DefaultFieldNames.Subject,
-						locked: false,
+						name: DefaultFieldNames.Summary,
+						locked: true,
 					},
 					{
-						name: DefaultFieldNames.AssignedTo,
-						locked: false,
+						name: DefaultFieldNames.Description,
+						locked: true,
 					},
 				],
 			},
@@ -77,6 +90,8 @@ export class CodeBeamerCardIntegration extends LucidCardIntegration {
 		onSelectedFieldsChange: async (
 			dataSource: DataSourceProxy,
 			selectedFields: string[]
-		) => {},
+		) => {
+			return;
+		},
 	};
 }

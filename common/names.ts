@@ -35,4 +35,7 @@ export enum DefaultFieldNames {
 	ModifiedAt = 'Modified at',
 	ModifiedBy = 'Modified by',
 	EstimatedMillis = 'Estimated effort',
+	Content = 'Content',
+	Completed = 'Completed',
+	Link = 'Link',
 }
