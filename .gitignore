@@ -5,6 +5,7 @@ docs/
 
 # build files
 **/bin
+/public
 
 # cypress large files and env variables
 cypress/screenshots
