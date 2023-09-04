@@ -82,4 +82,5 @@ const itemData: CodeBeamerItem = {
 	comments: [],
 	subjects: [],
 	teams: [],
+	storyPoints: 1,
 };

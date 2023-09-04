@@ -1,5 +1,4 @@
 import { Rect } from '@mirohq/websdk-types';
-import getRandomizedCoordSetInViewport from './getRandomizedCoordSetInViewPort';
 
 //* Skipped for now.
 describe.skip('getRandomizedInitialCoordSetInViewport', () => {

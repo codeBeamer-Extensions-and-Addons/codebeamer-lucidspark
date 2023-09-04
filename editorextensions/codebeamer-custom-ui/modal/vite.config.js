@@ -24,6 +24,7 @@ export default defineConfig({
 			input: allHtmlEntries,
 		},
 		outDir: '../../../public/modal',
+		emptyOutDir: true,
 	},
 	plugins: [reactRefresh()],
 	server: {

@@ -1,5 +1,4 @@
 import { AppData } from '@mirohq/websdk-types';
-import { RelationshipType } from '../enums/associationRelationshipType.enum';
 
 export interface ItemQueryPage {
 	page: number;

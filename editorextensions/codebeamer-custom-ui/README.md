@@ -13,7 +13,7 @@ You'll have to open three terminals.
  npm run build:watch
  ```
 
-- in `editorextensions/codebeamer-custom-ui`, run
+- in `editorextensions/codebeamer-custom-ui/modal`, run
  ```bash
  npm run build
  ```

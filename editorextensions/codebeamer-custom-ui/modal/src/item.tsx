@@ -15,8 +15,6 @@ function Item(props: {
 	itemId?: string; //optional prop for testing purposes
 	cardId?: string; //optional prop for testing purposes
 }) {
-	const dispatch = useDispatch();
-
 	const [itemId] = useState<string>(
 		props.itemId ??
 			new URL(document.location.href).searchParams.get('itemId') ??
@@ -72,5 +70,5 @@ function Wrapper() {
 }
 
 const container = document.getElementById('root');
-const root = createRoot(container);
+const root = createRoot(container!);
 root.render(<Wrapper />);

@@ -3,7 +3,7 @@ import { Connector } from "@mirohq/websdk-types";
 export default async function doesConnectorExist(
   startCardId: string,
   endCardId: string,
-  boardData: BoardNode[]
+  boardData: any[]
 ) {
   const connectors = boardData.filter(
     (node) => node.type === "connector"

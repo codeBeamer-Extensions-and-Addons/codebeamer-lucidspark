@@ -172,21 +172,6 @@ describe('<Auth>', () => {
 		cy.getBySel('cbPassword').should('have.value', password);
 	});
 
-	it.skip('communicates the user the success of the operation when the credentials / server address was updated', () => {
-		//* note that it really only does reflect success of updating these values in-store.
-		//* it mocks communicating successful
-		const projectId = '2';
-		cy.mountWithStore(<ProjectSelection />);
-
-		// cy.getBySel(projectIdSelector).type(projectId);
-		// cy.getBySel(submitSelector)
-		// 	.click()
-		// 	.then(() => {
-		// 		cy.getBySel(userFeedbackWrapperSelector).should('exist');
-		// 		cy.getBySel(submitSelector).should('not.exist');
-		// 	});
-	});
-
 	afterEach(() => {
 		localStorage.clear();
 		sessionStorage.clear();
