@@ -5,7 +5,6 @@ const reactTargets = [{ name: 'rightpanel', port: 3000 }];
 
 module.exports = {
 	entry: './src/extension.ts',
-	watch: true,
 	module: {
 		rules: [
 			{
@@ -33,10 +32,10 @@ module.exports = {
 			onWatchRun: {
 				scripts: reactTargets.map(
 					(target) =>
-						`mkdir ..\\..\\public\\${target.name} && ` +
-						`wget http://localhost:${target.port} | ` +
+						`mkdir -p ../../public/${target.name} &&` +
+						`curl http://localhost:${target.port} | ` +
 						`sed -E "s/(src|href)=\\"/\\\\1=\\"http:\\/\\/localhost:${target.port}\/gi" > ` +
-						`..\\..\\public\\${target.name}\\index.html`
+						`../../public/${target.name}/index.html`
 				),
 				blocking: true,
 			},
@@ -44,11 +43,11 @@ module.exports = {
 			onBeforeNormalRun: {
 				scripts: reactTargets.map(
 					(target) =>
-						`mkdir ..\\..\\public\\${target.name} &&` +
+						`mkdir -p ../../public/${target.name} &&` +
 						`cd ${target.name} && ` +
 						`npm run build && ` +
-						`sed -i -E "s/(src|href)=\\"\\//\\1=\\"\/gi" build\\index.html &&` +
-						`cp -r build\\* ..\\..\\..\\public\\${target.name}`
+						`sed -i -E "s/(src|href)=\\"\\//\\1=\\"\/gi" build/index.html &&` +
+						`cp -r build/* ../../../public/${target.name}`
 				),
 				blocking: true,
 			},
