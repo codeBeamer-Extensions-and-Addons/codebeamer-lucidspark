@@ -35,6 +35,23 @@
         "CUSTOM_UI",
         "NETWORK"
       ]
+    },
+    {
+      "name": "react-poc",
+      "title": "react-poc",
+      "products": [
+        "chart",
+        "spark"
+      ],
+      "codePath": "editorextensions/react-poc/bin/extension.js",
+      "scopes": [
+        "READ",
+        "WRITE",
+        "DOWNLOAD",
+        "SHOW_MODAL",
+        "CUSTOM_UI",
+        "NETWORK"
+      ]
     }
   ],
   "shapeLibraries": [],

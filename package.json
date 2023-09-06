@@ -17,7 +17,7 @@
 	},
 	"homepage": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark#readme",
 	"devDependencies": {
-		"lucid-package": "^0.0.74"
+		"lucid-package": "^0.0.79"
 	},
 	"dependencies": {
 		"webpack-shell-plugin-next": "^2.3.1"
