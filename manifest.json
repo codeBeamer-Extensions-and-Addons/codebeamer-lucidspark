@@ -52,6 +52,23 @@
         "CUSTOM_UI",
         "NETWORK"
       ]
+    },
+    {
+      "name": "blocks-poc",
+      "title": "blocks-poc",
+      "products": [
+        "chart",
+        "spark"
+      ],
+      "codePath": "editorextensions/blocks-poc/bin/extension.js",
+      "scopes": [
+        "READ",
+        "WRITE",
+        "DOWNLOAD",
+        "SHOW_MODAL",
+        "CUSTOM_UI",
+        "NETWORK"
+      ]
     }
   ],
   "shapeLibraries": [],
