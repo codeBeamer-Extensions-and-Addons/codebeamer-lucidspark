@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+interface IFrameMessage {
+	type: string;
+	data: any;
+}
+
 function App() {
+
+  useEffect(() => {
+    console.log("App initialized");
+
+    window.parent.postMessage({ type: 'ready' }, '*');
+  });
+
   return (
     <div className="App">
       <header className="App-header">

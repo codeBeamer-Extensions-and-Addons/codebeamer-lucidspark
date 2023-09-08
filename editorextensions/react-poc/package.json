@@ -6,7 +6,8 @@
         "webpack": "^5.64.4"
     },
     "scripts": {
-        "start": "webpack"
+        "build": "webpack",
+        "watch": "webpack --watch"
     },
     "dependencies": {
         "lucid-extension-sdk": "^0.0.203"

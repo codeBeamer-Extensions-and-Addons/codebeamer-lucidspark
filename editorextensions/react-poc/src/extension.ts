@@ -7,6 +7,11 @@ import {
 
 const client = new EditorClient();
 
+interface IFrameMessage {
+	type: string;
+	data: any;
+}
+
 export class RightPanel extends Panel {
 	private static icon = 'https://lucid.app/favicon.ico';
 
@@ -17,6 +22,11 @@ export class RightPanel extends Panel {
 			location: PanelLocation.RightDock,
 			iconUrl: RightPanel.icon,
 		});
+	}
+
+	
+	protected messageFromFrame(message: IFrameMessage): void {
+		console.log('messageFromFrame', message);
 	}
 }
 
