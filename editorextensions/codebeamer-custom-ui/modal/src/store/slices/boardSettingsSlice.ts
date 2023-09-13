@@ -25,13 +25,30 @@ const initialState: BoardSettingsState = {
 	cardTagConfiguration: { standard: {}, trackerSpecific: {} },
 };
 
+// export const loadBoardSettings = createAsyncThunk(
+// 	'boardSettings/loadBoardSettings',
+// 	async () => {
+// 		if (!window.miro || !miro.board) {
+// 			throw new Error('Miro not attached to the window');
+// 		}
+// 		return await miro.board.getAppData();
+// 	}
+// );
+
 export const loadBoardSettings = createAsyncThunk(
 	'boardSettings/loadBoardSettings',
 	async () => {
-		if (!window.miro || !miro.board) {
-			throw new Error('Miro not attached to the window');
-		}
-		return await miro.board.getAppData();
+		const cbAddress = localStorage.getItem(BoardSetting.CB_ADDRESS);
+		const projectId = localStorage.getItem(BoardSetting.PROJECT_ID);
+		const cardTagConfiguration = localStorage.getItem(
+			BoardSetting.CARD_TAG_CONFIGURATION
+		);
+		const localStorageData = {
+			cbAddress: cbAddress,
+			projectId: projectId,
+			cardTagConfiguration: cardTagConfiguration,
+		};
+		return localStorageData;
 	}
 );
 
@@ -40,8 +57,6 @@ export const boardSettingsSlice = createSlice({
 	initialState,
 	reducers: {
 		setCbAddress: (state, action: PayloadAction<string>) => {
-			miro.board.setAppData(BoardSetting.CB_ADDRESS, action.payload);
-
 			//additionally stored in local storage because only then can we use it
 			//in the api's baseQuery factory
 			localStorage.setItem(BoardSetting.CB_ADDRESS, action.payload);
@@ -50,7 +65,7 @@ export const boardSettingsSlice = createSlice({
 		},
 		setProjectId: (state, action: PayloadAction<number | string>) => {
 			const id = action.payload.toString();
-			miro.board.setAppData(BoardSetting.PROJECT_ID, id);
+			localStorage.setItem(BoardSetting.PROJECT_ID, id);
 
 			state.projectId = id;
 		},
@@ -61,7 +76,7 @@ export const boardSettingsSlice = createSlice({
 			state.cardTagConfiguration.standard[action.payload.property] =
 				action.payload.value;
 
-			miro.board.setAppData(
+			localStorage.setItem(
 				BoardSetting.CARD_TAG_CONFIGURATION,
 				structuredClone(current(state.cardTagConfiguration))
 			);
@@ -75,12 +90,12 @@ export const boardSettingsSlice = createSlice({
 			.addCase(loadBoardSettings.fulfilled, (state, action) => {
 				state.cbAddress = action.payload[BoardSetting.CB_ADDRESS] ?? '';
 				state.projectId = action.payload[BoardSetting.PROJECT_ID] ?? '';
-				state.inboxTrackerId =
-					action.payload[BoardSetting.INBOX_TRACKER_ID] ?? '';
-				state.userMapping =
-					(action.payload[
-						BoardSetting.USER_MAPPING
-					] as unknown as UserMapping[]) ?? {};
+				// state.inboxTrackerId =
+				// 	action.payload[BoardSetting.INBOX_TRACKER_ID] ?? '';
+				// state.userMapping =
+				// 	(action.payload[
+				// 		BoardSetting.USER_MAPPING
+				// 	] as unknown as UserMapping[]) ?? {};
 				state.cardTagConfiguration = (action.payload[
 					BoardSetting.CARD_TAG_CONFIGURATION
 				] as unknown as IAppCardTagSettings) ?? {
