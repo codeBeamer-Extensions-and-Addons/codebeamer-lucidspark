@@ -27,7 +27,7 @@ export default function Importer(props: {
 
 	const [loaded, setLoaded] = useState(0);
 
-	const importedItems = useImportedItems();
+	// const importedItems = useImportedItems();
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.
@@ -45,16 +45,23 @@ export default function Importer(props: {
 
 	//* applies all currently active filters by using the stored cbqlString,
 	//* then further filters out only the selected items (or takes all of 'em)
+
+	// const { data, error, isLoading } = useGetItemsQuery({
+	// 	page: DEFAULT_RESULT_PAGE,
+	// 	pageSize: MAX_ITEMS_PER_IMPORT,
+	// 	queryString: `${getMainQueryString()}${
+	// 		importedItems.length
+	// 			? ' AND item.id NOT IN (' +
+	// 			  importedItems.map((i) => i.itemId) +
+	// 			  ')'
+	// 			: ''
+	// 	}`,
+	// });
+
 	const { data, error, isLoading } = useGetItemsQuery({
 		page: DEFAULT_RESULT_PAGE,
 		pageSize: MAX_ITEMS_PER_IMPORT,
-		queryString: `${getMainQueryString()}${
-			importedItems.length
-				? ' AND item.id NOT IN (' +
-				  importedItems.map((i) => i.itemId) +
-				  ')'
-				: ''
-		}`,
+		queryString: getMainQueryString(),
 	});
 
 	React.useEffect(() => {
@@ -68,9 +75,9 @@ export default function Importer(props: {
 							(c) => c.name == 'Folder' || c.name == 'Information'
 						)
 					) {
-						miro.board.notifications.showInfo(
-							`${_items[i].name} is a Folder / Information and will not be imported.`
-						);
+						// miro.board.notifications.showInfo(
+						// 	`${_items[i].name} is a Folder / Information and will not be imported.`
+						// );
 						continue;
 					}
 				}
@@ -79,8 +86,8 @@ export default function Importer(props: {
 				console.log("Created card for item '" + _items[i].name + "'");
 			}
 			console.log('Done importing.');
-			miro.board.ui.closeModal();
-			miro.board.ui.closePanel();
+			// miro.board.ui.closeModal();
+			// miro.board.ui.closePanel();
 		};
 
 		if (error) {

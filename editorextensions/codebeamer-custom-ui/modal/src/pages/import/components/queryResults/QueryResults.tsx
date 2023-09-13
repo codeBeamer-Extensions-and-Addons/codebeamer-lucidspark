@@ -24,7 +24,7 @@ export default function QueryResults() {
 	const [importing, setImporting] = useState(false);
 	const [synchronizing, setSynchronizing] = useState(false);
 
-	const importedItems = useImportedItems();
+	// const importedItems = useImportedItems();
 
 	const intersectionObserverOptions = {
 		root: document.getElementById('queryResultsContainer'),
@@ -201,16 +201,16 @@ export default function QueryResults() {
 							<QueryResult
 								item={i}
 								key={i.id}
-								checked={
-									importedItems.find(
-										(imported) => imported.itemId == i.id
-									) !== undefined
-								}
-								disabled={
-									importedItems.find(
-										(imported) => imported.itemId == i.id
-									) !== undefined
-								}
+								// checked={
+								// 	importedItems.find(
+								// 		(imported) => imported.itemId == i.id
+								// 	) !== undefined
+								// }
+								// disabled={
+								// 	importedItems.find(
+								// 		(imported) => imported.itemId == i.id
+								// 	) !== undefined
+								// }
 								onSelect={toggleItemSelected}
 							/>
 						))}
@@ -241,7 +241,7 @@ export default function QueryResults() {
 					onImportSelected={handleImportSelected}
 					onImportAll={handleImportAll}
 					onSync={handleSync}
-					importedItems={importedItems}
+					// importedItems={importedItems}
 				/>
 				{importing && (
 					<Importer
@@ -253,7 +253,7 @@ export default function QueryResults() {
 						}
 					/>
 				)}
-				{synchronizing && <Updater items={importedItems} />}
+				{/* {synchronizing && <Updater items={importedItems} />} */}
 			</div>
 		);
 	} else {

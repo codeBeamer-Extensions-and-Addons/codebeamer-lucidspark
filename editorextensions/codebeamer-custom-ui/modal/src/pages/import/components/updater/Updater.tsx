@@ -67,9 +67,9 @@ export default function Updater(props: {
 							(c) => c.name == 'Folder' || c.name == 'Information'
 						)
 					) {
-						miro.board.notifications.showInfo(
-							`${_items[i].name} is a Folder / Information and will not be imported.`
-						);
+						// miro.board.notifications.showInfo(
+						// 	`${_items[i].name} is a Folder / Information and will not be imported.`
+						// );
 						continue;
 					}
 				}
@@ -80,16 +80,16 @@ export default function Updater(props: {
 					(item) => item.itemId == _items[i].id.toString()
 				)?.appCardId;
 				if (!appCardId) {
-					miro.board.notifications.showError(
-						`Failed updating card for Item ${_items[i].name}`
-					);
+					// miro.board.notifications.showError(
+					// 	`Failed updating card for Item ${_items[i].name}`
+					// );
 					continue;
 				}
 
 				await updateAppCard(_items[i], appCardId);
 				setLoaded(i + 1);
 			}
-			await miro.board.ui.closeModal();
+			// await miro.board.ui.closeModal();
 		};
 
 		if (error || trackerDetailsQueryError) {
