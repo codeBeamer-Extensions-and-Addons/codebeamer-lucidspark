@@ -15,6 +15,7 @@
 	"scripts": {
 		"start": "vite",
 		"build": "vite build",
+		"postbuild": "node ./post-process-build.js",
 		"serve": "vite preview",
 		"test": "cypress run -b electron --component --record false",
 		"test:open": "cypress open --component -b electron"
@@ -27,7 +28,7 @@
 		"react": "18.2.0",
 		"react-bootstrap": "^2.5.0",
 		"react-dom": "18.2.0",
-		"react-redux": "^8.0.2",
+		"react-redux": "^8.1.2",
 		"react-select": "^5.4.0",
 		"react-tooltip": "^5.11.1"
 	},
