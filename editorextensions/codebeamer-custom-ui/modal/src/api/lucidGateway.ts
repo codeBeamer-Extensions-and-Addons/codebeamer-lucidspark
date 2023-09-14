@@ -2,7 +2,7 @@ import { Association, ItemMetadata } from '../models/api-query-types';
 import { CodeBeamerItem } from '../models/codebeamer-item.if';
 
 export async function createAppCard(item: CodeBeamerItem) {
-	throw new Error('Not implemented');
+	window.parent.postMessage(item, '*');
 }
 
 export async function updateAppCard(

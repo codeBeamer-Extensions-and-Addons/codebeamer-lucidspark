@@ -1,8 +1,7 @@
-import { EditorClient, Menu, MenuType, Panel, PanelLocation, Viewport } from 'lucid-extension-sdk';
+import { EditorClient, Menu, MenuType } from 'lucid-extension-sdk';
 import { ImportModal } from './importmodal';
 
 const client = new EditorClient();
-const viewport = new Viewport(client);
 
 client.registerAction('cbcards', () => {
 	const modal = new ImportModal(client);

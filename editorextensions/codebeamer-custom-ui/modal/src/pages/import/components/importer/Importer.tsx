@@ -86,8 +86,6 @@ export default function Importer(props: {
 				console.log("Created card for item '" + _items[i].name + "'");
 			}
 			console.log('Done importing.');
-			// miro.board.ui.closeModal();
-			// miro.board.ui.closePanel();
 		};
 
 		if (error) {
