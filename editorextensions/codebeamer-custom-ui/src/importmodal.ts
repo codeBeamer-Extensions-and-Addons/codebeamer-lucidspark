@@ -26,17 +26,21 @@ export class ImportModal extends Modal {
 	protected viewport = new Viewport(this.client);
 
 	protected messageFromFrame(item: CodeBeamerItem): void {
-		this.createSticky(
+		this.createLucidCardBlock(
 			item,
 			this.viewport.getCurrentPage()!,
-			this.viewport.getVisibleRect().x,
-			this.viewport.getVisibleRect().y
+			(this.viewport.getVisibleRect().x +
+				this.viewport.getVisibleRect().w / 2) *
+				(Math.random() * (1.1 - 0.9) + 0.9),
+			(this.viewport.getVisibleRect().y +
+				this.viewport.getVisibleRect().h / 2) *
+				(Math.random() * (1.1 - 0.9) + 0.9)
 		);
 
 		this.hide();
 	}
 
-	protected async createSticky(
+	protected async createLucidCardBlock(
 		item: CodeBeamerItem,
 		page: PageProxy,
 		x: number,
@@ -60,10 +64,6 @@ export class ImportModal extends Modal {
 				block.setAssignee(item.assignedTo[0].name);
 			if (item.storyPoints) block.setEstimate(item.storyPoints);
 			block.setStatus(StatusValues.Todo);
-			block.setFillStyle({
-				position: SimpleImageFillPosition.Fit,
-				url: this.icon,
-			});
 		}
 	}
 	protected icon =
