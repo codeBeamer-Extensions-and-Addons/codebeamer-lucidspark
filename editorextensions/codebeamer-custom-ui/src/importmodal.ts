@@ -1,5 +1,4 @@
 import {EditorClient, Modal} from 'lucid-extension-sdk';
-import importHtml from '../resources/import.html';
 
 export interface ImportModalMessage {
     'name': string;
@@ -9,10 +8,10 @@ export interface ImportModalMessage {
 export class ImportModal extends Modal {
     constructor(client: EditorClient) {
         super(client, {
-            title: 'Import a thing',
-            width: 600,
-            height: 400,
-            content: importHtml,
+            title: 'codebeamer-cards import',
+            width: 1080,
+            height: 680,
+            url: 'modal/index.html'
         });
     }
 
