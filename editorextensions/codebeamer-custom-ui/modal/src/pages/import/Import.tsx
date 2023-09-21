@@ -7,7 +7,7 @@ import './import.css';
 
 export default function Import() {
 	return (
-		<div className="fade-in" data-test="import">
+		<div className="fade-in import" data-test="import">
 			<ImportHeader />
 			<Query />
 			<QueryResults />

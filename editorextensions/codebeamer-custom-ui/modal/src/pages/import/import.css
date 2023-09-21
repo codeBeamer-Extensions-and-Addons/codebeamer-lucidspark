@@ -2,6 +2,7 @@ div,
 p {
 	margin: 0;
 }
-.fade-in {
-	padding: 1em;
+.import {
+	padding-left: 3em;
+	padding-right: 3em;
 }
