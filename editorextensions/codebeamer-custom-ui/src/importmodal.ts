@@ -7,7 +7,7 @@ import {
 	StatusValues,
 	Viewport,
 } from 'lucid-extension-sdk';
-import { CodeBeamerItem } from '../modal/src/models/codebeamer-item.if';
+import { CardData } from '../modal/src/models/lucidCardData';
 
 export interface ImportModalMessage {
 	name: string;
@@ -25,9 +25,9 @@ export class ImportModal extends Modal {
 	}
 	protected viewport = new Viewport(this.client);
 
-	protected messageFromFrame(item: CodeBeamerItem): void {
+	protected messageFromFrame(cardData: CardData): void {
 		this.createLucidCardBlock(
-			item,
+			cardData,
 			this.viewport.getCurrentPage()!,
 			(this.viewport.getVisibleRect().x +
 				this.viewport.getVisibleRect().w / 2) *
@@ -41,7 +41,7 @@ export class ImportModal extends Modal {
 	}
 
 	protected async createLucidCardBlock(
-		item: CodeBeamerItem,
+		cardData: CardData,
 		page: PageProxy,
 		x: number,
 		y: number
@@ -58,12 +58,14 @@ export class ImportModal extends Modal {
 		});
 
 		if (block instanceof CardBlockProxy) {
-			if (item.name) block.setTitle(item.name);
-			if (item.description) block.setDescription(item.description);
-			if (item.assignedTo[0].name)
-				block.setAssignee(item.assignedTo[0].name);
-			if (item.storyPoints) block.setEstimate(item.storyPoints);
+			if (cardData.title) block.setTitle(cardData.title);
+			if (cardData.description)
+				block.setDescription(cardData.description);
+			if (cardData.assignee) block.setAssignee(cardData.assignee);
+			if (cardData.estimate) block.setEstimate(cardData.estimate);
 			block.setStatus(StatusValues.Todo);
+			if (cardData.style)
+				block.properties.set('LineColor', cardData.style.cardTheme);
 		}
 	}
 	protected icon =
