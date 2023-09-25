@@ -89,7 +89,7 @@ export default function ImportHeader() {
 							)}
 						</button>
 					</DefaultOverlayTrigger>
-					{/* <DefaultOverlayTrigger content="Settings">
+					<DefaultOverlayTrigger content="Settings">
 						<button
 							className="button button-secondary button-small mx-1"
 							onClick={openSettingsModal}
@@ -109,7 +109,7 @@ export default function ImportHeader() {
 								/>
 							</svg>
 						</button>
-					</DefaultOverlayTrigger> */}
+					</DefaultOverlayTrigger>
 					<DefaultOverlayTrigger content="Latest update informations">
 						<button
 							className="button-secondary button-small button mx-1"

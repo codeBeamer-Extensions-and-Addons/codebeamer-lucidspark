@@ -12,11 +12,11 @@ import './settings.css';
  */
 export default function Settings(props: { onClose: Function }) {
 	const tabs: ITab[] = [
-		{
-			title: 'Card Tags',
-			// icon: 'download',
-			tab: <AppCardTagSettings />,
-		},
+		// {
+		// 	title: 'Card Tags',
+		// 	// icon: 'download',
+		// 	tab: <AppCardTagSettings />,
+		// },
 		{
 			title: 'Project',
 			// icon: 'layers',
