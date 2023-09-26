@@ -34,7 +34,7 @@ export default function Announcements() {
 					data-test="close-announcements"
 				></div>
 			</span>
-			<AnnouncementArticle date={'2023-09-15'} version={'1.6.0'}>
+			<AnnouncementArticle date={'2023-09-26'} version={'1.0.0'}>
 				<p className="mt-5">
 					Welcome to codebeamer-cards for Lucidspark!
 				</p>
