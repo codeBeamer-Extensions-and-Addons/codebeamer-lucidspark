@@ -3,13 +3,17 @@
 # generated documentation
 docs/
 
+# build files
+**/bin
+/public
+
 # cypress large files and env variables
 cypress/screenshots
 cypress/videos
 cypress.env.json
 
 # dependencies
-/node_modules
+**/node_modules
 /.pnp
 .pnp.js
 
