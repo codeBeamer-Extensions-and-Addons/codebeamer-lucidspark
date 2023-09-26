@@ -43,7 +43,7 @@ export default function Announcements() {
 			<div className="announcement-actions mt-5 text-center">
 				<h6 className="h6">Additional resources</h6>
 				<a
-					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/master/CHANGELOG.md"
+					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/main/CHANGELOG.md"
 					target="_blank"
 					className="roche-primary-light"
 				>
@@ -51,7 +51,7 @@ export default function Announcements() {
 				</a>{' '}
 				|{' '}
 				<a
-					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/master/README.md"
+					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/main/README.md"
 					target="_blank"
 					className="roche-primary-light"
 				>
