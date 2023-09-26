@@ -59,7 +59,7 @@ export default function Announcements() {
 				</a>{' '}
 				|{' '}
 				<a
-					href="https://retina.roche.com/cb/wiki/1420850"
+					href="https://retina.roche.com/cb/wiki/10407748"
 					target="_blank"
 					className="roche-primary-light"
 				>
