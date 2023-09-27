@@ -27,15 +27,15 @@ If you want to propose a feature or report a bug instead, feel free to create an
 ### Setup
 
 ```bat
-npm i                                                        // install dependencies
-npx lucid-package test-editor-extension codebeamer-custom-ui // run the integration
+npm i                                                           // install dependencies
+npx lucid-package test-editor-extension codebeamer-custom-ui    // run the integration
 ```
 
 Open a second terminal
 
 ```bat
-cd editorextensions\codebeamer-custom-ui\modal               // navigate to the custom React code directory.
-npm run build                                                // build the app with vite
+cd editorextensions\codebeamer-custom-ui\modal    // navigate to the custom React code directory.
+npm run build                                     // build the app with vite
 ```
 
 To use the locally hosted app on Lucidspark, open a Lucidspark board and enable the `Load local extensions` option in the developer menu.
