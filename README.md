@@ -26,6 +26,7 @@ If you want to propose a feature or report a bug instead, feel free to create an
 
 ### Repository Structure
 
+```bash
 codebeamer-lucidspark/
 │
 │
@@ -37,6 +38,7 @@ codebeamer-lucidspark/
 │ │ └── ...
 │ └── ...
 └── ... (other project files)
+```
 
 ### Setup
 
