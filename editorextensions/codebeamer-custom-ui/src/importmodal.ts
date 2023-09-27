@@ -60,12 +60,12 @@ export class ImportModal extends Modal {
 		if (block instanceof CardBlockProxy) {
 			if (cardData.title) block.setTitle(cardData.title);
 			if (cardData.description)
-				block.setDescription(cardData.description);
+				block.properties.set('NoteHint', cardData.description);
 			if (cardData.assignee) block.setAssignee(cardData.assignee);
 			if (cardData.estimate) block.setEstimate(cardData.estimate);
-			block.setStatus(StatusValues.Todo);
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
+			block.setDescription(' '); // add empty description to disable 'Description' placeholder on created cards
 		}
 	}
 	protected icon =
