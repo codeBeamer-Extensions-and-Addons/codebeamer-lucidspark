@@ -63,7 +63,6 @@ export class ImportModal extends Modal {
 				block.properties.set('NoteHint', cardData.description);
 			if (cardData.assignee) block.setAssignee(cardData.assignee);
 			if (cardData.estimate) block.setEstimate(cardData.estimate);
-			block.setStatus(StatusValues.Todo);
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
 			block.setDescription(' '); // add empty description to disable 'Description' placeholder on created cards
