@@ -66,6 +66,7 @@ export class ImportModal extends Modal {
 			block.setStatus(StatusValues.Todo);
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
+			block.setDescription(' '); // add empty description to disable 'Description' placeholder on created cards
 		}
 	}
 	protected icon =
