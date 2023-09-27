@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-miro/blob/refactor/react/CHANGELOG.md">Changelog</a>
+  <a href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/main/CHANGELOG.md">Changelog</a>
 </p>
 
 <h3 align="center">Visualize your codebeamer issues in Lucidspark</h3>
