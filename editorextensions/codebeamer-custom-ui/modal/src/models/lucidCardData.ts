@@ -9,4 +9,8 @@ export interface CardData {
 	style?: {
 		cardTheme?: string;
 	};
+	coordinates?: {
+		x: number;
+		y: number;
+	};
 }
