@@ -50,7 +50,7 @@ npx lucid-package test-editor-extension codebeamer-custom-ui    // run the integ
 Open a second terminal
 
 ```bat
-cd editorextensions\codebeamer-custom-ui\modal    // navigate to the custom React code directory.
+cd editorextensions\codebeamer-custom-ui\modal    // navigate to the custom React code directory
 npm run build                                     // build the app with vite
 ```
 
