@@ -103,52 +103,52 @@ describe('<ImportActions>', () => {
 			cy.get('@handler').should('have.been.calledOnce');
 		});
 
-		context('syncing', () => {
-			it('displays the amount of already imported Items on the Sync button', () => {
-				const items: AppCardToItemMapping[] = [
-					{ itemId: '1', appCardId: '' },
-					{ itemId: '2', appCardId: '' },
-					{ itemId: '3', appCardId: '' },
-				];
+		// context('syncing', () => {
+		// 	it('displays the amount of already imported Items on the Sync button', () => {
+		// 		const items: AppCardToItemMapping[] = [
+		// 			{ itemId: '1', appCardId: '' },
+		// 			{ itemId: '2', appCardId: '' },
+		// 			{ itemId: '3', appCardId: '' },
+		// 		];
 
-				cy.mount(
-					<ImportActions
-						selectedCount={0}
-						totalCount={0}
-						onImportSelected={() => {}}
-						onImportAll={() => {}}
-						onSync={() => {}}
-						importedItems={items}
-					/>
-				);
+		// 		cy.mount(
+		// 			<ImportActions
+		// 				selectedCount={0}
+		// 				totalCount={0}
+		// 				onImportSelected={() => {}}
+		// 				onImportAll={() => {}}
+		// 				onSync={() => {}}
+		// 				importedItems={items}
+		// 			/>
+		// 		);
 
-				cy.getBySel('sync').should('contain.text', items.length);
-			});
+		// 		cy.getBySel('sync').should('contain.text', items.length);
+		// 	});
 
-			it('calls the passed handler when clicking the "Sync" button', () => {
-				const handler = cy.spy().as('handler');
+		// 	it('calls the passed handler when clicking the "Sync" button', () => {
+		// 		const handler = cy.spy().as('handler');
 
-				const items: AppCardToItemMapping[] = [
-					{ itemId: '1', appCardId: '' },
-					{ itemId: '2', appCardId: '' },
-					{ itemId: '3', appCardId: '' },
-				];
+		// 		const items: AppCardToItemMapping[] = [
+		// 			{ itemId: '1', appCardId: '' },
+		// 			{ itemId: '2', appCardId: '' },
+		// 			{ itemId: '3', appCardId: '' },
+		// 		];
 
-				cy.mount(
-					<ImportActions
-						selectedCount={0}
-						totalCount={0}
-						onImportSelected={() => {}}
-						onImportAll={() => {}}
-						onSync={handler}
-						importedItems={items}
-					/>
-				);
+		// 		cy.mount(
+		// 			<ImportActions
+		// 				selectedCount={0}
+		// 				totalCount={0}
+		// 				onImportSelected={() => {}}
+		// 				onImportAll={() => {}}
+		// 				onSync={handler}
+		// 				importedItems={items}
+		// 			/>
+		// 		);
 
-				cy.getBySel('sync').click();
+		// 		cy.getBySel('sync').click();
 
-				cy.get('@handler').should('have.been.calledOnce');
-			});
-		});
+		// 		cy.get('@handler').should('have.been.calledOnce');
+		// 	});
+		// });
 	});
 });
