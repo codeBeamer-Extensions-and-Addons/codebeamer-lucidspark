@@ -26,3 +26,4 @@ First version of the codebeamer-lucidspark plugin / MVP
     -   Connection to a Codebeamer instance
 -   Announcements page
 -   Item Importing to the lucidspark board
+-   Miro codebeamer-cards importer
