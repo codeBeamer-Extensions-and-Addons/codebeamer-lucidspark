@@ -1,60 +1,32 @@
 import React, { useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
+import ProgressBar from 'react-bootstrap/ProgressBar';
 import Spinner from 'react-bootstrap/Spinner';
-import { useSelector } from 'react-redux';
 import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
-import { createAppCard, startImport } from '../../../../api/lucidGateway';
+import {
+	closeModal,
+	createAppCard,
+	startImport,
+} from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
 } from '../../../../constants/cb-import-defaults';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
-import { RootState } from '../../../../store/store';
+import { CompressedItem } from '../settings/miroImport/MiroImport';
 
 import './importer.css';
 
 export default function Importer(props: {
-	items: string[];
-	totalItems?: number;
-	queryString?: string;
+	items: CompressedItem[];
 	onClose?: Function;
 }) {
-	const { cbqlString } = useSelector(
-		(state: RootState) => state.userSettings
-	);
-
-	const [loaded, setLoaded] = useState(0);
-
-	// const importedItems = useImportedItems();
-
 	/**
-	 * Produces the "main query string", which defines what should be imported.
-	 * Can and should be extended by what should NOT be imported
+	 * Produces the query string for the import.
 	 */
 	const getMainQueryString = () => {
-		if (props.queryString) return props.queryString;
-		else
-			return `${cbqlString}${
-				props.items.length
-					? ' AND item.id IN (' + props.items.join(',') + ')'
-					: ''
-			}`;
+		return `item.id IN (${props.items.map((i) => i.id).join(',')})`;
 	};
-
-	//* applies all currently active filters by using the stored cbqlString,
-	//* then further filters out only the selected items (or takes all of 'em)
-
-	// const { data, error, isLoading } = useGetItemsQuery({
-	// 	page: DEFAULT_RESULT_PAGE,
-	// 	pageSize: MAX_ITEMS_PER_IMPORT,
-	// 	queryString: `${getMainQueryString()}${
-	// 		importedItems.length
-	// 			? ' AND item.id NOT IN (' +
-	// 			  importedItems.map((i) => i.itemId) +
-	// 			  ')'
-	// 			: ''
-	// 	}`,
-	// });
 
 	const { data, error, isLoading } = useGetItemsQuery({
 		page: DEFAULT_RESULT_PAGE,
@@ -80,7 +52,10 @@ export default function Importer(props: {
 				}
 				await createAppCard(
 					importId,
-					_items[i]
+					_items[i],
+					props.items.find(
+						(m) => m.id == _items[i].id.toString().trim()
+					)?.coordinates
 				);
 			}
 		};

@@ -1,17 +1,21 @@
-import { EnhancedStore } from '@reduxjs/toolkit';
 import { Association, ItemMetadata } from '../models/api-query-types';
 import { CodeBeamerItem } from '../models/codebeamer-item.if';
-import addCardFields from './utils/addCardFields';
-import getCardTitle from './utils/getCardTitle';
 import getItemColorField from './utils/getItemColorField';
-import { CardBlockProxy } from 'lucid-extension-sdk';
 import { store } from '../store/store';
-import { DescriptionFormat } from '../enums/descriptionFormat.enum';
 import TrackerDetails from '../models/trackerDetails.if';
 import { CardData } from '../models/lucidCardData';
 
-export async function createAppCard(item: CodeBeamerItem) {
-	convertToCardDataAndPost(item);
+export interface Message {
+	action: string;
+	payload: any;
+}
+
+export async function createAppCard(
+	importId: number,
+	item: CodeBeamerItem,
+	coordinates?: { x: number; y: number }
+) {
+	convertToCardDataAndPost(importId, item, coordinates);
 }
 export async function updateAppCard(
 	item: CodeBeamerItem,
@@ -31,7 +35,11 @@ export async function createConnectors(
 	throw new Error('Not implemented');
 }
 
-export async function convertToCardDataAndPost(item: CodeBeamerItem) {
+export async function convertToCardDataAndPost(
+	importId: number,
+	item: CodeBeamerItem,
+	coordinates?: { x: number; y: number }
+) {
 	let description = item.description;
 	const username = store.getState().userSettings.cbUsername;
 	const password = store.getState().userSettings.cbPassword;
@@ -83,6 +91,7 @@ export async function convertToCardDataAndPost(item: CodeBeamerItem) {
 		// ),
 		title: item.name,
 		description: description,
+		coordinates: coordinates,
 	};
 
 	if (item.assignedTo[0]) cardData.assignee = item.assignedTo[0].name;
@@ -99,5 +108,25 @@ export async function convertToCardDataAndPost(item: CodeBeamerItem) {
 		cardData.style = { cardTheme: backgroundColor };
 	}
 
-	window.parent.postMessage(cardData, '*');
+	window.parent.postMessage({ action: 'importItem', payload: { importId, cardData } }, '*');
+}
+
+export function startImport(id: number, items: number) {
+	window.parent.postMessage(
+		{
+			action: 'startImport',
+			payload: {
+				id: id,
+				totalItems: items,
+			},
+		},
+		'*'
+	);
+}
+
+/**
+ * Call me, when you want to close the modal.
+ */
+export function closeModal() {
+	window.parent.postMessage({ action: 'closeModal', payload: true }, '*');
 }
