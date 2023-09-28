@@ -47,9 +47,6 @@ export default function Importer(props: {
 							(c) => c.name == 'Folder' || c.name == 'Information'
 						)
 					) {
-						// miro.board.notifications.showInfo(
-						// 	`${_items[i].name} is a Folder / Information and will not be imported.`
-						// );
 						continue;
 					}
 				}
