@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Tabs, { ITab } from '../../../../components/tabs/Tabs';
 import AuthForm from '../../../auth/auth';
 import ProjectSelection from '../projectSelection/ProjectSelection';
-import AppCardTagSettings from './cardCustomization/AppCardTagSettings';
+import MiroImport from './miroImport/MiroImport';
 
 import './settings.css';
 
@@ -12,11 +12,6 @@ import './settings.css';
  */
 export default function Settings(props: { onClose: Function }) {
 	const tabs: ITab[] = [
-		// {
-		// 	title: 'Card Tags',
-		// 	// icon: 'download',
-		// 	tab: <AppCardTagSettings />,
-		// },
 		{
 			title: 'Project',
 			// icon: 'layers',
@@ -26,6 +21,11 @@ export default function Settings(props: { onClose: Function }) {
 			title: 'Connection',
 			// icon: 'plug',
 			tab: <AuthForm headerLess={true} successAnimation={true} />,
+		},
+		{
+			title: 'Miro Import',
+			// icon: 'download',
+			tab: <MiroImport />,
 		},
 	];
 
