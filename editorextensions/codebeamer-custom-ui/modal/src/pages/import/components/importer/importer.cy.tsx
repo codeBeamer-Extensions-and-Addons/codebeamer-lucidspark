@@ -50,14 +50,6 @@ describe('<Importer>', () => {
 		const items: string[] = ['1', '2', '3', '4'];
 		const store = getStore();
 
-		cy.stub(miro.board, 'createAppCard').resolves(null);
-		cy.stub(miro.board.viewport, 'get').resolves({
-			x: 0,
-			y: 0,
-			width: 1000,
-			height: 1000,
-		});
-
 		cy.intercept('POST', '**/wiki2html');
 
 		cy.intercept('POST', '**/api/v3/items/query', {
@@ -181,40 +173,6 @@ describe('<Importer>', () => {
 		// 		.its('request.body.queryString')
 		// 		.should('equal', expectedQuery);
 		// });
-	});
-
-	describe('import progress bar', () => {
-		const progressBarSelector = 'importProgress';
-
-		it('shows the total amount of items to import based on the passed items array', () => {
-			const items: string[] = ['1', '2', '3'];
-			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
-			cy.mountWithStore(<Importer items={items} />);
-
-			cy.getBySel(progressBarSelector).should(
-				'contain.text',
-				`/${items.length}`
-			);
-		});
-
-		/**
-		 * Because importing all is communicated with an empty array, its length doesn't serve as measure in this case
-		 */
-		it('shows the total amount of items to import based on a fallback value when importing all items for a query', () => {
-			const items: string[] = [];
-			const totalItems = 235;
-			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
-			cy.mountWithStore(
-				<Importer items={items} totalItems={totalItems} />
-			);
-
-			cy.getBySel(progressBarSelector).should(
-				'contain.text',
-				`/${totalItems}`
-			);
-		});
 	});
 });
 
