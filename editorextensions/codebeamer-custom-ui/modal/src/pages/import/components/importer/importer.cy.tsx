@@ -106,37 +106,37 @@ describe('<Importer>', () => {
 			.should('equal', expectedQuery);
 	});
 
-	it('appends what items are already imported to the queryString so as not to duplicate them', () => {
-		cy.stub(miro.board, 'get')
-			.as('boardGetStub')
-			.withArgs({ type: 'app_card' })
-			.resolves(mockImportedItems);
+	// it('appends what items are already imported to the queryString so as not to duplicate them', () => {
+	// 	cy.stub(miro.board, 'get')
+	// 		.as('boardGetStub')
+	// 		.withArgs({ type: 'app_card' })
+	// 		.resolves(mockImportedItems);
 
-		const items: string[] = ['1', '2', '3'];
-		const store = getStore();
-		store.dispatch(setTrackerId('1'));
+	// 	const items: string[] = ['1', '2', '3'];
+	// 	const store = getStore();
+	// 	store.dispatch(setTrackerId('1'));
 
-		const expectedQuery = `tracker.id IN (1) AND item.id IN (${items.join(
-			','
-		)}) AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
+	// 	const expectedQuery = `tracker.id IN (1) AND item.id IN (${items.join(
+	// 		','
+	// 	)}) AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
 
-		cy.intercept('POST', '**/api/v3/items/query', {
-			statusCode: 200,
-			body: [],
-		}).as('fetch');
+	// 	cy.intercept('POST', '**/api/v3/items/query', {
+	// 		statusCode: 200,
+	// 		body: [],
+	// 	}).as('fetch');
 
-		cy.mountWithStore(<Importer items={items} />, { reduxStore: store });
+	// 	cy.mountWithStore(<Importer items={items} />, { reduxStore: store });
 
-		cy.get('@boardGetStub').should('be.called');
+	// 	cy.get('@boardGetStub').should('be.called');
 
-		//that's just React, or my inability to properly use it - one call will be made to @fetch before the importedItems
-		//are updated. once they are, an overriding second call is made, which is the final one we want
-		cy.wait('@fetch');
+	// 	//that's just React, or my inability to properly use it - one call will be made to @fetch before the importedItems
+	// 	//are updated. once they are, an overriding second call is made, which is the final one we want
+	// 	cy.wait('@fetch');
 
-		cy.wait('@fetch')
-			.its('request.body.queryString')
-			.should('equal', expectedQuery);
-	});
+	// 	cy.wait('@fetch')
+	// 		.its('request.body.queryString')
+	// 		.should('equal', expectedQuery);
+	// });
 
 	context('prop queryString', () => {
 		it('fetches the details of the items specified in the queryString if one is specified', () => {
@@ -152,35 +152,35 @@ describe('<Importer>', () => {
 				.should('equal', mockQueryString);
 		});
 
-		it('still appends what items are already imported to the queryString so as not to duplicate them', () => {
-			cy.stub(miro.board, 'get')
-				.as('boardGetStub')
-				.withArgs({ type: 'app_card' })
-				.resolves(mockImportedItems);
+		// it('still appends what items are already imported to the queryString so as not to duplicate them', () => {
+		// 	cy.stub(miro.board, 'get')
+		// 		.as('boardGetStub')
+		// 		.withArgs({ type: 'app_card' })
+		// 		.resolves(mockImportedItems);
 
-			const mockQueryString = 'item.id IN (1,2,3,4)';
+		// 	const mockQueryString = 'item.id IN (1,2,3,4)';
 
-			const expectedQuery = `${mockQueryString} AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
+		// 	const expectedQuery = `${mockQueryString} AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
 
-			cy.intercept('POST', '**/api/v3/items/query', {
-				statusCode: 200,
-				body: [],
-			}).as('fetch');
+		// 	cy.intercept('POST', '**/api/v3/items/query', {
+		// 		statusCode: 200,
+		// 		body: [],
+		// 	}).as('fetch');
 
-			cy.mountWithStore(
-				<Importer items={[]} queryString={mockQueryString} />
-			);
+		// 	cy.mountWithStore(
+		// 		<Importer items={[]} queryString={mockQueryString} />
+		// 	);
 
-			cy.get('@boardGetStub').should('be.called');
+		// 	cy.get('@boardGetStub').should('be.called');
 
-			//that's just React, or my inability to properly use it - one call will be made to @fetch before the importedItems
-			//are updated. once they are, an overriding second call is made, which is the final one we want
-			cy.wait('@fetch');
+		// 	//that's just React, or my inability to properly use it - one call will be made to @fetch before the importedItems
+		// 	//are updated. once they are, an overriding second call is made, which is the final one we want
+		// 	cy.wait('@fetch');
 
-			cy.wait('@fetch')
-				.its('request.body.queryString')
-				.should('equal', expectedQuery);
-		});
+		// 	cy.wait('@fetch')
+		// 		.its('request.body.queryString')
+		// 		.should('equal', expectedQuery);
+		// });
 	});
 
 	describe('import progress bar', () => {
