@@ -31,8 +31,5 @@ function renameReferences(files) {
 
 moveAssets();
 
-const files = [
-	'../../../public/modal/index.html',
-	'../../../public/modal/item.html',
-];
+const files = ['../../../public/modal/index.html'];
 renameReferences(files);
