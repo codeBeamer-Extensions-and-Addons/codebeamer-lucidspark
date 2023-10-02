@@ -55,3 +55,32 @@ npm run build                                     // build the app with vite
 ```
 
 To use the locally hosted app on Lucidspark, open a Lucidspark board and enable the `Load local extensions` option in the developer menu.
+
+## Publishing
+
+In order to bundle the distribution package, run  
+
+```sh
+# build custom modal
+cd editorextensions/codebeamer-custom-ui/modal
+npm run build
+cd ../../..
+
+# build & bundle extension
+npm run bundle
+```
+
+This will create a `package.zip` in the repo root, containing all extensions defined in the `manifest.json`, freshly built.  
+The bundling also increments the (minor) version of each included extension.  
+
+## CI/CD
+
+### CD
+
+`.github/workflows/cd.yml` defines a job that runs the [above-described build](#publishing), creating the `package.zip` as a downloadable artifact.  
+Mind that in order for the versioning to resolve properly, you need to manually have either bundled or increased the (minor+) version of the extension(s) in question once since the last deployment.  
+The pipeline will always produce the version currently in the `manifest.json` + 1 minor increase.
+
+### CI  
+
+Tests are run with cypress. 
