@@ -1,17 +1,17 @@
 {
 	"author": "urecha",
-	"name": "codebeamer-cards",
-	"version": "1.5.2",
+	"name": "codebeamer-cards-lucid",
+	"version": "1.0.0",
 	"licence": "AGPL-3.0",
-	"description": "This is a codeBeamer <-> Miro integration web-plugin to be installed on Miro.\r It allows to import codeBeamer items to a Miro board, displaying any associations between the items.",
+	"description": "This is a codeBeamer <-> Lucidspark extension.\r It allows to import codeBeamer items to a Lucidspark board.",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-miro.git"
+		"url": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucid.git"
 	},
 	"bugs": {
-		"url": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-miro/issues"
+		"url": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucid/issues"
 	},
-	"homepage": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-miro#readme",
+	"homepage": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucid/wiki",
 	"scripts": {
 		"start": "vite",
 		"build": "vite build",
