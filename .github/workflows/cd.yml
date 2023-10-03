@@ -1,4 +1,4 @@
-name: Cypress Tests
+name: CI
 
 on: push
 
@@ -10,7 +10,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Change directory
-              run: cd editorextensions\codebeamer-custom-ui\modal
+              run: cd editorextensions/codebeamer-custom-ui/modal
 
             - name: Cypress run
               uses: cypress-io/github-action@v6
