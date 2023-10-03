@@ -5,15 +5,27 @@ on: push
 jobs:
     cypress-run:
         runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
         steps:
             - name: Checkout
               uses: actions/checkout@v4
-
-            - name: Change directory
-              run: cd editorextensions/codebeamer-custom-ui/modal
-
-            - name: Cypress run
+            - name: Run tests
               uses: cypress-io/github-action@v6
               with:
                   build: npm run build
-                  start: npm start
+                  start: npm run start
+                  wait-on: 'http://localhost:3000'
+                  wait-on-timeout: 20
+                  browser: chrome
+                  component: true
+                  record: true
+                  parallel: false
+                  working-directory: editorextensions/codebeamer-custom-ui/modal
+              env:
+                  CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
+                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  CYPRESS_retinaBaseUrl: https://retinatest.roche.com/cb
+                  CYPRESS_cbUsername: ${{ secrets.CYPRESS_CBUSERNAME }}
+                  CYPRESS_cbPassword: ${{ secrets.CYPRESS_CBPASSWORD }}
