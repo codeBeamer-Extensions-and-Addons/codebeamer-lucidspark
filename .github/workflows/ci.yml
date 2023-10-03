@@ -17,7 +17,7 @@ jobs:
                   start: npm run start
                   wait-on: 'http://localhost:3000'
                   wait-on-timeout: 20
-                  browser: chrome
+                  browser: electron
                   component: true
                   record: true
                   parallel: false
