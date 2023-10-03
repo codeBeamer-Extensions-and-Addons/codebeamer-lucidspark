@@ -9,8 +9,11 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            - name: Change directory
+              run: cd editorextensions/codebeamer-custom-ui/modal
+
             - name: Cypress run
               uses: cypress-io/github-action@v6
               with:
-                  build: cd editorextensions/codebeamer-custom-ui/modal && npm run build && cd ../../..
-                  start: cd editorextensions/codebeamer-custom-ui/modal && npm run start && cd ../../..
+                  build: npm run build
+                  start: npm start
