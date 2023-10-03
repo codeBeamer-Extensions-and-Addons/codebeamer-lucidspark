@@ -1,0 +1,26 @@
+{
+	"name": "codebeamer-lucidspark",
+	"version": "1.0.0",
+	"description": "codebeamer integration with lucidspark",
+	"main": "index.js",
+	"scripts": {
+		"bundle": "lucid-package bundle",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark.git"
+	},
+	"author": "urecha",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/issues"
+	},
+	"homepage": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark#readme",
+	"devDependencies": {
+		"lucid-package": "^0.0.80"
+	},
+	"dependencies": {
+		"webpack-shell-plugin-next": "^2.3.1"
+	}
+}

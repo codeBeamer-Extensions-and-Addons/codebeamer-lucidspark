@@ -1,0 +1,11 @@
+div,
+p {
+	margin: 0;
+}
+.import {
+	padding-left: 3em;
+	padding-right: 3em;
+}
+.grid > * {
+	align-self: auto !important;
+}
