@@ -1,0 +1,16 @@
+name: CI
+
+on: push
+
+jobs:
+    cypress-run:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Cypress run
+              uses: cypress-io/github-action@v6
+              with:
+                  build: cd editorextensions/codebeamer-custom-ui/modal && npm run build && cd ../../..
+                  start: cd editorextensions/codebeamer-custom-ui/modal && npm run start && cd ../../..
