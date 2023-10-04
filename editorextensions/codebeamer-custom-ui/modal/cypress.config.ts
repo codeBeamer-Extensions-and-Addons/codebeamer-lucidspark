@@ -6,7 +6,7 @@ export default defineConfig({
 		openMode: 1,
 	},
 
-	projectId: 'cumqrv',
+	projectId: '61hnzi',
 
 	component: {
 		devServer: {
