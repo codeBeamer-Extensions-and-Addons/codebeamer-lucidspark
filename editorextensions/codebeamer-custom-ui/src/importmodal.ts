@@ -1,4 +1,5 @@
 import {
+	BlockProxy,
 	CardBlockProxy,
 	EditorClient,
 	Modal,
@@ -48,10 +49,40 @@ export class ImportModal extends Modal {
 					this.hide();
 				}
 				break;
+			case 'updateCard':
+				this.updateCard(message.payload.cardData);
+				break;
 			case 'closeModal':
 				this.hide();
 				break;
 		}
+	}
+
+	private updateCard(cardData: CardData): void {
+		const block = this.getCardByRetinaId(cardData.retinaId);
+		if (block) {
+			if (cardData.title) block.setTitle(cardData.title);
+			if (cardData.description)
+				block.properties.set('NoteHint', cardData.description);
+			if (cardData.assignee) block.setAssignee(cardData.assignee);
+			if (cardData.estimate) block.setEstimate(cardData.estimate);
+			if (cardData.style)
+				block.properties.set('LineColor', cardData.style.cardTheme);
+		} else {
+			console.warn('no card found with retina id: ', cardData.retinaId);
+		}
+	}
+
+	private getCardByRetinaId(id: number): CardBlockProxy | null {
+		const block = this.viewport
+			.getCurrentPage()
+			?.allBlocks.find((block) => {
+				const retinaId = block.shapeData.get('RetinaId');
+				return retinaId === id;
+			});
+		if (block instanceof CardBlockProxy) {
+			return block;
+		} else return null;
 	}
 
 	private createCard(cardData: CardData): void {

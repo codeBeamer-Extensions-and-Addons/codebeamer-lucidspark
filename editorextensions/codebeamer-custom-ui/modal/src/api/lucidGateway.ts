@@ -21,12 +21,12 @@ export async function createAppCard(
 		'*'
 	);
 }
-export async function updateAppCard(
-	item: CodeBeamerItem,
-	cardId: string,
-	iForgotWhatThisParamWasAbout?: boolean
-) {
-	throw new Error('Not implemented');
+export async function updateAppCard(item: CodeBeamerItem) {
+	const cardData = await convertToCardData(item);
+	window.parent.postMessage(
+		{ action: 'updateCard', payload: { cardData } },
+		'*'
+	);
 }
 
 export async function createConnectors(
