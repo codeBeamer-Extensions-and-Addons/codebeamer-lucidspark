@@ -89,6 +89,7 @@ export async function convertToCardDataAndPost(
 		// 	item.name,
 		// 	item.tracker.keyName
 		// ),
+		retinaId: item.id,
 		title: item.name,
 		description: description,
 		coordinates: coordinates,
@@ -108,7 +109,10 @@ export async function convertToCardDataAndPost(
 		cardData.style = { cardTheme: backgroundColor };
 	}
 
-	window.parent.postMessage({ action: 'importItem', payload: { importId, cardData } }, '*');
+	window.parent.postMessage(
+		{ action: 'importItem', payload: { importId, cardData } },
+		'*'
+	);
 }
 
 export function startImport(id: number, items: number) {

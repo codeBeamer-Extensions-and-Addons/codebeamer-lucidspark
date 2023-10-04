@@ -28,17 +28,22 @@ export class ImportModal extends Modal {
 
 	protected viewport = new Viewport(this.client);
 
-	imports: Map<number, {totalItems: number, finished: boolean}> = new Map();
+	imports: Map<number, { totalItems: number; finished: boolean }> = new Map();
 
 	protected messageFromFrame(message: Message): void {
 		switch (message.action) {
-			case 'startImport': 
-				this.imports.set(message.payload.id, { totalItems: message.payload.totalItems, finished: false });
+			case 'startImport':
+				this.imports.set(message.payload.id, {
+					totalItems: message.payload.totalItems,
+					finished: false,
+				});
 				break;
 			case 'importItem':
 				this.createCard(message.payload.cardData);
 				this.imports.get(message.payload.importId)!.totalItems--;
-				if (this.imports.get(message.payload.importId)!.totalItems <= 1) {
+				if (
+					this.imports.get(message.payload.importId)!.totalItems <= 1
+				) {
 					this.imports.delete(message.payload.importId);
 					this.hide();
 				}
@@ -89,9 +94,10 @@ export class ImportModal extends Modal {
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
 			block.setDescription(' '); // add empty description to disable 'Description' placeholder on created cards
+			block.shapeData.set('RetinaId', cardData.retinaId);
 		}
 
-		console.log("Card created: ", cardData.title);
+		console.log('Card created: ', cardData.title);
 	}
 
 	protected icon =
