@@ -15,7 +15,11 @@ export async function createAppCard(
 	item: CodeBeamerItem,
 	coordinates?: { x: number; y: number }
 ) {
-	convertToCardDataAndPost(importId, item, coordinates);
+	const cardData = await convertToCardData(item, coordinates);
+	window.parent.postMessage(
+		{ action: 'importItem', payload: { importId, cardData } },
+		'*'
+	);
 }
 export async function updateAppCard(
 	item: CodeBeamerItem,
@@ -35,8 +39,7 @@ export async function createConnectors(
 	throw new Error('Not implemented');
 }
 
-export async function convertToCardDataAndPost(
-	importId: number,
+export async function convertToCardData(
 	item: CodeBeamerItem,
 	coordinates?: { x: number; y: number }
 ) {
@@ -109,10 +112,7 @@ export async function convertToCardDataAndPost(
 		cardData.style = { cardTheme: backgroundColor };
 	}
 
-	window.parent.postMessage(
-		{ action: 'importItem', payload: { importId, cardData } },
-		'*'
-	);
+	return cardData;
 }
 
 export function startImport(id: number, items: number) {
