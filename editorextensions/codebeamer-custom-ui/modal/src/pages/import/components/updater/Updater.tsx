@@ -5,7 +5,7 @@ import {
 	useGetItemsQuery,
 	useGetTrackerDetailsQuery,
 } from '../../../../api/codeBeamerApi';
-import { updateAppCard } from '../../../../api/lucidGateway';
+import { closeModal, updateAppCard } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,
@@ -76,20 +76,20 @@ export default function Updater(props: {
 				_items[i].tracker.keyName = key;
 				_items[i].tracker.color = color;
 
-				const appCardId = props.items.find(
+				const cardBlockId = props.items.find(
 					(item) => item.itemId == _items[i].id.toString()
-				)?.appCardId;
-				if (!appCardId) {
+				)?.cardBlockId;
+				if (!cardBlockId) {
 					// miro.board.notifications.showError(
 					// 	`Failed updating card for Item ${_items[i].name}`
 					// );
 					continue;
 				}
 
-				await updateAppCard(_items[i], appCardId);
+				await updateAppCard(_items[i], cardBlockId);
 				setLoaded(i + 1);
 			}
-			// await miro.board.ui.closeModal();
+			closeModal();
 		};
 
 		if (error || trackerDetailsQueryError) {

@@ -6,7 +6,7 @@ import './importActions.css';
 export default function ImportActions(props: {
 	selectedCount: number;
 	totalCount: number;
-	// importedItems: AppCardToItemMapping[];
+	importedItems: CardBlockToItemMapping[];
 	onImportSelected: Function;
 	onImportAll: Function;
 	onSync: Function;
@@ -54,7 +54,7 @@ export default function ImportActions(props: {
 				</span>
 				Import all ({props.totalCount})
 			</button>
-			{/* <button
+			<button
 				className="button button-secondary button-small flex flex-centered"
 				disabled={props.importedItems.length == 0}
 				data-test="sync"
@@ -62,7 +62,7 @@ export default function ImportActions(props: {
 			>
 				<span className="icon icon-refresh mr-1 pos-adjusted-down"></span>
 				Sync ({props.importedItems.length})
-			</button> */}
+			</button>
 		</div>
 	);
 }

@@ -21,10 +21,13 @@ export async function createAppCard(
 		'*'
 	);
 }
-export async function updateAppCard(item: CodeBeamerItem) {
+export async function updateAppCard(item: CodeBeamerItem, cardBlockId: string) {
 	const cardData = await convertToCardData(item);
 	window.parent.postMessage(
-		{ action: 'updateCard', payload: { cardData } },
+		{
+			action: 'updateCard',
+			payload: { cardData, cardBlockId },
+		},
 		'*'
 	);
 }
