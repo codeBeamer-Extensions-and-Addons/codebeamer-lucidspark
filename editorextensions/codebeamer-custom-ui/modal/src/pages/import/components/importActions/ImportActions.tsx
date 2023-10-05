@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppCardToItemMapping } from '../../../../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 
 import './importActions.css';
 

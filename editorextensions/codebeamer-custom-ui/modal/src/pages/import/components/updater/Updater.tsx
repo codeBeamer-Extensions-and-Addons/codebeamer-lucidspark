@@ -10,7 +10,7 @@ import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,
 } from '../../../../constants/cb-import-defaults';
-import { AppCardToItemMapping } from '../../../../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
 
@@ -20,7 +20,7 @@ import '../importer/importer.css';
  * Twin of {@link Importer}, but for updating.
  */
 export default function Updater(props: {
-	items: AppCardToItemMapping[];
+	items: CardBlockToItemMapping[];
 	onClose?: Function;
 }) {
 	// My programming skills were insufficient to adequately generalize Importer & Updater. They only differ in a few (but supposedly essential) cases.

@@ -52,6 +52,14 @@ export class ImportModal extends Modal {
 			case 'updateCard':
 				this.updateCards(message.payload.cardData);
 				break;
+			case 'getCardBlocks':
+				const cardBlocks = this.viewport
+					.getCurrentPage()
+					?.allBlocks.filter(
+						(block) => block instanceof CardBlockProxy
+					) as CardBlockProxy[];
+				this.sendMessage(JSON.stringify(cardBlocks));
+				break;
 			case 'closeModal':
 				this.hide();
 				break;
@@ -60,7 +68,6 @@ export class ImportModal extends Modal {
 
 	private updateCards(cardData: CardData): void {
 		const blocks = this.getCardsByRetinaId(cardData.retinaId);
-		console.log('blocks: ', blocks);
 
 		if (blocks.length === 0) {
 			console.warn('No cards found with retina id:', cardData.retinaId);

@@ -1,17 +1,17 @@
 import { AppCard } from '@mirohq/websdk-types';
 import React, { useState } from 'react';
 import { CARD_TITLE_ID_FILTER_REGEX } from '../constants/regular-expressions';
-import { AppCardToItemMapping } from '../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
 import { CodeBeamerItem } from '../models/codebeamer-item.if';
 
 /**
- * Queries the AppCards present on the Miro board
- * @returns An array of ${@link AppCardToItemMapping}s matching the AppCards on the board.
+ * Queries the CardBlocks present on the Lucid board
+ * @returns An array of ${@link CardBlockToItemMapping}s matching the AppCards on the board.
  */
 export const useImportedItems = () => {
-	const [importedItems, setImportedItems] = useState<AppCardToItemMapping[]>(
-		[]
-	);
+	const [importedItems, setImportedItems] = useState<
+		CardBlockToItemMapping[]
+	>([]);
 
 	/**
 	 * Queries miro for the currently existing app_cards on the board.
