@@ -30,6 +30,7 @@ export class ImportModal extends Modal {
 	protected viewport = new Viewport(this.client);
 
 	imports: Map<number, { totalItems: number; finished: boolean }> = new Map();
+	cardBlocks: CardBlockProxy[] = [];
 
 	protected messageFromFrame(message: Message): void {
 		switch (message.action) {
@@ -62,6 +63,8 @@ export class ImportModal extends Modal {
 						(block) => block instanceof CardBlockProxy
 					) as CardBlockProxy[];
 
+				this.cardBlocks = cardBlocks;
+
 				const data = cardBlocks.map((cardBlock) => ({
 					cardBlock: cardBlock,
 					retinaId: cardBlock.shapeData.get('RetinaId'),
@@ -85,15 +88,17 @@ export class ImportModal extends Modal {
 			if (cardData.estimate) block.setEstimate(cardData.estimate);
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
+		} else {
+			console.warn("card block couldn't be found with id: ", cardBlockId);
 		}
 	}
 
-	private getCardById(id: string): CardBlockProxy {
-		const block = this.viewport
-			.getCurrentPage()
-			?.allBlocks.find((block) => block.id === id);
+	private getCardById(id: string): CardBlockProxy | undefined {
+		const cardBlock = this.cardBlocks.find(
+			(cardBlock) => cardBlock.id === id
+		);
 
-		return block as CardBlockProxy;
+		return cardBlock;
 	}
 
 	private createCard(cardData: CardData): void {
