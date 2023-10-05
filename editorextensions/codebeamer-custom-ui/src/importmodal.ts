@@ -58,7 +58,12 @@ export class ImportModal extends Modal {
 					?.allBlocks.filter(
 						(block) => block instanceof CardBlockProxy
 					) as CardBlockProxy[];
-				this.sendMessage(JSON.stringify(cardBlocks));
+
+				const data = cardBlocks.map((cardBlock) => ({
+					cardBlock: cardBlock,
+					retinaId: cardBlock.shapeData.get('RetinaId'),
+				}));
+				this.sendMessage(JSON.stringify(data));
 				break;
 			case 'closeModal':
 				this.hide();
