@@ -50,7 +50,7 @@ export class ImportModal extends Modal {
 				}
 				break;
 			case 'updateCard':
-				this.updateCard(message.payload.cardData);
+				this.updateCards(message.payload.cardData);
 				break;
 			case 'closeModal':
 				this.hide();
@@ -58,9 +58,16 @@ export class ImportModal extends Modal {
 		}
 	}
 
-	private updateCard(cardData: CardData): void {
-		const block = this.getCardByRetinaId(cardData.retinaId);
-		if (block) {
+	private updateCards(cardData: CardData): void {
+		const blocks = this.getCardsByRetinaId(cardData.retinaId);
+		console.log('blocks: ', blocks);
+
+		if (blocks.length === 0) {
+			console.warn('No cards found with retina id:', cardData.retinaId);
+			return;
+		}
+
+		blocks.forEach((block) => {
 			if (cardData.title) block.setTitle(cardData.title);
 			if (cardData.description)
 				block.properties.set('NoteHint', cardData.description);
@@ -68,21 +75,19 @@ export class ImportModal extends Modal {
 			if (cardData.estimate) block.setEstimate(cardData.estimate);
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
-		} else {
-			console.warn('no card found with retina id: ', cardData.retinaId);
-		}
+		});
 	}
 
-	private getCardByRetinaId(id: number): CardBlockProxy | null {
-		const block = this.viewport
-			.getCurrentPage()
-			?.allBlocks.find((block) => {
+	private getCardsByRetinaId(id: number): CardBlockProxy[] {
+		const blocks =
+			this.viewport.getCurrentPage()?.allBlocks.filter((block) => {
 				const retinaId = block.shapeData.get('RetinaId');
 				return retinaId === id;
-			});
-		if (block instanceof CardBlockProxy) {
-			return block;
-		} else return null;
+			}) || [];
+
+		return blocks.filter(
+			(block) => block instanceof CardBlockProxy
+		) as CardBlockProxy[];
 	}
 
 	private createCard(cardData: CardData): void {
