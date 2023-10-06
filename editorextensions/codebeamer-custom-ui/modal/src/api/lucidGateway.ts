@@ -137,3 +137,22 @@ export function startImport(id: number, items: number) {
 export function closeModal() {
 	window.parent.postMessage({ action: 'closeModal', payload: true }, '*');
 }
+
+export function handleCardBlocks(callback: (arg0: any) => void) {
+	const getCardBlocks = () => {
+		window.parent.postMessage(
+			{ action: 'getCardBlocks', payload: {} },
+			'*'
+		);
+	};
+
+	const addMessageListener = () => {
+		window.addEventListener('message', (e) => {
+			const data = JSON.parse(e.data);
+			callback(data);
+		});
+	};
+
+	getCardBlocks();
+	addMessageListener();
+}

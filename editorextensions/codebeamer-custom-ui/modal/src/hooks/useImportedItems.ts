@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
+import { handleCardBlocks } from '../api/lucidGateway';
 
 /**
  * Queries the CardBlocks present on the Lucid board
- * @returns An array of ${@link CardBlockToItemMapping}s matching the AppCards on the board.
+ * @returns An array of ${@link CardBlockToItemMapping}s matching the CardBlocks on the board.
  */
 export const useImportedItems = () => {
 	const [importedCardBlocks, setImportedCardBlocks] = useState<
@@ -15,13 +16,7 @@ export const useImportedItems = () => {
 	 * This does mean that this plugin is currently not 100% compatible with others that would create Card Blocks.
 	 */
 	React.useEffect(() => {
-		window.parent.postMessage(
-			{ action: 'getCardBlocks', payload: {} },
-			'*'
-		);
-
-		window.addEventListener('message', (e) => {
-			const data = JSON.parse(e.data);
+		handleCardBlocks((data) => {
 			const cardBlockRetinaIdPairs = data.map(
 				(x: { cardBlock: { id: any }; retinaId: any }) => ({
 					cardBlockId: x.cardBlock.id,
