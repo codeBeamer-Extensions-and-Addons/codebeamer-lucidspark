@@ -44,7 +44,7 @@ export class ImportModal extends Modal {
 				this.createCard(message.payload.cardData);
 				this.imports.get(message.payload.importId)!.totalItems--;
 				if (
-					this.imports.get(message.payload.importId)!.totalItems <= 1
+					this.imports.get(message.payload.importId)!.totalItems <= 0
 				) {
 					this.imports.delete(message.payload.importId);
 					this.hide();
