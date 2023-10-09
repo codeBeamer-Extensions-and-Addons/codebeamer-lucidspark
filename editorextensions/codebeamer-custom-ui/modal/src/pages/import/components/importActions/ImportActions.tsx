@@ -36,6 +36,7 @@ export default function ImportActions(props: {
 			</button>
 			<button
 				className="button button-primary button-small flex flex-centered"
+				disabled={props.totalCount - props.importedItems.length == 0}
 				onClick={() => props.onImportAll()}
 				data-test="importAll"
 			>
@@ -52,7 +53,7 @@ export default function ImportActions(props: {
 						/>
 					</svg>
 				</span>
-				Import all ({props.totalCount})
+				Import all ({props.totalCount - props.importedItems.length})
 			</button>
 			<button
 				className="button button-secondary button-small flex flex-centered"

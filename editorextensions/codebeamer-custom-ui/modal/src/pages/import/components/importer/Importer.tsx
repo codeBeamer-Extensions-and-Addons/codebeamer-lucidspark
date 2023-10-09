@@ -10,6 +10,7 @@ import {
 } from '../../../../constants/cb-import-defaults';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
+import { useImportedItems } from '../../../../hooks/useImportedItems';
 
 import './importer.css';
 
@@ -25,7 +26,7 @@ export default function Importer(props: {
 
 	const [loaded, setLoaded] = useState(0);
 
-	// const importedItems = useImportedItems();
+	const importedItems = useImportedItems();
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.
@@ -44,22 +45,16 @@ export default function Importer(props: {
 	//* applies all currently active filters by using the stored cbqlString,
 	//* then further filters out only the selected items (or takes all of 'em)
 
-	// const { data, error, isLoading } = useGetItemsQuery({
-	// 	page: DEFAULT_RESULT_PAGE,
-	// 	pageSize: MAX_ITEMS_PER_IMPORT,
-	// 	queryString: `${getMainQueryString()}${
-	// 		importedItems.length
-	// 			? ' AND item.id NOT IN (' +
-	// 			  importedItems.map((i) => i.itemId) +
-	// 			  ')'
-	// 			: ''
-	// 	}`,
-	// });
-
 	const { data, error, isLoading } = useGetItemsQuery({
 		page: DEFAULT_RESULT_PAGE,
 		pageSize: MAX_ITEMS_PER_IMPORT,
-		queryString: getMainQueryString(),
+		queryString: `${getMainQueryString()}${
+			importedItems.length
+				? ' AND item.id NOT IN (' +
+				  importedItems.map((i: { itemId: string }) => i.itemId) +
+				  ')'
+				: ''
+		}`,
 	});
 
 	React.useEffect(() => {
@@ -78,10 +73,7 @@ export default function Importer(props: {
 						continue;
 					}
 				}
-				await createAppCard(
-					importId,
-					_items[i]
-				);
+				await createAppCard(importId, _items[i]);
 			}
 		};
 
