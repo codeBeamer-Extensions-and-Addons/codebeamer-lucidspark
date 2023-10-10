@@ -18,7 +18,10 @@ export const useImportedItems = () => {
 	React.useEffect(() => {
 		handleCardBlocks((data) => {
 			const cardBlockCodebeamerItemIdPairs = data.map(
-				(x: { cardBlock: { id: any }; codebeamerItemId: any }) => ({
+				(x: {
+					cardBlock: { id: string };
+					codebeamerItemId: number;
+				}) => ({
 					cardBlockId: x.cardBlock.id,
 					itemId: x.codebeamerItemId,
 				})

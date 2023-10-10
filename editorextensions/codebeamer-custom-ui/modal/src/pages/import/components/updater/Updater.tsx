@@ -77,7 +77,7 @@ export default function Updater(props: {
 				_items[i].tracker.color = color;
 
 				const cardBlockId = props.items.find(
-					(item) => item.itemId == _items[i].id.toString()
+					(item) => item.itemId == _items[i].id
 				)?.cardBlockId;
 				if (!cardBlockId) {
 					// miro.board.notifications.showError(
