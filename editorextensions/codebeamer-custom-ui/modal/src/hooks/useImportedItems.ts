@@ -17,13 +17,13 @@ export const useImportedItems = () => {
 	 */
 	React.useEffect(() => {
 		handleCardBlocks((data) => {
-			const cardBlockRetinaIdPairs = data.map(
-				(x: { cardBlock: { id: any }; retinaId: any }) => ({
+			const cardBlockCodebeamerItemIdPairs = data.map(
+				(x: { cardBlock: { id: any }; codebeamerItemId: any }) => ({
 					cardBlockId: x.cardBlock.id,
-					itemId: x.retinaId,
+					itemId: x.codebeamerItemId,
 				})
 			);
-			setImportedCardBlocks(cardBlockRetinaIdPairs);
+			setImportedCardBlocks(cardBlockCodebeamerItemIdPairs);
 		});
 	}, []);
 

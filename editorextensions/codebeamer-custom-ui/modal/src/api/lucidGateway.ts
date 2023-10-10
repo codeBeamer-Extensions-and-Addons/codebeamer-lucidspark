@@ -95,7 +95,7 @@ export async function convertToCardData(
 		// 	item.name,
 		// 	item.tracker.keyName
 		// ),
-		retinaId: item.id,
+		codebeamerItemId: item.id,
 		title: item.name,
 		description: description,
 		coordinates: coordinates,
