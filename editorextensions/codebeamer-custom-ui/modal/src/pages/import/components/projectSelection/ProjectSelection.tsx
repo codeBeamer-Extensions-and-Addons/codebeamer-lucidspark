@@ -104,7 +104,7 @@ export default function ProjectSelection(props: { headerLess?: boolean }) {
 									return;
 								}
 								dispatch(setProjectId(selectedProjectId));
-								dispatch(setTrackerId(''));
+								dispatch(setTrackerId('0'));
 
 								showSuccessAnimation();
 							}}
