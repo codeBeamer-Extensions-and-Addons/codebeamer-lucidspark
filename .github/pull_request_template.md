@@ -56,5 +56,3 @@
              or reasonably argued for
     -   [ ] Maintainable :tools:
     -   [ ] Good patterns :third_place:
-
-/assign me
