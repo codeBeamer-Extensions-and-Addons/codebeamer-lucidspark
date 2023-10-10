@@ -103,7 +103,7 @@ describe('<ImportActions>', () => {
 			cy.get('@handler').should('have.been.calledOnce');
 		});
 
-		context.only('syncing', () => {
+		context('syncing', () => {
 			it('displays the amount of already imported Items on the Sync button', () => {
 				const items: CardBlockToItemMapping[] = [
 					{ itemId: '1', cardBlockId: '' },
