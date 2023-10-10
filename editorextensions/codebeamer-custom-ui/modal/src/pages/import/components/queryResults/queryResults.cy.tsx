@@ -1,4 +1,3 @@
-import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 import * as React from 'react';
 import { IFilterCriteria } from '../../../../models/filterCriteria.if';
 import {
