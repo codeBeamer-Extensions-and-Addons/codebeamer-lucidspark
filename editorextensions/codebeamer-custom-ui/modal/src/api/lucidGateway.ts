@@ -5,6 +5,41 @@ import { store } from '../store/store';
 import TrackerDetails from '../models/trackerDetails.if';
 import { CardData } from '../models/lucidCardData';
 
+export class MessageHandler {
+	private callbacks: ((data: any) => void)[] = [];
+
+	constructor() {
+		window.addEventListener('message', (e) => {
+			const data = JSON.parse(e.data);
+			this.notifyCallbacks(data);
+		});
+	}
+
+	getCardBlocks(callback: (arg0: any) => void) {
+		this.subscribeCallback(callback);
+
+		window.parent.postMessage(
+			{ action: 'getCardBlocks', payload: {} },
+			'*'
+		);
+	}
+
+	subscribeCallback(callback: (data: any) => void) {
+		this.callbacks.push(callback);
+	}
+
+	unsubscribeCallback(callback: (data: any) => void) {
+		const index = this.callbacks.indexOf(callback);
+		if (index !== -1) {
+			this.callbacks.splice(index, 1);
+		}
+	}
+
+	private notifyCallbacks(data: any) {
+		this.callbacks.forEach((callback) => callback(data));
+	}
+}
+
 export interface Message {
 	action: string;
 	payload: any;
@@ -136,23 +171,4 @@ export function startImport(id: number, items: number) {
  */
 export function closeModal() {
 	window.parent.postMessage({ action: 'closeModal', payload: true }, '*');
-}
-
-export function handleCardBlocks(callback: (arg0: any) => void) {
-	const getCardBlocks = () => {
-		window.parent.postMessage(
-			{ action: 'getCardBlocks', payload: {} },
-			'*'
-		);
-	};
-
-	const addMessageListener = () => {
-		window.addEventListener('message', (e) => {
-			const data = JSON.parse(e.data);
-			callback(data);
-		});
-	};
-
-	getCardBlocks();
-	addMessageListener();
 }
