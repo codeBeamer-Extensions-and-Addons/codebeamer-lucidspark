@@ -1,11 +1,7 @@
 import {
-	BlockProxy,
 	CardBlockProxy,
 	EditorClient,
 	Modal,
-	PageProxy,
-	SimpleImageFillPosition,
-	StatusValues,
 	Viewport,
 } from 'lucid-extension-sdk';
 import { CardData } from '../modal/src/models/lucidCardData';
