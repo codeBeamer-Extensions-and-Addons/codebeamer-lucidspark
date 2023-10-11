@@ -48,7 +48,6 @@ export class ImportModal extends Modal {
 				break;
 			case 'importItem':
 				this.importItem(message);
-				this.importItem(message);
 				break;
 			case 'updateCard':
 				this.updateCard(
@@ -57,7 +56,6 @@ export class ImportModal extends Modal {
 				);
 				break;
 			case 'getCardBlocks':
-				this.getCardBlocks();
 				this.getCardBlocks();
 				break;
 			case 'closeModal':
@@ -109,8 +107,14 @@ export class ImportModal extends Modal {
 	private updateCard(cardData: CardData, cardBlockId: string): void {
 		const block = this.getCardById(cardBlockId);
 
-		if (block instanceof CardBlockProxy) {
-			this.setCardData(block, cardData);
+		if (block) {
+			if (cardData.title) block.setTitle(cardData.title);
+			if (cardData.description)
+				block.properties.set('NoteHint', cardData.description);
+			if (cardData.assignee) block.setAssignee(cardData.assignee);
+			if (cardData.estimate) block.setEstimate(cardData.estimate);
+			if (cardData.style)
+				block.properties.set('LineColor', cardData.style.cardTheme);
 		} else {
 			console.warn("card block couldn't be found with id: ", cardBlockId);
 		}
