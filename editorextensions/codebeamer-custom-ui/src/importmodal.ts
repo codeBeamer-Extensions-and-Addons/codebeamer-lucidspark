@@ -67,7 +67,8 @@ export class ImportModal extends Modal {
 
 				const data = cardBlocks.map((cardBlock) => ({
 					cardBlock: cardBlock,
-					retinaId: cardBlock.shapeData.get('RetinaId'),
+					codebeamerItemId:
+						cardBlock.shapeData.get('codebeamerItemId'),
 				}));
 				this.sendMessage(JSON.stringify(data));
 				break;
@@ -141,7 +142,7 @@ export class ImportModal extends Modal {
 			if (cardData.style)
 				block.properties.set('LineColor', cardData.style.cardTheme);
 			block.setDescription(' '); // add empty description to disable 'Description' placeholder on created cards
-			block.shapeData.set('RetinaId', cardData.retinaId);
+			block.shapeData.set('codebeamerItemId', cardData.codebeamerItemId);
 		}
 
 		console.log('Card created: ', cardData.title);

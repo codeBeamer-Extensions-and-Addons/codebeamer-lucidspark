@@ -3,5 +3,5 @@
  */
 export interface CardBlockToItemMapping {
 	cardBlockId: string;
-	itemId: string;
+	itemId: number;
 }

@@ -51,7 +51,7 @@ export default function Importer(props: {
 		queryString: `${getMainQueryString()}${
 			importedItems.length
 				? ' AND item.id NOT IN (' +
-				  importedItems.map((i: { itemId: string }) => i.itemId) +
+				  importedItems.map((i: { itemId: number }) => i.itemId) +
 				  ')'
 				: ''
 		}`,
