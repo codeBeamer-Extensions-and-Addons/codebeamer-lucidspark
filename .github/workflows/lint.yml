@@ -19,6 +19,6 @@ jobs:
         steps:
         - uses: actions/checkout@v4
         - name: Install modules
-          run: npm ci
+          run: cd editorextensions/codebeamer-custom-ui/modal && npm ci
         - name: Run ESLint
           run: cd editorextensions/codebeamer-custom-ui/modal && npx eslint . --ext .ts,.tsx
