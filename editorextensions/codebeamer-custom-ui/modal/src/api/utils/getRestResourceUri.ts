@@ -17,6 +17,6 @@ export default function getRestResourceUri(
  * @return the entity's id
  */
 export function getIdFromRestResourceUri(restResourceUri: string) {
-	let pathParts = restResourceUri.split('/');
+	const pathParts = restResourceUri.split('/');
 	return pathParts[pathParts.length - 1];
 }

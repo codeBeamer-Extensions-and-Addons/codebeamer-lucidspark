@@ -158,7 +158,7 @@ export class LucidGateway {
 		item: CodeBeamerItem,
 		coordinates?: { x: number; y: number }
 	): Promise<CardData> {
-		let description = item.description;
+		const description = item.description;
 		const username = store.getState().userSettings.cbUsername;
 		const password = store.getState().userSettings.cbPassword;
 		const cbBaseAddress = store.getState().boardSettings.cbAddress;
@@ -200,7 +200,7 @@ export class LucidGateway {
 			console.warn(message);
 		}
 
-		let cardData: CardData = {
+		const cardData: CardData = {
 			// id: item.id.toString(),
 			// title: getCardTitle(
 			// 	item.id.toString(),
@@ -217,8 +217,8 @@ export class LucidGateway {
 		if (item.storyPoints) cardData.estimate = item.storyPoints;
 
 		// background Color
-		let colorFieldValue = getItemColorField(item);
-		let backgroundColor = colorFieldValue
+		const colorFieldValue = getItemColorField(item);
+		const backgroundColor = colorFieldValue
 			? colorFieldValue
 			: item.tracker.color
 			? item.tracker.color

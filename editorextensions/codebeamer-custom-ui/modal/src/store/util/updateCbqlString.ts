@@ -34,7 +34,7 @@ function getFilterQuerySubstring(
 
 	let index = 0;
 	let query = ' AND (';
-	for (let filter of filters) {
+	for (const filter of filters) {
 		const type = filter.fieldName;
 		const value = filter.value;
 
