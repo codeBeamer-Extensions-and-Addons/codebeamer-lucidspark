@@ -25,7 +25,7 @@ export const rtkQueryErrorLogger: Middleware =
 			if (message.length >= 80) {
 				message = DEFAULT_MESSAGE;
 			}
-			miro.board.notifications.showError(message);
+			//miro.board.notifications.showError(message);
 		}
 		next(action);
 	};
