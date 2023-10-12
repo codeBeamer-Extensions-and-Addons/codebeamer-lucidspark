@@ -242,6 +242,9 @@ export class LucidGateway {
 		});
 	}
 
+	/**
+	 * Request card block data from the parent window.
+	 */
 	public static requestCardBlockData() {
 		this.postMessage({
 			action: MessageAction.GET_CARD_BLOCKS,
