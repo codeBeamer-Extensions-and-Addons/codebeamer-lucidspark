@@ -127,6 +127,7 @@ export class ImportModal extends Modal {
 	 */
 	protected async createLucidCardBlock(cardData: CardData) {
 		const page = this.viewport.getCurrentPage()!;
+		//if cardData.coordinates is undefined then use this.generateCoordinates()
 		const { x, y } = cardData.coordinates ?? this.generateCoordinates();
 
 		const block = page.addBlock({
@@ -140,47 +141,6 @@ export class ImportModal extends Modal {
 		});
 
 		if (block instanceof CardBlockProxy) {
-			this.setCardData(block, cardData);
-			block.setDescription(' '); // Add empty description to disable 'Description' placeholder on created cards
-			block.shapeData.set('codebeamerItemId', cardData.codebeamerItemId);
-		}
-	}
-
-	/**
-	 * Sets the data for a CardBlockProxy based on the provided card data.
-	 *
-	 * @param {CardBlockProxy} block - The CardBlockProxy to update.
-	 * @param {CardData} cardData - The card data to set.
-	 */
-	private setCardData(block: CardBlockProxy, cardData: CardData): void {
-		if (cardData.title) block.setTitle(cardData.title);
-		if (cardData.description)
-			block.properties.set('NoteHint', cardData.description);
-		if (cardData.assignee) block.setAssignee(cardData.assignee);
-		if (cardData.estimate) block.setEstimate(cardData.estimate);
-		if (cardData.style)
-			block.properties.set('LineColor', cardData.style.cardTheme);
-	}
-
-	/**
-	 * Retrieves and sends the list of LucidCardBlocks to the modal.
-	 */
-	private getCardBlocks(): void {
-		const cardBlocks = this.viewport
-			.getCurrentPage()
-			?.allBlocks.filter(
-				(block) => block instanceof CardBlockProxy
-			) as CardBlockProxy[];
-
-		// Save card blocks to the class to be able to access them later
-		this.cardBlocks = cardBlocks;
-
-		// Map the card blocks to the codebeamer item ids and send them to the modal
-		const data = cardBlocks.map((cardBlock) => ({
-			cardBlock: cardBlock,
-			codebeamerItemId: cardBlock.shapeData.get('codebeamerItemId'),
-		}));
-		this.sendMessage(JSON.stringify(data));
 			this.setCardData(block, cardData);
 			block.setDescription(' '); // Add empty description to disable 'Description' placeholder on created cards
 			block.shapeData.set('codebeamerItemId', cardData.codebeamerItemId);
