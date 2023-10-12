@@ -127,9 +127,7 @@ export class ImportModal extends Modal {
 	 */
 	protected async createLucidCardBlock(cardData: CardData) {
 		const page = this.viewport.getCurrentPage()!;
-		//if cardData.coordinates is undefined then use this.generateCoordinates()
 		const { x, y } = cardData.coordinates ?? this.generateCoordinates();
-		console.log('x: ', x, 'y: ', y);
 
 		const block = page.addBlock({
 			className: 'LucidCardBlock',
