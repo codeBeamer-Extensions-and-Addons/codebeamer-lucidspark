@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### [1.1.0]
+
+#### Added
+
+-   Sync Cards Button
+    -   Syncs all cards on the lucidspark board by fetching the matching codebeamer items and updating the card content
+
 ## Released
 
 ### [1.0.0]

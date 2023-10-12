@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppCardToItemMapping } from '../../../../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 import { setTrackerId } from '../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../store/store';
 import Updater from './Updater';
@@ -32,10 +32,10 @@ describe('<Updater>', () => {
 	});
 
 	it('fetches the details of the items passed as props', () => {
-		const items: AppCardToItemMapping[] = [
-			{ itemId: '1', appCardId: '' },
-			{ itemId: '2', appCardId: '' },
-			{ itemId: '3', appCardId: '' },
+		const items: CardBlockToItemMapping[] = [
+			{ itemId: '1', cardBlockId: '' },
+			{ itemId: '2', cardBlockId: '' },
+			{ itemId: '3', cardBlockId: '' },
 		];
 		const store = getStore();
 
@@ -54,10 +54,10 @@ describe('<Updater>', () => {
 		const progressBarSelector = 'importProgress';
 
 		it('shows the total amount of items to import based on the passed items array', () => {
-			const items: AppCardToItemMapping[] = [
-				{ itemId: '1', appCardId: '' },
-				{ itemId: '2', appCardId: '' },
-				{ itemId: '3', appCardId: '' },
+			const items: CardBlockToItemMapping[] = [
+				{ itemId: '1', cardBlockId: '' },
+				{ itemId: '2', cardBlockId: '' },
+				{ itemId: '3', cardBlockId: '' },
 			];
 			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
 

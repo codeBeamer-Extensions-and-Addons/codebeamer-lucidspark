@@ -5,12 +5,12 @@ import {
 	useGetItemsQuery,
 	useGetTrackerDetailsQuery,
 } from '../../../../api/codeBeamerApi';
-import { updateAppCard } from '../../../../api/lucidGateway';
+import { LucidGateway } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,
 } from '../../../../constants/cb-import-defaults';
-import { AppCardToItemMapping } from '../../../../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
 
@@ -20,7 +20,7 @@ import '../importer/importer.css';
  * Twin of {@link Importer}, but for updating.
  */
 export default function Updater(props: {
-	items: AppCardToItemMapping[];
+	items: CardBlockToItemMapping[];
 	onClose?: Function;
 }) {
 	// My programming skills were insufficient to adequately generalize Importer & Updater. They only differ in a few (but supposedly essential) cases.
@@ -76,20 +76,20 @@ export default function Updater(props: {
 				_items[i].tracker.keyName = key;
 				_items[i].tracker.color = color;
 
-				const appCardId = props.items.find(
-					(item) => item.itemId == _items[i].id.toString()
-				)?.appCardId;
-				if (!appCardId) {
+				const cardBlockId = props.items.find(
+					(item) => item.itemId == _items[i].id
+				)?.cardBlockId;
+				if (!cardBlockId) {
 					// miro.board.notifications.showError(
 					// 	`Failed updating card for Item ${_items[i].name}`
 					// );
 					continue;
 				}
 
-				await updateAppCard(_items[i], appCardId);
+				await LucidGateway.updateAppCard(_items[i], cardBlockId);
 				setLoaded(i + 1);
 			}
-			// await miro.board.ui.closeModal();
+			LucidGateway.closeModal();
 		};
 
 		if (error || trackerDetailsQueryError) {
