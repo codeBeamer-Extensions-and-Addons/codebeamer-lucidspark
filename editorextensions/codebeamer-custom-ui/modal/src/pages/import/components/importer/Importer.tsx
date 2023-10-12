@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
 import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
-import { createAppCard, startImport } from '../../../../api/lucidGateway';
+import { LucidGateway } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
@@ -65,7 +65,7 @@ export default function Importer(props: {
 	React.useEffect(() => {
 		const importItems = async (items: CodeBeamerItem[]) => {
 			const importId = Math.ceil(Math.random() * 899) + 100;
-			startImport(importId, items.length);
+			LucidGateway.startImport(importId, items.length);
 			const _items: CodeBeamerItem[] = structuredClone(items);
 			for (let i = 0; i < _items.length; i++) {
 				console.log('Item no. ' + i + ' of ' + _items.length);
@@ -78,10 +78,7 @@ export default function Importer(props: {
 						continue;
 					}
 				}
-				await createAppCard(
-					importId,
-					_items[i]
-				);
+				await LucidGateway.createAppCard(importId, _items[i]);
 			}
 		};
 

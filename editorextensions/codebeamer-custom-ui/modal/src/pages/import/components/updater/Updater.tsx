@@ -5,7 +5,7 @@ import {
 	useGetItemsQuery,
 	useGetTrackerDetailsQuery,
 } from '../../../../api/codeBeamerApi';
-import { closeModal, updateAppCard } from '../../../../api/lucidGateway';
+import { LucidGateway } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,
@@ -86,10 +86,10 @@ export default function Updater(props: {
 					continue;
 				}
 
-				await updateAppCard(_items[i], cardBlockId);
+				await LucidGateway.updateAppCard(_items[i], cardBlockId);
 				setLoaded(i + 1);
 			}
-			closeModal();
+			LucidGateway.closeModal();
 		};
 
 		if (error || trackerDetailsQueryError) {

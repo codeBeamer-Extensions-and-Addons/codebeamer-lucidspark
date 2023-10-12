@@ -11,7 +11,7 @@ export const useImportedItems = () => {
 		CardBlockToItemMapping[]
 	>([]);
 
-	const messageHandler = new MessageHandler();
+	const messageHandler = MessageHandler.getInstance();
 
 	/**
 	 * Queries the editor extension for the currently existing cardBlocks on the board.
