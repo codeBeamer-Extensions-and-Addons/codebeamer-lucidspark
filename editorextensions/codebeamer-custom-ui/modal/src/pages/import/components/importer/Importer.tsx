@@ -30,16 +30,22 @@ export default function Importer(props: {
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.
-	 * Can and should be extended by what should NOT be imported
 	 */
 	const getMainQueryString = () => {
 		if (props.queryString) return props.queryString;
-		else
-			return `${cbqlString}${
-				props.items.length
-					? ' AND item.id IN (' + props.items.join(',') + ')'
-					: ''
-			}`;
+		else {
+			const mainQuery = cbqlString;
+			const selectedItemsFilter = props.items.length
+				? ` AND item.id IN (${props.items.join(',')})`
+				: '';
+			const importedItemsFilter = importedItems.length
+				? ` AND item.id NOT IN (${importedItems
+						.map((i) => i.itemId)
+						.join(',')})`
+				: '';
+
+			return `${mainQuery}${selectedItemsFilter}${importedItemsFilter}`;
+		}
 	};
 
 	//* applies all currently active filters by using the stored cbqlString,
@@ -48,13 +54,7 @@ export default function Importer(props: {
 	const { data, error, isLoading } = useGetItemsQuery({
 		page: DEFAULT_RESULT_PAGE,
 		pageSize: MAX_ITEMS_PER_IMPORT,
-		queryString: `${getMainQueryString()}${
-			importedItems.length
-				? ' AND item.id NOT IN (' +
-				  importedItems.map((i: { itemId: number }) => i.itemId) +
-				  ')'
-				: ''
-		}`,
+		queryString: getMainQueryString(),
 	});
 
 	React.useEffect(() => {
