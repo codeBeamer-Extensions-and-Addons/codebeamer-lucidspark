@@ -49,10 +49,7 @@ export class MessageHandler {
 	getCardBlocks(callback: (arg0: any) => void) {
 		this.subscribeCallback(callback);
 
-		LucidGateway.postMessage({
-			action: MessageAction.GET_CARD_BLOCKS,
-			payload: {},
-		});
+		LucidGateway.requestCardBlockData();
 	}
 
 	/**
@@ -113,7 +110,7 @@ export class LucidGateway {
 	 * @param item - The CodeBeamerItem.
 	 * @param coordinates - Optional coordinates for the card.
 	 */
-	static async createAppCard(
+	public static async createAppCard(
 		importId: number,
 		item: CodeBeamerItem,
 		coordinates?: { x: number; y: number }
@@ -130,7 +127,10 @@ export class LucidGateway {
 	 * @param item - The CodeBeamerItem to update the card with.
 	 * @param cardBlockId - The ID of the card block to update.
 	 */
-	static async updateAppCard(item: CodeBeamerItem, cardBlockId: string) {
+	public static async updateAppCard(
+		item: CodeBeamerItem,
+		cardBlockId: string
+	) {
 		const cardData = await this.convertToCardData(item);
 		this.postMessage({
 			action: MessageAction.UPDATE_CARD,
@@ -138,7 +138,7 @@ export class LucidGateway {
 		});
 	}
 
-	static async createConnectors(
+	public static async createConnectors(
 		fromCard: string,
 		toCards: number[],
 		associations: Association[],
@@ -154,7 +154,7 @@ export class LucidGateway {
 	 * @param coordinates - Optional coordinates for the card.
 	 * @returns The CardData representing the item.
 	 */
-	static async convertToCardData(
+	private static async convertToCardData(
 		item: CodeBeamerItem,
 		coordinates?: { x: number; y: number }
 	): Promise<CardData> {
@@ -235,24 +235,31 @@ export class LucidGateway {
 	 * @param id - The import ID.
 	 * @param items - The total number of items to import.
 	 */
-	static startImport(id: number, items: number) {
+	public static startImport(id: number, items: number) {
 		this.postMessage({
 			action: MessageAction.START_IMPORT,
 			payload: { id: id, totalItems: items },
 		});
 	}
 
+	public static requestCardBlockData() {
+		this.postMessage({
+			action: MessageAction.GET_CARD_BLOCKS,
+			payload: {},
+		});
+	}
+
 	/**
 	 * Call this function to close the modal.
 	 */
-	static closeModal() {
-		this.postMessage({ action: MessageAction.CLOSE_MODAL, payload: true });
+	public static closeModal() {
+		this.postMessage({ action: MessageAction.CLOSE_MODAL, payload: {} });
 	}
 
 	/**
 	 * Post a message to the parent window.
 	 */
-	static postMessage(message: Message) {
+	private static postMessage(message: Message) {
 		window.parent.postMessage(message, '*');
 	}
 }
