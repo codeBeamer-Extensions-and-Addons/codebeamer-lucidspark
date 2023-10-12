@@ -48,7 +48,7 @@ export default function Announcements() {
 				<a
 					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/main/CHANGELOG.md"
 					target="_blank"
-					className="roche-primary-light"
+					className="roche-primary-light" rel="noreferrer"
 				>
 					Detailed Changelog
 				</a>{' '}
@@ -56,7 +56,7 @@ export default function Announcements() {
 				<a
 					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/wiki"
 					target="_blank"
-					className="roche-primary-light"
+					className="roche-primary-light" rel="noreferrer"
 				>
 					Github Wiki
 				</a>{' '}
@@ -64,7 +64,7 @@ export default function Announcements() {
 				<a
 					href="https://retina.roche.com/cb/wiki/10407748"
 					target="_blank"
-					className="roche-primary-light"
+					className="roche-primary-light" rel="noreferrer"
 				>
 					Retina Wiki
 				</a>

@@ -6,7 +6,7 @@ import getRandomOffset from './getRandomOffset';
 /**
  * Maps subjects to a certain set of coordinates to spawn child items around.
  */
-var subjectOriginsMap: Map<string, { x: number; y: number }> = new Map<
+const subjectOriginsMap: Map<string, { x: number; y: number }> = new Map<
 	string,
 	{ x: number; y: number }
 >();
@@ -24,8 +24,8 @@ export default async function getRandomCoordSetPerSubject(
 		origin = await getRandomizedCoordSetInViewport();
 		subjectOriginsMap.set(mainSubject, origin);
 	}
-	let xOffset = getRandomOffset(MAX_OFFSET_TO_SUBJECT_ORIGIN);
-	let yOffset = getRandomOffset(MAX_OFFSET_TO_SUBJECT_ORIGIN);
+	const xOffset = getRandomOffset(MAX_OFFSET_TO_SUBJECT_ORIGIN);
+	const yOffset = getRandomOffset(MAX_OFFSET_TO_SUBJECT_ORIGIN);
 
 	console.log(subjectOriginsMap);
 	return { x: origin.x + xOffset, y: origin.y + yOffset };

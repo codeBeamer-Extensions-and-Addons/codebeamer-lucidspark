@@ -7,10 +7,10 @@ import {
 import { CodeBeamerItem } from '../../models/codebeamer-item.if';
 import getRandomOffset from './getRandomOffset';
 
-var subjectOrigins: { subject: string; x: number; y: number }[] = [];
-var currentViewPort: Rect;
-var circleXCenter: number;
-var circleYCenter: number;
+const subjectOrigins: { subject: string; x: number; y: number }[] = [];
+let currentViewPort: Rect;
+let circleXCenter: number;
+let circleYCenter: number;
 
 let itemIndex = 1;
 
@@ -54,20 +54,20 @@ export default async function getSnailCoordSetPerSubject(
 		});
 	}
 
-	let itemSubject =
+	const itemSubject =
 		item.subjects && item.subjects.length ? item.subjects[0].name : 'none';
 	let subjectOrigin = subjectOrigins.find(
 		(so) => so.subject == itemSubject || so.subject == item.name
 	);
 
 	if (!subjectOrigin) {
-		let index = itemIndex++;
-		let radiusIndex = Math.ceil(index / DEFAULT_ORIGINS_PER_RADIUS);
-		let x =
+		const index = itemIndex++;
+		const radiusIndex = Math.ceil(index / DEFAULT_ORIGINS_PER_RADIUS);
+		const x =
 			circleXCenter +
 			Math.cos(2 * getAngle(index, radiusIndex)) *
 				(RADIUS_INCREMENT * radiusIndex);
-		let y =
+		const y =
 			circleYCenter +
 			Math.sin(getAngle(index, radiusIndex)) *
 				(RADIUS_INCREMENT * radiusIndex);
