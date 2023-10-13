@@ -32,18 +32,19 @@ export default function Importer(props: {
 	 * Produces the "main query string", which defines what should be imported.
 	 */
 	const getMainQueryString = () => {
-		if (props.queryString) return props.queryString;
-		else {
-			const mainQuery = cbqlString;
-			const selectedItemsFilter = props.items.length
-				? ` AND item.id IN (${props.items.join(',')})`
-				: '';
-			const importedItemsFilter = importedItems.length
-				? ` AND item.id NOT IN (${importedItems
-						.map((i) => i.itemId)
-						.join(',')})`
-				: '';
+		const mainQuery = cbqlString;
+		const selectedItemsFilter = props.items.length
+			? ` AND item.id IN (${props.items.join(',')})`
+			: '';
+		const importedItemsFilter = importedItems.length
+			? ` AND item.id NOT IN (${importedItems
+					.map((i) => i.itemId)
+					.join(',')})`
+			: '';
 
+		if (props.queryString) {
+			return `${props.queryString}${importedItemsFilter}`;
+		} else {
 			return `${mainQuery}${selectedItemsFilter}${importedItemsFilter}`;
 		}
 	};
