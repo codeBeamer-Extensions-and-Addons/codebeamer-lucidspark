@@ -241,7 +241,15 @@ export default function QueryResults() {
 					onImportSelected={handleImportSelected}
 					onImportAll={handleImportAll}
 					onSync={handleSync}
-					importedItems={importedItems}
+					importedItemsCount={importedItems.length}
+					unImportedItemsCount={
+						(data?.total ?? 0) -
+						(data?.items.filter((i) =>
+							importedItems.find(
+								(imported) => imported.itemId == i.id
+							)
+						).length ?? 0)
+					}
 				/>
 				{importing && (
 					<Importer

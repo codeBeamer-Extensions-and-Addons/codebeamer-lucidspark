@@ -33,9 +33,9 @@ describe('<Updater>', () => {
 
 	it('fetches the details of the items passed as props', () => {
 		const items: CardBlockToItemMapping[] = [
-			{ itemId: '1', cardBlockId: '' },
-			{ itemId: '2', cardBlockId: '' },
-			{ itemId: '3', cardBlockId: '' },
+			{ itemId: 1, cardBlockId: '' },
+			{ itemId: 2, cardBlockId: '' },
+			{ itemId: 3, cardBlockId: '' },
 		];
 		const store = getStore();
 
@@ -55,9 +55,9 @@ describe('<Updater>', () => {
 
 		it('shows the total amount of items to import based on the passed items array', () => {
 			const items: CardBlockToItemMapping[] = [
-				{ itemId: '1', cardBlockId: '' },
-				{ itemId: '2', cardBlockId: '' },
-				{ itemId: '3', cardBlockId: '' },
+				{ itemId: 1, cardBlockId: '' },
+				{ itemId: 2, cardBlockId: '' },
+				{ itemId: 3, cardBlockId: '' },
 			];
 			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
 

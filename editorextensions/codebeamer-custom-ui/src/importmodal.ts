@@ -167,11 +167,13 @@ export class ImportModal extends Modal {
 	 * Retrieves and sends the list of LucidCardBlocks to the modal.
 	 */
 	private getCardBlocks(): void {
-		const cardBlocks = this.viewport
-			.getCurrentPage()
-			?.allBlocks.filter(
-				(block) => block instanceof CardBlockProxy
-			) as CardBlockProxy[];
+		const cardBlocks = (
+			this.viewport
+				.getCurrentPage()
+				?.allBlocks.filter(
+					(block) => block instanceof CardBlockProxy
+				) as CardBlockProxy[]
+		).filter((cardBlock) => cardBlock.shapeData.get('codebeamerItemId'));
 
 		// Save card blocks to the class to be able to access them later
 		this.cardBlocks = cardBlocks;

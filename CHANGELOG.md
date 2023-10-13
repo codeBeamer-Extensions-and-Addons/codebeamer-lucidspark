@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Sync Cards Button
     -   Syncs all cards on the lucidspark board by fetching the matching codebeamer items and updating the card content
 
+#### Changed
+
+-   Import All button
+    -   count displays the number of items which have not been imported yet from that specific Tracker
+    -   imports only those missing items to avoid duplicates
+
 ## Released
 
 ### [1.0.0]
