@@ -243,7 +243,7 @@ export default function QueryResults() {
 					onSync={handleSync}
 					importedItemsCount={importedItems.length}
 					unImportedItemsCount={
-						(data?.total ?? 0) -
+						(data?.items.length ?? 0) -
 						(data?.items.filter((i) =>
 							importedItems.find(
 								(imported) => imported.itemId == i.id
