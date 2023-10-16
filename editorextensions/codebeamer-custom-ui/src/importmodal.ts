@@ -110,12 +110,15 @@ export class ImportModal extends Modal {
 	 */
 	private generateCoordinates(): { x: number; y: number } {
 		const visibleRect = this.viewport.getVisibleRect();
+		// get random coordinates within 80% of the visible rectangle
 		const x =
-			(visibleRect.x + visibleRect.w / 2) *
-			(Math.random() * (1.1 - 0.9) + 0.9);
+			visibleRect.x +
+			visibleRect.w * 0.1 +
+			visibleRect.w * 0.8 * Math.random();
 		const y =
-			(visibleRect.y + visibleRect.h / 2) *
-			(Math.random() * (1.1 - 0.9) + 0.9);
+			visibleRect.y +
+			visibleRect.h * 0.1 +
+			visibleRect.h * 0.8 * Math.random();
 
 		return { x, y };
 	}
