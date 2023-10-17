@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   imports only those missing items to avoid duplicates
 -   Item Import
     -   cards are spread out more evenly on the board
+-   UI Changes
+    -   added padding to the top of the import modal
 
 ## Released
 
