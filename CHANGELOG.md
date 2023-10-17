@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 -   Import All button
     -   count displays the number of items which have not been imported yet from that specific Tracker
     -   imports only those missing items to avoid duplicates
+-   Item Import
+    -   cards are spread out more evenly on the board
 
 ## Released
 
