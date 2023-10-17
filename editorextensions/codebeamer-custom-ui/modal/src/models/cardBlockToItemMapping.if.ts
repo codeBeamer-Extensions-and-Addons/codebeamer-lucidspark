@@ -4,4 +4,5 @@
 export interface CardBlockToItemMapping {
 	cardBlockId: string;
 	itemId: number;
+	trackerId: number;
 }

@@ -208,6 +208,7 @@ export class LucidGateway {
 			// 	item.tracker.keyName
 			// ),
 			codebeamerItemId: item.id,
+			codebeamerTrackerId: item.tracker.id,
 			title: item.name,
 			description: description,
 			coordinates: coordinates,
