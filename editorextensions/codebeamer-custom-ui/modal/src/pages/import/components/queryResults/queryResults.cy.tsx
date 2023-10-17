@@ -6,6 +6,8 @@ import {
 } from '../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../store/store';
 import QueryResults from './QueryResults';
+import query_multi_page from '../../../../../cypress/fixtures/query_multi-page.json';
+import query_multi_page_2 from '../../../../../cypress/fixtures/query_multi-page_2.json';
 
 describe('<QueryResults>', () => {
 	it('mounts', () => {
@@ -214,7 +216,21 @@ describe('<QueryResults>', () => {
 
 		cy.mountWithStore(<QueryResults />, { reduxStore: store });
 
-		cy.getBySel('importAll').should('have.text', 'Import all (11)');
+		const expectedCount = query_multi_page.items
+			.concat(query_multi_page_2.items)
+			.filter(
+				(item) =>
+					mockImportedItems.filter(
+						(importedItem) =>
+							importedItem.codebeamerItemId === item.id &&
+							importedItem.codebeamerTrackerId === item.tracker.id
+					).length === 0
+			).length;
+
+		cy.getBySel('importAll').should(
+			'have.text',
+			`Import all (${expectedCount})`
+		);
 	});
 
 	describe('lazy loading', () => {
