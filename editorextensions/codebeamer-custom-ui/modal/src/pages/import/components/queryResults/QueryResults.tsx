@@ -244,11 +244,14 @@ export default function QueryResults() {
 					importedItemsCount={importedItems.length}
 					unImportedItemsCount={
 						(data?.total ?? 0) -
-						(data?.items.filter((i) =>
-							importedItems.find(
-								(imported) => imported.itemId == i.id
-							)
-						).length ?? 0)
+						(importedItems.filter((item, index, array) => {
+							return (
+								item.trackerId == Number(trackerId) &&
+								array.findIndex(
+									(i) => i.itemId == item.itemId
+								) == index
+							);
+						}).length ?? 0)
 					}
 				/>
 				{importing && (

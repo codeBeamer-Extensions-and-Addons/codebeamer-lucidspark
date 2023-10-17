@@ -23,9 +23,11 @@ export const useImportedItems = () => {
 				(x: {
 					cardBlock: { id: string };
 					codebeamerItemId: number;
+					codebeamerTrackerId: number;
 				}) => ({
 					cardBlockId: x.cardBlock.id,
 					itemId: x.codebeamerItemId,
+					trackerId: x.codebeamerTrackerId,
 				})
 			);
 			setImportedCardBlocks(cardBlockCodebeamerItemIdPairs);

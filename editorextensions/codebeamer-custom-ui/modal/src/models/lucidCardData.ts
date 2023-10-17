@@ -3,6 +3,7 @@
  */
 export interface CardData {
 	codebeamerItemId: number;
+	codebeamerTrackerId: number;
 	title?: string;
 	description?: string;
 	assignee?: string;

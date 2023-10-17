@@ -144,6 +144,10 @@ export class ImportModal extends Modal {
 			this.setCardData(block, cardData);
 			block.setDescription(' '); // Add empty description to disable 'Description' placeholder on created cards
 			block.shapeData.set('codebeamerItemId', cardData.codebeamerItemId);
+			block.shapeData.set(
+				'codebeamerTrackerId',
+				cardData.codebeamerTrackerId
+			);
 		}
 	}
 
@@ -182,6 +186,7 @@ export class ImportModal extends Modal {
 		const data = cardBlocks.map((cardBlock) => ({
 			cardBlock: cardBlock,
 			codebeamerItemId: cardBlock.shapeData.get('codebeamerItemId'),
+			codebeamerTrackerId: cardBlock.shapeData.get('codebeamerTrackerId'),
 		}));
 		this.sendMessage(JSON.stringify(data));
 	}
