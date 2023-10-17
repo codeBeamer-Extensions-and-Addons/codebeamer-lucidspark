@@ -131,6 +131,92 @@ describe('<QueryResults>', () => {
 			.should('equal', expectedQueryString);
 	});
 
+	it('passes the count of tracker items that have not been imported yet to the Import All button', () => {
+		const mockImportedItems = [
+			{
+				cardBlock: { id: '1' },
+				codebeamerItemId: 1,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '2' },
+				codebeamerItemId: 2,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '3' },
+				codebeamerItemId: 3,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '4' },
+				codebeamerItemId: 4,
+				codebeamerTrackerId: 4877085,
+			},
+
+			// items from a different tracker
+			{
+				cardBlock: { id: '5' },
+				codebeamerItemId: 5,
+				codebeamerTrackerId: 999,
+			},
+			{
+				cardBlock: { id: '6' },
+				codebeamerItemId: 6,
+				codebeamerTrackerId: 999,
+			},
+			{
+				cardBlock: { id: '7' },
+				codebeamerItemId: 7,
+				codebeamerTrackerId: 999,
+			},
+			{
+				cardBlock: { id: '8' },
+				codebeamerItemId: 8,
+				codebeamerTrackerId: 999,
+			},
+
+			// duplicate items
+			{
+				cardBlock: { id: '9' },
+				codebeamerItemId: 1,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '10' },
+				codebeamerItemId: 2,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '11' },
+				codebeamerItemId: 3,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '12' },
+				codebeamerItemId: 4,
+				codebeamerTrackerId: 4877085,
+			},
+		];
+
+		cy.stub(window.parent, 'postMessage')
+			.as('boardGetStub')
+			.callsFake(() => {
+				window.postMessage(JSON.stringify(mockImportedItems), '*');
+			});
+
+		const store = getStore();
+		store.dispatch(setTrackerId('4877085'));
+
+		cy.intercept('POST', `**/api/v3/items/query`, {
+			fixture: 'query_multi-page.json',
+		}).as('itemQuery');
+
+		cy.mountWithStore(<QueryResults />, { reduxStore: store });
+
+		cy.getBySel('importAll').should('have.text', 'Import all (11)');
+	});
+
 	describe('lazy loading', () => {
 		beforeEach(() => {
 			const store = getStore();
