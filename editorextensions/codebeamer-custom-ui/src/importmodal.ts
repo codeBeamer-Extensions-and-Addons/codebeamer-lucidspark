@@ -106,19 +106,26 @@ export class ImportModal extends Modal {
 	/**
 	 * Generates random coordinates within the visible rectangle.
 	 *
-	 * @returns {Object} An object with 'x' and 'y' properties representing the coordinates.
+	 * @param w - The width of the card.
+	 * @param h - The height of the card.
+	 * @returns An object with 'x' and 'y' properties representing the coordinates.
 	 */
-	private generateCoordinates(): { x: number; y: number } {
+	private generateCoordinates(
+		w: number,
+		h: number
+	): { x: number; y: number } {
 		const visibleRect = this.viewport.getVisibleRect();
 		// get random coordinates within 80% of the visible rectangle
 		const x =
 			visibleRect.x +
 			visibleRect.w * 0.1 +
-			visibleRect.w * 0.8 * Math.random();
+			visibleRect.w * 0.8 * Math.random() -
+			w / 2;
 		const y =
 			visibleRect.y +
 			visibleRect.h * 0.1 +
-			visibleRect.h * 0.8 * Math.random();
+			visibleRect.h * 0.8 * Math.random() -
+			h / 2;
 
 		return { x, y };
 	}
@@ -130,16 +137,19 @@ export class ImportModal extends Modal {
 	 */
 	protected async createLucidCardBlock(cardData: CardData) {
 		const page = this.viewport.getCurrentPage()!;
-		//if cardData.coordinates is undefined then use this.generateCoordinates()
-		const { x, y } = cardData.coordinates ?? this.generateCoordinates();
+		const widthOfCard = 420;
+		const heightOfCard = 160;
+		const { x, y } =
+			cardData.coordinates ??
+			this.generateCoordinates(widthOfCard, heightOfCard);
 
 		const block = page.addBlock({
 			className: 'LucidCardBlock',
 			boundingBox: {
 				x,
 				y,
-				w: 420,
-				h: 160,
+				w: widthOfCard,
+				h: heightOfCard,
 			},
 		});
 
