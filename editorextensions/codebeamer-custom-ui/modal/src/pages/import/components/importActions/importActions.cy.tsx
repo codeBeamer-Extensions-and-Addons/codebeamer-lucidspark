@@ -93,9 +93,9 @@ describe('<ImportActions>', () => {
 			const handler = cy.spy().as('handler');
 
 			const items: CardBlockToItemMapping[] = [
-				{ itemId: 1, cardBlockId: '' },
-				{ itemId: 2, cardBlockId: '' },
-				{ itemId: 3, cardBlockId: '' },
+				{ itemId: 1, trackerId: 1, cardBlockId: '' },
+				{ itemId: 2, trackerId: 1, cardBlockId: '' },
+				{ itemId: 3, trackerId: 1, cardBlockId: '' },
 			];
 
 			cy.mount(
@@ -118,9 +118,9 @@ describe('<ImportActions>', () => {
 		context('syncing', () => {
 			it('displays the amount of already imported Items on the Sync button', () => {
 				const items: CardBlockToItemMapping[] = [
-					{ itemId: 1, cardBlockId: '' },
-					{ itemId: 2, cardBlockId: '' },
-					{ itemId: 3, cardBlockId: '' },
+					{ itemId: 1, trackerId: 1, cardBlockId: '' },
+					{ itemId: 2, trackerId: 1, cardBlockId: '' },
+					{ itemId: 3, trackerId: 1, cardBlockId: '' },
 				];
 
 				cy.mount(
@@ -142,9 +142,9 @@ describe('<ImportActions>', () => {
 				const handler = cy.spy().as('handler');
 
 				const items: CardBlockToItemMapping[] = [
-					{ itemId: 1, cardBlockId: '' },
-					{ itemId: 2, cardBlockId: '' },
-					{ itemId: 3, cardBlockId: '' },
+					{ itemId: 1, trackerId: 1, cardBlockId: '' },
+					{ itemId: 2, trackerId: 1, cardBlockId: '' },
+					{ itemId: 3, trackerId: 1, cardBlockId: '' },
 				];
 
 				cy.mount(
