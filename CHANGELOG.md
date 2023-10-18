@@ -20,9 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   count displays the number of items which have not been imported yet from that specific Tracker
     -   imports only those missing items to avoid duplicates
 -   Item Import
-    -   cards are spread out more evenly on the board
+    -   cards are spread out further depending on the number of items imported
 -   UI Changes
     -   added padding to the top of the import modal
+    -   Query Results
+        -   Background of the query result turns #f5f5f5 (light grey) when hovered
+        -   The whole query result is clickable now
+        -   The cursor becomes a pointer when hovering over the query result
 
 ## Released
 
