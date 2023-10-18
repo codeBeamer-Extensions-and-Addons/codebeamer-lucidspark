@@ -5,6 +5,7 @@ import ActiveFilters from './activeFilters/ActiveFilters';
 import CbqlInput from './cbqlInput/CbqlInput';
 import FilterInput from './filterInput/FilterInput';
 import TrackerSelect from './trackerSelect/TrackerSelect';
+import CbqlToggle from './cbqlToggle/CbqlToggle';
 
 import './query.css';
 
@@ -13,21 +14,26 @@ export default function Query() {
 		(state: RootState) => state.userSettings
 	);
 
-	if (!advancedSearch) {
-		return (
-			<div className="grid fade-in-quick">
-				<div className="cs1 ce3">
-					<TrackerSelect />
+	return (
+		<div className="flex-row align-items-center">
+			{advancedSearch ? (
+				<div className="grid fade-in-quick">
+					<div className="cs1 ce3">
+						<TrackerSelect />
+					</div>
+					<div className="cs4 ce7 text-center form-group">
+						<FilterInput />
+					</div>
+					<div className="cs8 ce12 text-center active-filters-container">
+						<ActiveFilters />
+					</div>
 				</div>
-				<div className="cs4 ce7 text-center">
-					<FilterInput />
+			) : (
+				<div className="w-100">
+					<CbqlInput />
 				</div>
-				<div className="cs8 ce12 text-center active-filters-container">
-					<ActiveFilters />
-				</div>
-			</div>
-		);
-	} else {
-		return <CbqlInput />;
-	}
+			)}
+			<CbqlToggle />
+		</div>
+	);
 }
