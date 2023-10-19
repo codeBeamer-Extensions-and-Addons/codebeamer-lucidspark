@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## Released
+
 ### [1.1.0]
 
 #### Added
@@ -28,8 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
         -   The whole query result is clickable now
         -   The cursor becomes a pointer when hovering over the query result
     -   CBQL Toggle button has been moved to the right side of the query input
-
-## Released
 
 ### [1.0.0]
 
