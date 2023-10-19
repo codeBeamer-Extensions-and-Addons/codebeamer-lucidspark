@@ -16,21 +16,19 @@ export default function CbqlToggle() {
 
 	return (
 		<DefaultOverlayTrigger
-			content={advancedSearch ? 'Assisted Query' : 'CBQL Input'}
+			content={advancedSearch ? 'CBQL Input' : 'Assisted Query'}
 		>
 			<button
 				className={`mx-1 
 							${
 								advancedSearch
-									? 'button-icon-small button-icon button-icon-secondary icon-parameters'
-									: 'button button-secondary button-small'
+									? 'button button-secondary button-small'
+									: 'button-icon-small button-icon button-icon-secondary icon-parameters'
 							}`}
 				onClick={toggleSearchMethod}
 				data-test="search-method"
 			>
 				{advancedSearch ? (
-					''
-				) : (
 					<i data-test="cbql-icon">
 						<svg
 							width="24"
@@ -49,6 +47,8 @@ export default function CbqlToggle() {
 							</text>
 						</svg>
 					</i>
+				) : (
+					''
 				)}
 			</button>
 		</DefaultOverlayTrigger>
