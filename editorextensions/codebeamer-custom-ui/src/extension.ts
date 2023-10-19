@@ -19,4 +19,4 @@ const icon =
 		iconUrl: icon,
 	});
 
-console.log("codebeamer-cards extension loaded @v1.0")
+console.log("codebeamer-cards extension loaded @v1.1-alpha")
