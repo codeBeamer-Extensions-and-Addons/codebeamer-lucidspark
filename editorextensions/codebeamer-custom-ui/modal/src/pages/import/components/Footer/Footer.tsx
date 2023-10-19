@@ -4,7 +4,7 @@ import './footer.css';
 import { useDispatch } from 'react-redux';
 import { setShowAnnouncements } from '../../../../store/slices/userSettingsSlice';
 import Settings from '../settings/Settings';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import DefaultOverlayTrigger from '../../../../components/defaultOverlayTrigger/DefautOverlayTrigger';
 
 export default function Footer() {
 	const dispatch = useDispatch();
@@ -52,23 +52,5 @@ export default function Footer() {
 				<Settings onClose={() => setShowSettings(false)} />
 			)}
 		</>
-	);
-}
-
-function DefaultOverlayTrigger(props: {
-	children: JSX.Element;
-	content: string;
-}): JSX.Element {
-	return (
-		<OverlayTrigger
-			placement="bottom"
-			trigger={['hover', 'focus']}
-			delay={{ show: 250, hide: 250 }}
-			overlay={
-				<Tooltip className="tooltip-grey">{props.content}</Tooltip>
-			}
-		>
-			{props.children}
-		</OverlayTrigger>
 	);
 }

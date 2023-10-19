@@ -2,7 +2,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAdvancedSearch } from '../../../../../store/slices/userSettingsSlice';
 import { RootState } from '../../../../../store/store';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import DefaultOverlayTrigger from '../../../../../components/defaultOverlayTrigger/DefautOverlayTrigger';
 
 export default function CbqlToggle() {
 	const dispatch = useDispatch();
@@ -51,23 +51,5 @@ export default function CbqlToggle() {
 				</button>
 			</DefaultOverlayTrigger>
 		</div>
-	);
-}
-
-function DefaultOverlayTrigger(props: {
-	children: JSX.Element;
-	content: string;
-}): JSX.Element {
-	return (
-		<OverlayTrigger
-			placement="bottom"
-			trigger={['hover', 'focus']}
-			delay={{ show: 250, hide: 250 }}
-			overlay={
-				<Tooltip className="tooltip-grey">{props.content}</Tooltip>
-			}
-		>
-			{props.children}
-		</OverlayTrigger>
 	);
 }
