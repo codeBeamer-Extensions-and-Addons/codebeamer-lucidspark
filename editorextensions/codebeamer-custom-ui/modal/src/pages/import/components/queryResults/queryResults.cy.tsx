@@ -1,4 +1,3 @@
-import { AppCard } from '@mirohq/websdk-types';
 import * as React from 'react';
 import { IFilterCriteria } from '../../../../models/filterCriteria.if';
 import {
@@ -7,6 +6,8 @@ import {
 } from '../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../store/store';
 import QueryResults from './QueryResults';
+import query_multi_page from '../../../../../cypress/fixtures/query_multi-page.json';
+import query_multi_page_2 from '../../../../../cypress/fixtures/query_multi-page_2.json';
 
 describe('<QueryResults>', () => {
 	it('mounts', () => {
@@ -14,13 +15,24 @@ describe('<QueryResults>', () => {
 	});
 
 	it('queries the already imported items and displays them as checked and disabled when they appear in a query its results', () => {
-		const itemOne: Partial<AppCard> = { id: '1', title: '[RETUS-1]' };
-		const itemTwo: Partial<AppCard> = { id: '2', title: '[RETUS-2]' };
-		const notSyncedItemOne: Partial<AppCard> = { id: '3' };
-		const notSyncedItemTwo: Partial<AppCard> = { id: '4' };
+		const itemOne: {
+			cardBlock: { id: string };
+			codebeamerItemId: number;
+		} = { cardBlock: { id: '1' }, codebeamerItemId: 1 };
+		const itemTwo: {
+			cardBlock: { id: string };
+			codebeamerItemId: number;
+		} = { cardBlock: { id: '2' }, codebeamerItemId: 2 };
+		const notSyncedItemOne: { codebeamerItemId: number } = {
+			codebeamerItemId: 3,
+		};
+		const notSyncedItemTwo: { codebeamerItemId: number } = {
+			codebeamerItemId: 4,
+		};
 
-		cy.stub(miro.board, 'get').callsFake(() => {
-			return Promise.resolve([itemOne, itemTwo]);
+		cy.stub(window.parent, 'postMessage').callsFake(() => {
+			const data = [itemOne, itemTwo];
+			window.postMessage(JSON.stringify(data), '*');
 		});
 
 		const store = getStore();
@@ -33,16 +45,16 @@ describe('<QueryResults>', () => {
 
 		cy.mountWithStore(<QueryResults />, { reduxStore: store });
 
-		cy.getBySel('itemCheck-' + itemOne.id)
+		cy.getBySel('itemCheck-' + itemOne.codebeamerItemId)
 			.should('be.checked')
 			.and('be.disabled');
-		cy.getBySel('itemCheck-' + itemTwo.id)
+		cy.getBySel('itemCheck-' + itemTwo.codebeamerItemId)
 			.should('be.checked')
 			.and('be.disabled');
-		cy.getBySel('itemCheck-' + notSyncedItemOne.id)
+		cy.getBySel('itemCheck-' + notSyncedItemOne.codebeamerItemId)
 			.should('not.be.checked')
 			.and('be.enabled');
-		cy.getBySel('itemCheck-' + notSyncedItemTwo.id)
+		cy.getBySel('itemCheck-' + notSyncedItemTwo.codebeamerItemId)
 			.should('not.be.checked')
 			.and('be.enabled');
 	});
@@ -119,6 +131,106 @@ describe('<QueryResults>', () => {
 		cy.wait('@itemQuery')
 			.its('request.body.queryString')
 			.should('equal', expectedQueryString);
+	});
+
+	it('passes the count of tracker items that have not been imported yet to the Import All button', () => {
+		const mockImportedItems = [
+			{
+				cardBlock: { id: '1' },
+				codebeamerItemId: 1,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '2' },
+				codebeamerItemId: 2,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '3' },
+				codebeamerItemId: 3,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '4' },
+				codebeamerItemId: 4,
+				codebeamerTrackerId: 4877085,
+			},
+
+			// items from a different tracker
+			{
+				cardBlock: { id: '5' },
+				codebeamerItemId: 5,
+				codebeamerTrackerId: 999,
+			},
+			{
+				cardBlock: { id: '6' },
+				codebeamerItemId: 6,
+				codebeamerTrackerId: 999,
+			},
+			{
+				cardBlock: { id: '7' },
+				codebeamerItemId: 7,
+				codebeamerTrackerId: 999,
+			},
+			{
+				cardBlock: { id: '8' },
+				codebeamerItemId: 8,
+				codebeamerTrackerId: 999,
+			},
+
+			// duplicate items
+			{
+				cardBlock: { id: '9' },
+				codebeamerItemId: 1,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '10' },
+				codebeamerItemId: 2,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '11' },
+				codebeamerItemId: 3,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlock: { id: '12' },
+				codebeamerItemId: 4,
+				codebeamerTrackerId: 4877085,
+			},
+		];
+
+		cy.stub(window.parent, 'postMessage')
+			.as('boardGetStub')
+			.callsFake(() => {
+				window.postMessage(JSON.stringify(mockImportedItems), '*');
+			});
+
+		const store = getStore();
+		store.dispatch(setTrackerId('4877085'));
+
+		cy.intercept('POST', `**/api/v3/items/query`, {
+			fixture: 'query_multi-page.json',
+		}).as('itemQuery');
+
+		cy.mountWithStore(<QueryResults />, { reduxStore: store });
+
+		const expectedCount = query_multi_page.items
+			.concat(query_multi_page_2.items)
+			.filter(
+				(item) =>
+					mockImportedItems.filter(
+						(importedItem) =>
+							importedItem.codebeamerItemId === item.id &&
+							importedItem.codebeamerTrackerId === item.tracker.id
+					).length === 0
+			).length;
+
+		cy.getBySel('importAll').should(
+			'have.text',
+			`Import all (${expectedCount})`
+		);
 	});
 
 	describe('lazy loading', () => {

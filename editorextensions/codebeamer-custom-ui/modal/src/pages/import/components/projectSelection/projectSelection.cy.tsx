@@ -80,7 +80,7 @@ describe('<ProjectSelection>', () => {
 
 		it('resets the trackerId when a projectId change is submitted', () => {
 			const store = getStore();
-			const trackerId = '';
+			const trackerId = '0';
 
 			cy.mountWithStore(<ProjectSelection />, { reduxStore: store });
 

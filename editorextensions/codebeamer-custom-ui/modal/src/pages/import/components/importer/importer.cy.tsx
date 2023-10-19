@@ -50,14 +50,6 @@ describe('<Importer>', () => {
 		const items: string[] = ['1', '2', '3', '4'];
 		const store = getStore();
 
-		cy.stub(miro.board, 'createAppCard').resolves(null);
-		cy.stub(miro.board.viewport, 'get').resolves({
-			x: 0,
-			y: 0,
-			width: 1000,
-			height: 1000,
-		});
-
 		cy.intercept('POST', '**/wiki2html');
 
 		cy.intercept('POST', '**/api/v3/items/query', {
@@ -107,10 +99,11 @@ describe('<Importer>', () => {
 	});
 
 	it('appends what items are already imported to the queryString so as not to duplicate them', () => {
-		cy.stub(miro.board, 'get')
+		cy.stub(window.parent, 'postMessage')
 			.as('boardGetStub')
-			.withArgs({ type: 'app_card' })
-			.resolves(mockImportedItems);
+			.callsFake(() => {
+				window.postMessage(JSON.stringify(mockImportedItems), '*');
+			});
 
 		const items: string[] = ['1', '2', '3'];
 		const store = getStore();
@@ -153,10 +146,11 @@ describe('<Importer>', () => {
 		});
 
 		it('still appends what items are already imported to the queryString so as not to duplicate them', () => {
-			cy.stub(miro.board, 'get')
+			cy.stub(window.parent, 'postMessage')
 				.as('boardGetStub')
-				.withArgs({ type: 'app_card' })
-				.resolves(mockImportedItems);
+				.callsFake(() => {
+					window.postMessage(JSON.stringify(mockImportedItems), '*');
+				});
 
 			const mockQueryString = 'item.id IN (1,2,3,4)';
 
@@ -182,111 +176,9 @@ describe('<Importer>', () => {
 				.should('equal', expectedQuery);
 		});
 	});
-
-	describe('import progress bar', () => {
-		const progressBarSelector = 'importProgress';
-
-		it('shows the total amount of items to import based on the passed items array', () => {
-			const items: string[] = ['1', '2', '3'];
-			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
-			cy.mountWithStore(<Importer items={items} />);
-
-			cy.getBySel(progressBarSelector).should(
-				'contain.text',
-				`/${items.length}`
-			);
-		});
-
-		/**
-		 * Because importing all is communicated with an empty array, its length doesn't serve as measure in this case
-		 */
-		it('shows the total amount of items to import based on a fallback value when importing all items for a query', () => {
-			const items: string[] = [];
-			const totalItems = 235;
-			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
-			cy.mountWithStore(
-				<Importer items={items} totalItems={totalItems} />
-			);
-
-			cy.getBySel(progressBarSelector).should(
-				'contain.text',
-				`/${totalItems}`
-			);
-		});
-	});
 });
 
 const mockImportedItems = [
-	{
-		type: 'app_card',
-		owned: true,
-		title: '<a href="https://codebeamer.com/cb/issue/569657">Do a barrel roll - [PBI|569657]</a>',
-		description: 'hi',
-		style: {
-			cardTheme: '#ffab46',
-		},
-		tagIds: [],
-		status: 'disconnected',
-		fields: [
-			{
-				value: 'ID: 569657',
-				fillColor: '#bf4040',
-				textColor: '#ffffff',
-			},
-			{
-				value: 'Owner: me',
-				fillColor: '#4095bf',
-				textColor: '#ffffff',
-			},
-		],
-		id: '1284604263',
-		parentId: null,
-		origin: 'center',
-		createdAt: '2022-10-27T10:51:32.088Z',
-		createdBy: '3074457359559759394',
-		modifiedAt: '2022-12-20T06:07:16.741Z',
-		modifiedBy: '3074457359559759394',
-		x: -980.3690303296571,
-		y: 2873.21422855878,
-		width: 320,
-		height: 190,
-		rotation: 0,
-	},
-	{
-		type: 'app_card',
-		owned: true,
-		title: '<a href="https://codebeamer.com/cb/issue/569527">Improve your barrel roll - [PBI|569527]</a>',
-		description: 'hello from the other side',
-		style: {
-			cardTheme: '#ffab46',
-		},
-		tagIds: [],
-		status: 'connected',
-		fields: [
-			{
-				value: 'ID: 569527',
-				fillColor: '#bf4040',
-				textColor: '#ffffff',
-			},
-			{
-				value: 'Teams: Unicorns',
-				fillColor: '#40bf95',
-				textColor: '#ffffff',
-			},
-		],
-		id: '869124682946',
-		parentId: null,
-		origin: 'center',
-		createdAt: '2022-10-27T10:51:32.321Z',
-		createdBy: '3074457359559759394',
-		modifiedAt: '2022-12-13T05:17:02.615Z',
-		modifiedBy: '3074457359559759394',
-		x: -1398.39803840151,
-		y: 2724.40598150612,
-		width: 396.6044358451181,
-		height: 190.00000000000023,
-		rotation: 0,
-	},
+	{ cardBlock: { id: '1' }, codebeamerItemId: 569657 },
+	{ cardBlock: { id: '2' }, codebeamerItemId: 569527 },
 ];

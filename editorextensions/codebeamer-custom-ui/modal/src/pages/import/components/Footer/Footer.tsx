@@ -1,27 +1,15 @@
 import React, { useState } from 'react';
 
 import './footer.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../../store/store';
-import {
-	setAdvancedSearch,
-	setShowAnnouncements,
-} from '../../../../store/slices/userSettingsSlice';
+import { useDispatch } from 'react-redux';
+import { setShowAnnouncements } from '../../../../store/slices/userSettingsSlice';
 import Settings from '../settings/Settings';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import DefaultOverlayTrigger from '../../../../components/defaultOverlayTrigger/DefautOverlayTrigger';
 
 export default function Footer() {
 	const dispatch = useDispatch();
 
 	const [showSettings, setShowSettings] = useState(false);
-
-	const { advancedSearch } = useSelector(
-		(state: RootState) => state.userSettings
-	);
-
-	const toggleSearchMethod = () => {
-		dispatch(setAdvancedSearch(!advancedSearch));
-	};
 
 	const openSettingsModal = () => {
 		setShowSettings(true);
@@ -30,43 +18,6 @@ export default function Footer() {
 	return (
 		<>
 			<div className="actions flex flex- import footer">
-				<DefaultOverlayTrigger
-					content={advancedSearch ? 'Assisted Query' : 'CBQL Input'}
-				>
-					<button
-						className={`mx-1 
-							${
-								advancedSearch
-									? 'button-icon-small button-icon button-icon-secondary icon-parameters'
-									: 'button button-secondary button-small'
-							}`}
-						onClick={toggleSearchMethod}
-						data-test="search-method"
-					>
-						{advancedSearch ? (
-							''
-						) : (
-							<i data-test="cbql-icon">
-								<svg
-									width="24"
-									height="24"
-									viewBox="0 0 28 28"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
-									<text fill="#000000">
-										<tspan x="4" y="13" textLength="20">
-											CB
-										</tspan>
-										<tspan x="4" y="25">
-											QL
-										</tspan>
-									</text>
-								</svg>
-							</i>
-						)}
-					</button>
-				</DefaultOverlayTrigger>
 				<DefaultOverlayTrigger content="Settings">
 					<button
 						className="button button-secondary button-small mx-1"
@@ -101,23 +52,5 @@ export default function Footer() {
 				<Settings onClose={() => setShowSettings(false)} />
 			)}
 		</>
-	);
-}
-
-function DefaultOverlayTrigger(props: {
-	children: JSX.Element;
-	content: string;
-}): JSX.Element {
-	return (
-		<OverlayTrigger
-			placement="bottom"
-			trigger={['hover', 'focus']}
-			delay={{ show: 250, hide: 250 }}
-			overlay={
-				<Tooltip className="tooltip-grey">{props.content}</Tooltip>
-			}
-		>
-			{props.children}
-		</OverlayTrigger>
 	);
 }

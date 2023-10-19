@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Released
 
+### [1.1.0]
+
+#### Added
+
+-   Sync Cards Button
+    -   Syncs all cards on the lucidspark board by fetching the matching codebeamer items and updating the card content
+
+#### Changed
+
+-   Import All button
+    -   count displays the number of items which have not been imported yet from that specific Tracker
+    -   imports only those missing items to avoid duplicates
+-   Item Import
+    -   cards are spread out further depending on the number of items imported
+-   UI Changes
+    -   added padding to the top of the import modal
+    -   Query Results
+        -   Background of the query result turns #f5f5f5 (light grey) when hovered
+        -   The whole query result is clickable now
+        -   The cursor becomes a pointer when hovering over the query result
+    -   CBQL Toggle button has been moved to the right side of the query input
+
 ### [1.0.0]
 
 First version of the codebeamer-lucidspark plugin / MVP

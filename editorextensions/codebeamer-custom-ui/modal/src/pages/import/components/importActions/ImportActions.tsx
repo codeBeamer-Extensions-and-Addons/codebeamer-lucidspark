@@ -1,12 +1,13 @@
 import React from 'react';
-import { AppCardToItemMapping } from '../../../../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 
 import './importActions.css';
 
 export default function ImportActions(props: {
 	selectedCount: number;
 	totalCount: number;
-	// importedItems: AppCardToItemMapping[];
+	importedItemsCount: number;
+	unImportedItemsCount: number;
 	onImportSelected: Function;
 	onImportAll: Function;
 	onSync: Function;
@@ -36,6 +37,7 @@ export default function ImportActions(props: {
 			</button>
 			<button
 				className="button button-primary button-small flex flex-centered"
+				disabled={props.unImportedItemsCount == 0}
 				onClick={() => props.onImportAll()}
 				data-test="importAll"
 			>
@@ -52,17 +54,17 @@ export default function ImportActions(props: {
 						/>
 					</svg>
 				</span>
-				Import all ({props.totalCount})
+				Import all ({props.unImportedItemsCount})
 			</button>
-			{/* <button
+			<button
 				className="button button-secondary button-small flex flex-centered"
-				disabled={props.importedItems.length == 0}
+				disabled={props.importedItemsCount == 0}
 				data-test="sync"
 				onClick={() => props.onSync()}
 			>
 				<span className="icon icon-refresh mr-1 pos-adjusted-down"></span>
-				Sync ({props.importedItems.length})
-			</button> */}
+				Sync ({props.importedItemsCount})
+			</button>
 		</div>
 	);
 }

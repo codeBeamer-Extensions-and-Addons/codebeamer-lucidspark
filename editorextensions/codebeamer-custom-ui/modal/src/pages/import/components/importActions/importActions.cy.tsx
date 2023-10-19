@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppCardToItemMapping } from '../../../../models/appCardToItemMapping.if';
+import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 import ImportActions from './ImportActions';
 
 describe('<ImportActions>', () => {
@@ -11,7 +11,8 @@ describe('<ImportActions>', () => {
 				onImportSelected={() => {}}
 				onImportAll={() => {}}
 				onSync={() => {}}
-				importedItems={[]}
+				importedItemsCount={0}
+				unImportedItemsCount={0}
 			/>
 		);
 	});
@@ -25,7 +26,8 @@ describe('<ImportActions>', () => {
 					onImportSelected={() => {}}
 					onImportAll={() => {}}
 					onSync={() => {}}
-					importedItems={[]}
+					importedItemsCount={0}
+					unImportedItemsCount={0}
 				/>
 			);
 
@@ -43,22 +45,24 @@ describe('<ImportActions>', () => {
 					onImportSelected={() => {}}
 					onImportAll={() => {}}
 					onSync={() => {}}
-					importedItems={[]}
+					importedItemsCount={0}
+					unImportedItemsCount={0}
 				/>
 			);
 
 			cy.getBySel('importSelected').should('be.disabled');
 		});
 
-		it('displays the passed amount of total Items in the "Import All" button', () => {
+		it('displays the passed amount of items that have not been imported yet in the "Import All" button', () => {
 			cy.mount(
 				<ImportActions
 					selectedCount={0}
-					totalCount={15}
+					totalCount={0}
 					onImportSelected={() => {}}
 					onImportAll={() => {}}
 					onSync={() => {}}
-					importedItems={[]}
+					importedItemsCount={0}
+					unImportedItemsCount={15}
 				/>
 			);
 
@@ -75,7 +79,8 @@ describe('<ImportActions>', () => {
 					onImportSelected={handler}
 					onImportAll={() => {}}
 					onSync={() => {}}
-					importedItems={[]}
+					importedItemsCount={0}
+					unImportedItemsCount={0}
 				/>
 			);
 
@@ -87,6 +92,12 @@ describe('<ImportActions>', () => {
 		it('calls the passed handler when clicking the "Import All" button', () => {
 			const handler = cy.spy().as('handler');
 
+			const items: CardBlockToItemMapping[] = [
+				{ itemId: 1, trackerId: 1, cardBlockId: '' },
+				{ itemId: 2, trackerId: 1, cardBlockId: '' },
+				{ itemId: 3, trackerId: 1, cardBlockId: '' },
+			];
+
 			cy.mount(
 				<ImportActions
 					selectedCount={0}
@@ -94,7 +105,8 @@ describe('<ImportActions>', () => {
 					onImportSelected={() => {}}
 					onImportAll={handler}
 					onSync={() => {}}
-					importedItems={[]}
+					importedItemsCount={0}
+					unImportedItemsCount={items.length}
 				/>
 			);
 
@@ -105,10 +117,10 @@ describe('<ImportActions>', () => {
 
 		context('syncing', () => {
 			it('displays the amount of already imported Items on the Sync button', () => {
-				const items: AppCardToItemMapping[] = [
-					{ itemId: '1', appCardId: '' },
-					{ itemId: '2', appCardId: '' },
-					{ itemId: '3', appCardId: '' },
+				const items: CardBlockToItemMapping[] = [
+					{ itemId: 1, trackerId: 1, cardBlockId: '' },
+					{ itemId: 2, trackerId: 1, cardBlockId: '' },
+					{ itemId: 3, trackerId: 1, cardBlockId: '' },
 				];
 
 				cy.mount(
@@ -118,7 +130,8 @@ describe('<ImportActions>', () => {
 						onImportSelected={() => {}}
 						onImportAll={() => {}}
 						onSync={() => {}}
-						importedItems={items}
+						importedItemsCount={items.length}
+						unImportedItemsCount={0}
 					/>
 				);
 
@@ -128,10 +141,10 @@ describe('<ImportActions>', () => {
 			it('calls the passed handler when clicking the "Sync" button', () => {
 				const handler = cy.spy().as('handler');
 
-				const items: AppCardToItemMapping[] = [
-					{ itemId: '1', appCardId: '' },
-					{ itemId: '2', appCardId: '' },
-					{ itemId: '3', appCardId: '' },
+				const items: CardBlockToItemMapping[] = [
+					{ itemId: 1, trackerId: 1, cardBlockId: '' },
+					{ itemId: 2, trackerId: 1, cardBlockId: '' },
+					{ itemId: 3, trackerId: 1, cardBlockId: '' },
 				];
 
 				cy.mount(
@@ -141,7 +154,8 @@ describe('<ImportActions>', () => {
 						onImportSelected={() => {}}
 						onImportAll={() => {}}
 						onSync={handler}
-						importedItems={items}
+						importedItemsCount={items.length}
+						unImportedItemsCount={0}
 					/>
 				);
 

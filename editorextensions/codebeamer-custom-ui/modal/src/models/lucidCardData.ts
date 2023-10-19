@@ -2,6 +2,8 @@
  * Structure of the card data being prepared for import on a lucid board
  */
 export interface CardData {
+	codebeamerItemId: number;
+	codebeamerTrackerId: number;
 	title?: string;
 	description?: string;
 	assignee?: string;

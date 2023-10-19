@@ -12,6 +12,12 @@
     This is (going to be) a Plugin for <a href="https://lucidspark.com">Lucidspark</a> that allows you to sync Issues managed on a <a href="https://codebeamer.com">codeBeamer</a> instance, <br/> visualizing them as Cards on your boards.
 </p>
 
+<p align="center">
+<a href="[https://www.npmjs.com/package/cypress](https://dashboard.cypress.io/projects/61hnzi/runs)">
+    <img src="https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/detailed/61hnzi&style=flat&logo=cypress" alt="tests"/>
+ </a>
+</p>
+
 # Contribute
 
 Anyone can contribute. Just branch off of `develop` and create a Pull request when your feature is ready.  
