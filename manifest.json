@@ -1,26 +1,23 @@
 {
-  "id": "08f8f5fc-87a9-4f1f-a0bb-f632ffbbdf49",
-  "version": "1.0.2",
-  "extensions": [
-    {
-      "name": "codebeamer-custom-ui",
-      "title": "codebeamer-custom-ui",
-      "products": [
-        "chart",
-        "spark"
-      ],
-      "codePath": "editorextensions/codebeamer-custom-ui/bin/extension.js",
-      "scopes": [
-        "READ",
-        "WRITE",
-        "DOWNLOAD",
-        "SHOW_MODAL",
-        "CUSTOM_UI",
-        "NETWORK"
-      ]
-    }
-  ],
-  "shapeLibraries": [],
-  "oauthProviders": [],
-  "dataConnectors": []
+	"id": "08f8f5fc-87a9-4f1f-a0bb-f632ffbbdf49",
+	"version": "1.1.0",
+	"extensions": [
+		{
+			"name": "codebeamer-custom-ui",
+			"title": "codebeamer-custom-ui",
+			"products": ["chart", "spark"],
+			"codePath": "editorextensions/codebeamer-custom-ui/bin/extension.js",
+			"scopes": [
+				"READ",
+				"WRITE",
+				"DOWNLOAD",
+				"SHOW_MODAL",
+				"CUSTOM_UI",
+				"NETWORK"
+			]
+		}
+	],
+	"shapeLibraries": [],
+	"oauthProviders": [],
+	"dataConnectors": []
 }

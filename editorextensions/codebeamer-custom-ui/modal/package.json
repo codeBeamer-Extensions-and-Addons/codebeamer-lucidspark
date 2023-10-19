@@ -1,7 +1,7 @@
 {
 	"author": "urecha",
 	"name": "codebeamer-cards-lucid",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"licence": "AGPL-3.0",
 	"description": "This is a codeBeamer <-> Lucidspark extension.\r It allows to import codeBeamer items to a Lucidspark board.",
 	"repository": {
