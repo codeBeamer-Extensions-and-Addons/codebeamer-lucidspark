@@ -19,7 +19,7 @@ export default function CbqlToggle() {
 			content={advancedSearch ? 'CBQL Input' : 'Assisted Query'}
 		>
 			<button
-				className={'mx-1 button button-secondary button-small'}
+				className={'mx-1 mt-1 button button-secondary button-small'}
 				onClick={toggleSearchMethod}
 				data-test="search-method"
 			>
