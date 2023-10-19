@@ -25,7 +25,10 @@ export class ImportModal extends Modal {
 
 	protected viewport = new Viewport(this.client);
 
-	imports: Map<number, { totalItems: number; finished: boolean }> = new Map();
+	imports: Map<
+		number,
+		{ totalItems: number; initialTotalItems: number; finished: boolean }
+	> = new Map();
 	cardBlocks: CardBlockProxy[] = [];
 
 	/**
@@ -38,6 +41,7 @@ export class ImportModal extends Modal {
 			case 'startImport':
 				this.imports.set(message.payload.id, {
 					totalItems: message.payload.totalItems,
+					initialTotalItems: message.payload.totalItems,
 					finished: false,
 				});
 				break;
@@ -65,7 +69,10 @@ export class ImportModal extends Modal {
 	 * @param {Message} message - The import item message.
 	 */
 	private importItem(message: Message): void {
-		this.createLucidCardBlock(message.payload.cardData);
+		this.createLucidCardBlock(
+			message.payload.cardData,
+			this.imports.get(message.payload.importId)!.initialTotalItems
+		);
 		this.imports.get(message.payload.importId)!.totalItems--;
 		if (this.imports.get(message.payload.importId)!.totalItems <= 0) {
 			this.imports.delete(message.payload.importId);
@@ -104,18 +111,36 @@ export class ImportModal extends Modal {
 	}
 
 	/**
-	 * Generates random coordinates within the visible rectangle.
+	 * Generates coordinates for a new card with consideration for the size of the viewport
+	 * and existing card blocks.
 	 *
-	 * @returns {Object} An object with 'x' and 'y' properties representing the coordinates.
+	 * @param {number} w - The width of the card.
+	 * @param {number} h - The height of the card.
+	 * @returns An object with 'x' and 'y' properties representing the coordinates.
 	 */
-	private generateCoordinates(): { x: number; y: number } {
+	private generateCoordinates(
+		w: number,
+		h: number,
+		totalItems: number
+	): { x: number; y: number } {
 		const visibleRect = this.viewport.getVisibleRect();
-		const x =
-			(visibleRect.x + visibleRect.w / 2) *
-			(Math.random() * (1.1 - 0.9) + 0.9);
-		const y =
-			(visibleRect.y + visibleRect.h / 2) *
-			(Math.random() * (1.1 - 0.9) + 0.9);
+		let areaWidth = Math.ceil(Math.sqrt(totalItems)) * w;
+		let areaHeight = Math.ceil(Math.sqrt(totalItems)) * h;
+
+		//set areaWidth and areaHeight to 80% of viewport size if they are bigger than 80% of the viewport
+		if (areaWidth > visibleRect.w * 0.8) {
+			areaWidth = visibleRect.w * 0.8;
+		}
+		if (areaHeight > visibleRect.h * 0.8) {
+			areaHeight = visibleRect.h * 0.8;
+		}
+
+		const minX = visibleRect.x + (visibleRect.w - areaWidth) / 2 - w / 2;
+		const minY = visibleRect.y + (visibleRect.h - areaHeight) / 2 - h / 2;
+		const maxX = visibleRect.x + (visibleRect.w + areaWidth) / 2 - w / 2;
+		const maxY = visibleRect.y + (visibleRect.h + areaHeight) / 2 - h / 2;
+		const x = Math.random() * (maxX - minX) + minX;
+		const y = Math.random() * (maxY - minY) + minY;
 
 		return { x, y };
 	}
@@ -125,18 +150,24 @@ export class ImportModal extends Modal {
 	 *
 	 * @param {CardData} cardData - The data for creating the LucidCardBlock.
 	 */
-	protected async createLucidCardBlock(cardData: CardData) {
+	protected async createLucidCardBlock(
+		cardData: CardData,
+		totalItems: number
+	) {
 		const page = this.viewport.getCurrentPage()!;
-		//if cardData.coordinates is undefined then use this.generateCoordinates()
-		const { x, y } = cardData.coordinates ?? this.generateCoordinates();
+		const widthOfCard = 420;
+		const heightOfCard = 160;
+		const { x, y } =
+			cardData.coordinates ??
+			this.generateCoordinates(widthOfCard, heightOfCard, totalItems);
 
 		const block = page.addBlock({
 			className: 'LucidCardBlock',
 			boundingBox: {
 				x,
 				y,
-				w: 420,
-				h: 160,
+				w: widthOfCard,
+				h: heightOfCard,
 			},
 		});
 
