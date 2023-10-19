@@ -5,44 +5,40 @@ import { setAdvancedSearch } from '../../../../../store/slices/userSettingsSlice
 
 const searchMethodSelector = 'search-method';
 const cbqlIconSelector = 'cbql-icon';
+const queryAssistant = 'icon-parameters';
 
 describe('<CbqlToggle>', () => {
 	it('mounts', () => {
 		cy.mountWithStore(<CbqlToggle />);
 	});
 
-	it('displays the "CBQL" button by default', () => {
+	it('displays the "Query Assistant" button by default', () => {
 		cy.mountWithStore(<CbqlToggle />);
 
-		cy.getBySel(cbqlIconSelector).should('exist');
+		cy.getBySel(queryAssistant).should('exist');
 	});
 
 	describe('with cached setting', () => {
-		it('displays "Query Assistant" when "Advanced Search" is enabled in cache', () => {
-			const expectedClass = 'icon-parameters';
-
+		it('displays "CBQL" when "Advanced Search" is enabled in cache', () => {
 			const store = getStore();
 			store.dispatch(setAdvancedSearch(true));
 
 			cy.mountWithStore(<CbqlToggle />, { reduxStore: store });
 
-			cy.getBySel(searchMethodSelector).should(
-				'have.class',
-				expectedClass
-			);
+			cy.getBySel(cbqlIconSelector).should('exist');
 		});
 
-		it('displays "CBQL" when "Advanced Search" is disabled in cache', () => {
+		it('displays "Query Assistant" when "Advanced Search" is disabled in cache', () => {
 			const store = getStore();
 			store.dispatch(setAdvancedSearch(false));
 
 			cy.mountWithStore(<CbqlToggle />, { reduxStore: store });
 
-			cy.getBySel(cbqlIconSelector).should('exist');
+			cy.getBySel(queryAssistant).should('exist');
 		});
 	});
 
-	it('updates the "Advanced Search" userSetting when the CBQL button is clicked', () => {
+	it('updates the "Advanced Search" userSetting when the Query Assistant button is clicked', () => {
 		const store = getStore();
 		store.dispatch(setAdvancedSearch(false));
 

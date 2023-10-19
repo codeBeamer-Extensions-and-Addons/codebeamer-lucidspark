@@ -46,7 +46,10 @@ export default function CbqlToggle() {
 							</svg>
 						</i>
 					) : (
-						<span className="icon icon-parameters"></span>
+						<span
+							data-test="icon-parameters"
+							className="icon icon-parameters"
+						></span>
 					)}
 				</button>
 			</DefaultOverlayTrigger>
