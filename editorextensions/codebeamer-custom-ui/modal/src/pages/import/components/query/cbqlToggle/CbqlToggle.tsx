@@ -48,7 +48,7 @@ export default function CbqlToggle() {
 					) : (
 						<span
 							data-test="icon-parameters"
-							className="icon icon-parameters"
+							className="icon icon-parameters clickable"
 						></span>
 					)}
 				</button>
