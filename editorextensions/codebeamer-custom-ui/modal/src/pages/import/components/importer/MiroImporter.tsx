@@ -14,7 +14,7 @@ import './importer.css';
 
 export default function Importer(props: {
 	items: CompressedItem[];
-	onClose?: Function;
+	onClose?: () => void;
 }) {
 	/**
 	 * Produces the query string for the import.

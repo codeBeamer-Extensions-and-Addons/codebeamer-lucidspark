@@ -7,9 +7,9 @@ export default function ImportActions(props: {
 	totalCount: number;
 	importedItemsCount: number;
 	unImportedItemsCount: number;
-	onImportSelected: Function;
-	onImportAll: Function;
-	onSync: Function;
+	onImportSelected: () => void;
+	onImportAll: () => void;
+	onSync: () => void;
 }) {
 	return (
 		<div className="w-100 flex-row">

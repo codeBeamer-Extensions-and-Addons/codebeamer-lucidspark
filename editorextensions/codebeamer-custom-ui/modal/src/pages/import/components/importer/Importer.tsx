@@ -18,7 +18,7 @@ export default function Importer(props: {
 	items: string[];
 	totalItems?: number;
 	queryString?: string;
-	onClose?: Function;
+	onClose?: () => void;
 }) {
 	const { cbqlString } = useSelector(
 		(state: RootState) => state.userSettings

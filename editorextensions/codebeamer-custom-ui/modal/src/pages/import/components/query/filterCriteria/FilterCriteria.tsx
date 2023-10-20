@@ -5,7 +5,7 @@ import './filterCriteria.css';
 
 export default function FilterCriteria(props: {
 	filterCriteria: IFilterCriteria;
-	onRemove: Function;
+	onRemove: (id: number) => void;
 	showId?: boolean;
 }) {
 	return (
@@ -19,7 +19,11 @@ export default function FilterCriteria(props: {
 			<div
 				className="filter-remove"
 				data-test={`remove-${props.filterCriteria.id}`}
-				onClick={() => props.onRemove(props.filterCriteria.id)}
+				onClick={() => {
+					if (props.filterCriteria.id) {
+						props.onRemove(props.filterCriteria.id);
+					}
+				}}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

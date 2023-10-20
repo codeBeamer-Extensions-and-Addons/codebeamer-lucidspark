@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
-import { ItemListView } from '../../../../models/itemListView';
 import './queryResult.css';
+import { ItemQueryResultView } from '../../../../models/itemQueryResultView';
 
 export default function QueryResult(props: {
-	item: ItemListView;
+	item: ItemQueryResultView;
 	checked?: boolean;
 	disabled?: boolean;
-	onSelect: Function;
+	onSelect: (item: ItemQueryResultView, checked: boolean) => void;
 }) {
 	const checkbox = useRef<HTMLInputElement>(null);
 

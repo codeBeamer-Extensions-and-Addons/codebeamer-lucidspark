@@ -21,7 +21,7 @@ import '../importer/importer.css';
  */
 export default function Updater(props: {
 	items: CardBlockToItemMapping[];
-	onClose?: Function;
+	onClose?: () => void;
 }) {
 	// My programming skills were insufficient to adequately generalize Importer & Updater. They only differ in a few (but supposedly essential) cases.
 	// So I fell back to creating a seperate one for the Updater, with much duplication. If you know better, please go ahead.
