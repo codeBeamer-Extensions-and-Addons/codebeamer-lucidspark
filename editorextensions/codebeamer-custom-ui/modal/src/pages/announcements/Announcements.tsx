@@ -37,9 +37,10 @@ export default function Announcements() {
 			<AnnouncementArticle date={'2023-10-03'} version={'1.0'}>
 				<p className="mt-5">
 					Welcome to codebeamer-cards for Lucidspark!
-					<br/>
-					We're glad to have you here. This is the first version of the app, and features only minimal functionality. 
-					We're working hard to add more features, so stay tuned!
+					<br />
+					We&apos;re glad to have you here. This is the first version
+					of the app, and features only minimal functionality.
+					We&apos;re working hard to add more features, so stay tuned!
 				</p>
 			</AnnouncementArticle>
 
@@ -48,7 +49,8 @@ export default function Announcements() {
 				<a
 					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/blob/main/CHANGELOG.md"
 					target="_blank"
-					className="roche-primary-light" rel="noreferrer"
+					className="roche-primary-light"
+					rel="noreferrer"
 				>
 					Detailed Changelog
 				</a>{' '}
@@ -56,7 +58,8 @@ export default function Announcements() {
 				<a
 					href="https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark/wiki"
 					target="_blank"
-					className="roche-primary-light" rel="noreferrer"
+					className="roche-primary-light"
+					rel="noreferrer"
 				>
 					Github Wiki
 				</a>{' '}
@@ -64,7 +67,8 @@ export default function Announcements() {
 				<a
 					href="https://retina.roche.com/cb/wiki/10407748"
 					target="_blank"
-					className="roche-primary-light" rel="noreferrer"
+					className="roche-primary-light"
+					rel="noreferrer"
 				>
 					Retina Wiki
 				</a>

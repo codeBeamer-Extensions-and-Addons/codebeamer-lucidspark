@@ -87,7 +87,7 @@ export default function AuthForm(props: {
 
 						if (!values.cbAddress) errors.cbAddress = 'Required';
 						else if (values.cbAddress) {
-							const regex = /^https?:\/\/[a-z0-9\.]*\/cb$/;
+							const regex = /^https?:\/\/[a-z0-9.]*\/cb$/;
 							if (!values.cbAddress.match(regex))
 								errors.cbAddress =
 									'Not a valid CB Address! Must specify the protocol (HTTP(S)) and end with /cb';
