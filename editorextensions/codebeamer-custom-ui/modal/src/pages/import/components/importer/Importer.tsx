@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
@@ -23,8 +23,6 @@ export default function Importer(props: {
 	const { cbqlString } = useSelector(
 		(state: RootState) => state.userSettings
 	);
-
-	const [loaded, setLoaded] = useState(0);
 
 	const importedItems = useImportedItems();
 

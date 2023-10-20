@@ -48,7 +48,7 @@ export default function QueryResults() {
 		intersectionObserverOptions
 	);
 
-	const { cbqlString, trackerId, advancedSearch } = useSelector(
+	const { cbqlString, trackerId } = useSelector(
 		(state: RootState) => state.userSettings
 	);
 
@@ -149,11 +149,6 @@ export default function QueryResults() {
 
 	const handleSync = () => {
 		setSynchronizing(true);
-	};
-
-	//just to debug with
-	const closeModalDebugOnly = () => {
-		setImporting(false);
 	};
 
 	//*********************************************************************** */

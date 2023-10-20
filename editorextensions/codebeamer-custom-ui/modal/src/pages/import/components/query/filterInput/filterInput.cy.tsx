@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { DefaultFilterCriteria } from '../../../../../enums/default-filter-criteria.enum';
-import {
-	addFilter,
-	setTrackerId,
-} from '../../../../../store/slices/userSettingsSlice';
+import { setTrackerId } from '../../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../../store/store';
 import FilterInput from './FilterInput';
 
@@ -115,12 +112,10 @@ describe('<FilterInput>', () => {
 			});
 
 			let slug: string = 'Priority';
-			let category: string = 'priority';
 			const value: string = 'down';
 
 			cy.fixture('tracker_schema.json').then((json) => {
 				slug = json[0].name;
-				category = json[0].trackerItemField;
 
 				cy.mountWithStore(<FilterInput />, { reduxStore: store });
 

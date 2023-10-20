@@ -117,7 +117,6 @@ export default function AuthForm(props: {
 					}}
 				>
 					{({
-						values,
 						errors,
 						touched,
 						handleChange,

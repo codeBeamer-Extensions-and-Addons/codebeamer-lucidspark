@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
-import { setTrackerId } from '../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../store/store';
 import Updater from './Updater';
 

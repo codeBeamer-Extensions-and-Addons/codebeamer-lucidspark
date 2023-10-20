@@ -1,5 +1,4 @@
 import React from 'react';
-import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 
 import './importActions.css';
 

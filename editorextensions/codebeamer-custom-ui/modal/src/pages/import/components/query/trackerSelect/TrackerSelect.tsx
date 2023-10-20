@@ -13,7 +13,7 @@ export default function TrackerSelect() {
 
 	const { trackerId } = useSelector((state: RootState) => state.userSettings);
 
-	const { data, error, isLoading } = useGetTrackersQuery(projectId);
+	const { data, isLoading } = useGetTrackersQuery(projectId);
 
 	const handleSelect = (event: any) => {
 		dispatch(setTrackerId(event.target.value));

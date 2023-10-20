@@ -250,7 +250,7 @@ describe('<QueryResults>', () => {
 		});
 
 		it('fetches the next result page of the current query when scrolling near the table its bottom', () => {
-			cy.on('uncaught:exception', (err, runnable) => {
+			cy.on('uncaught:exception', (err) => {
 				//* not providing a new fixture for each page, so we'll get duplicates.
 				if (err.message.includes('two children with the same key')) {
 					return false;

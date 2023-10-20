@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, current } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { BoardSetting } from '../enums/boardSetting.enum';
-import { UserMapping } from '../../models/user-mapping.if';
 import {
 	IAppCardTagSetting,
 	IAppCardTagSettings,
@@ -84,7 +83,7 @@ export const boardSettingsSlice = createSlice({
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(loadBoardSettings.pending, (state, action) => {
+			.addCase(loadBoardSettings.pending, (state) => {
 				state.loading = true;
 			})
 			.addCase(loadBoardSettings.fulfilled, (state, action) => {
@@ -105,7 +104,7 @@ export const boardSettingsSlice = createSlice({
 
 				state.loading = false;
 			})
-			.addCase(loadBoardSettings.rejected, (state, action) => {});
+			.addCase(loadBoardSettings.rejected, () => {});
 	},
 });
 

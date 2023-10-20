@@ -18,12 +18,12 @@ export default function CbqlInput() {
 					cbql: cbqlString,
 				}}
 				enableReinitialize={true}
-				validate={(values) => {}}
+				validate={() => {}}
 				onSubmit={async (values) => {
 					dispatch(setCbqlString(values.cbql));
 				}}
 			>
-				{({ values, errors, touched, handleSubmit, isSubmitting }) => (
+				{({ handleSubmit }) => (
 					<form onSubmit={handleSubmit}>
 						<div className="form-group">
 							<label>CBQL Input</label>
