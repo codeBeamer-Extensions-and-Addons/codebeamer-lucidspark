@@ -19,7 +19,7 @@ export default function CbqlToggle() {
 			<div className="ml-1" />
 			<div className="mt-1 mr-1 soft-border-left" />
 			<DefaultOverlayTrigger
-				content={advancedSearch ? 'CBQL Input' : 'Assisted Query'}
+				content={advancedSearch ? 'Assisted Query' : 'CBQL Input'}
 			>
 				<button
 					className={'mx-1 mt-1 button button-secondary button-small'}
@@ -27,6 +27,11 @@ export default function CbqlToggle() {
 					data-test="search-method"
 				>
 					{advancedSearch ? (
+						<span
+							data-test="icon-parameters"
+							className="icon icon-parameters clickable"
+						></span>
+					) : (
 						<i data-test="cbql-icon">
 							<svg
 								width="24"
@@ -45,11 +50,6 @@ export default function CbqlToggle() {
 								</text>
 							</svg>
 						</i>
-					) : (
-						<span
-							data-test="icon-parameters"
-							className="icon icon-parameters clickable"
-						></span>
 					)}
 				</button>
 			</DefaultOverlayTrigger>

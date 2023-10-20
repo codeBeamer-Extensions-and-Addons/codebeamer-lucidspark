@@ -17,6 +17,10 @@ export default function Query() {
 	return (
 		<div className="flex-row align-items-center">
 			{advancedSearch ? (
+				<div className="w-100">
+					<CbqlInput />
+				</div>
+			) : (
 				<div className="grid fade-in-quick">
 					<div className="cs1 ce3">
 						<TrackerSelect />
@@ -27,10 +31,6 @@ export default function Query() {
 					<div className="cs8 ce12 text-center active-filters-container">
 						<ActiveFilters />
 					</div>
-				</div>
-			) : (
-				<div className="w-100">
-					<CbqlInput />
 				</div>
 			)}
 			<CbqlToggle />
