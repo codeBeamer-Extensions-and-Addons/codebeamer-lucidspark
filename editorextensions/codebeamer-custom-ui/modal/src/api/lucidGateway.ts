@@ -1,4 +1,3 @@
-import { Association, ItemMetadata } from '../models/api-query-types';
 import { CodeBeamerItem } from '../models/codebeamer-item.if';
 import getItemColorField from './utils/getItemColorField';
 import { store } from '../store/store';
@@ -9,7 +8,7 @@ import { CardData } from '../models/lucidCardData';
  * Class for handling message events and callbacks.
  */
 export class MessageHandler {
-	private callbacks: ((data: any) => void)[] = [];
+	private callbacks: ((data: []) => void)[] = [];
 
 	/**
 	 * Private instance to hold the singleton instance.
@@ -46,7 +45,7 @@ export class MessageHandler {
 	 * Requests card blocks from the parent window and registers a callback to handle the response.
 	 * @param {function} callback - The callback function that will be called with the received card block data.
 	 */
-	getCardBlocks(callback: (arg0: any) => void) {
+	getCardBlocks(callback: (data: CardBlockData[]) => void) {
 		this.subscribeCallback(callback);
 
 		LucidGateway.requestCardBlockData();
@@ -56,7 +55,7 @@ export class MessageHandler {
 	 * Register a callback function to handle messages.
 	 * @param callback - The callback function to register.
 	 */
-	subscribeCallback(callback: (data: any) => void) {
+	subscribeCallback(callback: (data: []) => void) {
 		this.callbacks.push(callback);
 	}
 
@@ -64,7 +63,7 @@ export class MessageHandler {
 	 * Unregister a previously registered callback function.
 	 * @param callback - The callback function to unregister.
 	 */
-	unsubscribeCallback(callback: (data: any) => void) {
+	unsubscribeCallback(callback: (data: []) => void) {
 		const index = this.callbacks.indexOf(callback);
 		if (index !== -1) {
 			this.callbacks.splice(index, 1);
@@ -75,7 +74,7 @@ export class MessageHandler {
 	 * Notifies registered callbacks with message data.
 	 * @param data - The data received in the message.
 	 */
-	private notifyCallbacks(data: any) {
+	private notifyCallbacks(data: []) {
 		this.callbacks.forEach((callback) => callback(data));
 	}
 }
@@ -88,7 +87,25 @@ export class MessageHandler {
  */
 export interface Message {
 	action: MessageAction;
-	payload: any;
+	payload?: ImportItemPayload | UpdateCardPayload | StartImportPayload;
+}
+
+// Interface for payload specific to the IMPORT_ITEM action
+export interface ImportItemPayload {
+	importId: number;
+	cardData: CardData;
+}
+
+// Interface for payload specific to the UPDATE_CARD action
+export interface UpdateCardPayload {
+	cardData: CardData;
+	cardBlockId: string;
+}
+
+// Interface for payload specific to the START_IMPORT action
+export interface StartImportPayload {
+	id: number;
+	totalItems: number;
 }
 
 /**
@@ -101,6 +118,17 @@ export enum MessageAction {
 	CREATE_CONNECTORS = 'createConnectors',
 	START_IMPORT = 'startImport',
 	CLOSE_MODAL = 'closeModal',
+}
+
+/**
+ * Interface for card block data.
+ */
+export interface CardBlockData {
+	cardBlock: {
+		id: string;
+	};
+	codebeamerItemId: number;
+	codebeamerTrackerId: number;
 }
 
 export class LucidGateway {
@@ -138,13 +166,7 @@ export class LucidGateway {
 		});
 	}
 
-	public static async createConnectors(
-		fromCard: string,
-		toCards: number[],
-		associations: Association[],
-		existingAssociations: any[],
-		metaData: ItemMetadata[]
-	) {
+	public static async createConnectors() {
 		throw new Error('Not implemented');
 	}
 
@@ -195,7 +217,7 @@ export class LucidGateway {
 			const trackerJson = (await trackerRes.json()) as TrackerDetails;
 			item.tracker.keyName = trackerJson.keyName;
 			item.tracker.color = trackerJson.color;
-		} catch (e: any) {
+		} catch (error) {
 			const message = `Failed fetching tracker details for Item ${item.name}.`;
 			console.warn(message);
 		}
@@ -249,7 +271,6 @@ export class LucidGateway {
 	public static requestCardBlockData() {
 		this.postMessage({
 			action: MessageAction.GET_CARD_BLOCKS,
-			payload: {},
 		});
 	}
 
@@ -257,7 +278,7 @@ export class LucidGateway {
 	 * Call this function to close the modal.
 	 */
 	public static closeModal() {
-		this.postMessage({ action: MessageAction.CLOSE_MODAL, payload: {} });
+		this.postMessage({ action: MessageAction.CLOSE_MODAL });
 	}
 
 	/**
