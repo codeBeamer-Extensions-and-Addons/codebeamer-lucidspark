@@ -17,7 +17,9 @@ export default async function getRandomCoordSetPerSubject(
 	let mainSubject: string = 'default';
 	try {
 		mainSubject = item.subjects[0].name;
-	} catch (error) {}
+	} catch (error) {
+		/* empty */
+	}
 
 	let origin = subjectOriginsMap.get(mainSubject);
 	if (!origin) {
