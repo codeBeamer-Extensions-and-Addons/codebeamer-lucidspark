@@ -1,15 +1,17 @@
-import { Association, ItemMetadata } from '../models/api-query-types';
 import { CodeBeamerItem } from '../models/codebeamer-item.if';
 import getItemColorField from './utils/getItemColorField';
 import { store } from '../store/store';
 import TrackerDetails from '../models/trackerDetails.if';
 import { CardData } from '../models/lucidCardData';
+import { Association, RelationsQuery } from '../models/api-query-types';
+import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
 
 /**
  * Class for handling message events and callbacks.
  */
 export class MessageHandler {
-	private callbacks: ((data: any) => void)[] = [];
+	private callbacks: ((data: []) => void)[] = [];
 
 	/**
 	 * Private instance to hold the singleton instance.
@@ -46,7 +48,7 @@ export class MessageHandler {
 	 * Requests card blocks from the parent window and registers a callback to handle the response.
 	 * @param {function} callback - The callback function that will be called with the received card block data.
 	 */
-	getCardBlocks(callback: (arg0: any) => void) {
+	getCardBlocks(callback: (data: CardBlockData[]) => void) {
 		this.subscribeCallback(callback);
 
 		LucidGateway.requestCardBlockData();
@@ -56,7 +58,7 @@ export class MessageHandler {
 	 * Register a callback function to handle messages.
 	 * @param callback - The callback function to register.
 	 */
-	subscribeCallback(callback: (data: any) => void) {
+	subscribeCallback(callback: (data: []) => void) {
 		this.callbacks.push(callback);
 	}
 
@@ -64,7 +66,7 @@ export class MessageHandler {
 	 * Unregister a previously registered callback function.
 	 * @param callback - The callback function to unregister.
 	 */
-	unsubscribeCallback(callback: (data: any) => void) {
+	unsubscribeCallback(callback: (data: []) => void) {
 		const index = this.callbacks.indexOf(callback);
 		if (index !== -1) {
 			this.callbacks.splice(index, 1);
@@ -75,7 +77,7 @@ export class MessageHandler {
 	 * Notifies registered callbacks with message data.
 	 * @param data - The data received in the message.
 	 */
-	private notifyCallbacks(data: any) {
+	private notifyCallbacks(data: []) {
 		this.callbacks.forEach((callback) => callback(data));
 	}
 }
@@ -88,7 +90,35 @@ export class MessageHandler {
  */
 export interface Message {
 	action: MessageAction;
-	payload: any;
+	payload?:
+		| ImportItemPayload
+		| UpdateCardPayload
+		| StartImportPayload
+		| CreateLinePayload;
+}
+
+// Interface for payload specific to the IMPORT_ITEM action
+export interface ImportItemPayload {
+	importId: number;
+	cardData: CardData;
+}
+
+// Interface for payload specific to the UPDATE_CARD action
+export interface UpdateCardPayload {
+	cardData: CardData;
+	cardBlockId: string;
+}
+
+// Interface for payload specific to the CREATE_LINE action
+export interface CreateLinePayload {
+	sourceBlockId: string;
+	targetBlockId: string;
+}
+
+// Interface for payload specific to the START_IMPORT action
+export interface StartImportPayload {
+	id: number;
+	totalItems: number;
 }
 
 /**
@@ -98,9 +128,20 @@ export enum MessageAction {
 	GET_CARD_BLOCKS = 'getCardBlocks',
 	IMPORT_ITEM = 'importItem',
 	UPDATE_CARD = 'updateCard',
-	CREATE_CONNECTORS = 'createConnectors',
+	CREATE_LINE = 'createLine',
 	START_IMPORT = 'startImport',
 	CLOSE_MODAL = 'closeModal',
+}
+
+/**
+ * Interface for card block data.
+ */
+export interface CardBlockData {
+	cardBlock: {
+		id: string;
+	};
+	codebeamerItemId: number;
+	codebeamerTrackerId: number;
 }
 
 export class LucidGateway {
@@ -138,14 +179,143 @@ export class LucidGateway {
 		});
 	}
 
-	public static async createConnectors(
-		fromCard: string,
-		toCards: number[],
-		associations: Association[],
-		existingAssociations: any[],
-		metaData: ItemMetadata[]
+	public static async createLinesForDownstreamRefsAndAssociations(
+		sourceCodebeamerItemId: number,
+		importedItems: CardBlockToItemMapping[]
 	) {
-		throw new Error('Not implemented');
+		const username = store.getState().userSettings.cbUsername;
+		const password = store.getState().userSettings.cbPassword;
+
+		const requestArgs = {
+			method: 'GET',
+			headers: new Headers({
+				'Content-Type': 'text/plain',
+				Authorization: `Basic ${btoa(username + ':' + password)}`,
+			}),
+		};
+
+		const matchingImportedItems = importedItems.filter(
+			(x) => x.itemId === sourceCodebeamerItemId
+		);
+
+		try {
+			const relationsRes = await fetch(
+				`${
+					store.getState().boardSettings.cbAddress
+				}/api/v3/items/${sourceCodebeamerItemId}/relations`,
+				requestArgs
+			);
+			const relations = (await relationsRes.json()) as RelationsQuery;
+
+			const downstreamRefIds: number[] = [];
+			const associations: Association[] = [];
+			if (relations.downstreamReferences.length) {
+				relations.downstreamReferences.forEach(function (
+					downstreamReference
+				) {
+					downstreamRefIds.push(downstreamReference.itemRevision.id);
+				});
+			}
+			if (relations.outgoingAssociations.length) {
+				relations.outgoingAssociations.forEach(function (
+					outgoingAssociation
+				) {
+					const association = {
+						associationId: outgoingAssociation.id,
+						targetItemId: outgoingAssociation.itemRevision.id,
+					};
+					associations.push(association);
+				});
+			}
+
+			associations.forEach((association) => {
+				const matchingCardBlockToItemMappings = importedItems.filter(
+					(x) => x.itemId === association.targetItemId
+				);
+				matchingCardBlockToItemMappings.forEach(
+					(matchingCardBlockToItemMapping) => {
+						matchingImportedItems.forEach((importedItem) => {
+							this.createLine(
+								importedItem.cardBlockId,
+								matchingCardBlockToItemMapping.cardBlockId
+							);
+						});
+					}
+				);
+			});
+
+			downstreamRefIds.forEach((downstreamRefId) => {
+				const matchingCardBlockToItemMappings = importedItems.filter(
+					(x) => x.itemId === downstreamRefId
+				);
+
+				matchingCardBlockToItemMappings.forEach(
+					(matchingCardBlockToItemMapping) => {
+						matchingImportedItems.forEach((importedItem) => {
+							this.createLine(
+								importedItem.cardBlockId,
+								matchingCardBlockToItemMapping.cardBlockId
+							);
+						});
+					}
+				);
+			});
+		} catch (error) {
+			console.warn(
+				`Failed fetching association ${sourceCodebeamerItemId}.`
+			);
+		}
+
+		// associations.forEach(async function (association) {
+		// 	try {
+		// 		const associationRes = await fetch(
+		// 			`${
+		// 				store.getState().boardSettings.cbAddress
+		// 			}/api/v3/associations/${association.associationId}`,
+		// 			requestArgs
+		// 		);
+		// 		const associationJson =
+		// 			(await associationRes.json()) as Association;
+
+		// 		createConnector(
+		// 			startCardId,
+		// 			association.targetBlockId,
+		// 			associationJson.type.name,
+		// 			boardData,
+		// 			metadata
+		// 		);
+		// 	} catch (e: any) {
+		// 		const message = `Failed fetching association ${association.associationId}.`;
+		// 		console.warn(message);
+		// 		miro.board.notifications.showError(message);
+		// 		logError(message);
+		// 	}
+		// });
+
+		// downstreamRefIds.forEach(async function (downstreamRefId) {
+		// 	createConnector(
+		// 		startCardId,
+		// 		downstreamRefId,
+		// 		RelationshipType.DOWNSTREAM,
+		// 		boardData,
+		// 		metadata
+		// 	);
+		// });
+	}
+
+	/**
+	 * Create a line between two card blocks
+	 * @param sourceBlockId - The ID of the source card block.
+	 * @param targetBlockId - The ID of the target card block.
+	 */
+	private static async createLine(
+		sourceBlockId: string,
+		targetBlockId: string
+	) {
+		this.postMessage({
+			action: MessageAction.CREATE_LINE,
+			payload: { sourceBlockId, targetBlockId },
+		});
 	}
 
 	/**
@@ -158,7 +328,7 @@ export class LucidGateway {
 		item: CodeBeamerItem,
 		coordinates?: { x: number; y: number }
 	): Promise<CardData> {
-		let description = item.description;
+		const description = item.description;
 		const username = store.getState().userSettings.cbUsername;
 		const password = store.getState().userSettings.cbPassword;
 		const cbBaseAddress = store.getState().boardSettings.cbAddress;
@@ -195,12 +365,12 @@ export class LucidGateway {
 			const trackerJson = (await trackerRes.json()) as TrackerDetails;
 			item.tracker.keyName = trackerJson.keyName;
 			item.tracker.color = trackerJson.color;
-		} catch (e: any) {
+		} catch (error) {
 			const message = `Failed fetching tracker details for Item ${item.name}.`;
 			console.warn(message);
 		}
 
-		let cardData: CardData = {
+		const cardData: CardData = {
 			// id: item.id.toString(),
 			// title: getCardTitle(
 			// 	item.id.toString(),
@@ -218,8 +388,8 @@ export class LucidGateway {
 		if (item.storyPoints) cardData.estimate = item.storyPoints;
 
 		// background Color
-		let colorFieldValue = getItemColorField(item);
-		let backgroundColor = colorFieldValue
+		const colorFieldValue = getItemColorField(item);
+		const backgroundColor = colorFieldValue
 			? colorFieldValue
 			: item.tracker.color
 			? item.tracker.color
@@ -249,7 +419,6 @@ export class LucidGateway {
 	public static requestCardBlockData() {
 		this.postMessage({
 			action: MessageAction.GET_CARD_BLOCKS,
-			payload: {},
 		});
 	}
 
@@ -257,7 +426,7 @@ export class LucidGateway {
 	 * Call this function to close the modal.
 	 */
 	public static closeModal() {
-		this.postMessage({ action: MessageAction.CLOSE_MODAL, payload: {} });
+		this.postMessage({ action: MessageAction.CLOSE_MODAL });
 	}
 
 	/**
