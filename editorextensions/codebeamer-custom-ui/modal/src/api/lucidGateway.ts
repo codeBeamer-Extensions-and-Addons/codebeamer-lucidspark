@@ -11,6 +11,7 @@ import {
 import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
 import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
+import getCardBlockIds from './utils/getCardBlockIds';
 
 /**
  * Class for handling message events and callbacks.
@@ -201,8 +202,9 @@ export class LucidGateway {
 			}),
 		};
 
-		const matchingImportedItems = importedItems.filter(
-			(x) => x.itemId === sourceCodebeamerItemId
+		const sourceCardBlockIds = getCardBlockIds(
+			sourceCodebeamerItemId,
+			importedItems
 		);
 
 		try {
@@ -245,20 +247,20 @@ export class LucidGateway {
 				const associationJson =
 					(await associationRes.json()) as AssociationDetails;
 
-				const matchingCardBlockToItemMappings = importedItems.filter(
-					(x) => x.itemId === association.targetItemId
+				const targetCardBlockIds = getCardBlockIds(
+					association.targetItemId,
+					importedItems
 				);
-				matchingCardBlockToItemMappings.forEach(
-					(matchingCardBlockToItemMapping) => {
-						matchingImportedItems.forEach((importedItem) => {
-							this.createLine(
-								importedItem.cardBlockId,
-								matchingCardBlockToItemMapping.cardBlockId,
-								associationJson.type.name as RelationshipType
-							);
-						});
-					}
-				);
+
+				targetCardBlockIds.forEach((targetCardBlockId) => {
+					sourceCardBlockIds.forEach((sourceCardBlockId) => {
+						this.createLine(
+							sourceCardBlockId,
+							targetCardBlockId,
+							associationJson.type.name as RelationshipType
+						);
+					});
+				});
 			});
 
 			downstreamRefIds.forEach((downstreamRefId) => {
@@ -268,9 +270,9 @@ export class LucidGateway {
 
 				matchingCardBlockToItemMappings.forEach(
 					(matchingCardBlockToItemMapping) => {
-						matchingImportedItems.forEach((importedItem) => {
+						sourceCardBlockIds.forEach((sourceCardBlockId) => {
 							this.createLine(
-								importedItem.cardBlockId,
+								sourceCardBlockId,
 								matchingCardBlockToItemMapping.cardBlockId,
 								RelationshipType.DOWNSTREAM
 							);
