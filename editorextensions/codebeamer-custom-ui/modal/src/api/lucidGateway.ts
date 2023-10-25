@@ -3,9 +3,14 @@ import getItemColorField from './utils/getItemColorField';
 import { store } from '../store/store';
 import TrackerDetails from '../models/trackerDetails.if';
 import { CardData } from '../models/lucidCardData';
-import { Association, RelationsQuery } from '../models/api-query-types';
+import {
+	Association,
+	AssociationDetails,
+	RelationsQuery,
+} from '../models/api-query-types';
 import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
+import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
 
 /**
  * Class for handling message events and callbacks.
@@ -113,6 +118,8 @@ export interface UpdateCardPayload {
 export interface CreateLinePayload {
 	sourceBlockId: string;
 	targetBlockId: string;
+	relationshipType: RelationshipType;
+	lineColor: string;
 }
 
 // Interface for payload specific to the START_IMPORT action
@@ -228,7 +235,16 @@ export class LucidGateway {
 				});
 			}
 
-			associations.forEach((association) => {
+			associations.forEach(async (association) => {
+				const associationRes = await fetch(
+					`${
+						store.getState().boardSettings.cbAddress
+					}/api/v3/associations/${association.associationId}`,
+					requestArgs
+				);
+				const associationJson =
+					(await associationRes.json()) as AssociationDetails;
+
 				const matchingCardBlockToItemMappings = importedItems.filter(
 					(x) => x.itemId === association.targetItemId
 				);
@@ -237,7 +253,8 @@ export class LucidGateway {
 						matchingImportedItems.forEach((importedItem) => {
 							this.createLine(
 								importedItem.cardBlockId,
-								matchingCardBlockToItemMapping.cardBlockId
+								matchingCardBlockToItemMapping.cardBlockId,
+								associationJson.type.name as RelationshipType
 							);
 						});
 					}
@@ -254,7 +271,8 @@ export class LucidGateway {
 						matchingImportedItems.forEach((importedItem) => {
 							this.createLine(
 								importedItem.cardBlockId,
-								matchingCardBlockToItemMapping.cardBlockId
+								matchingCardBlockToItemMapping.cardBlockId,
+								RelationshipType.DOWNSTREAM
 							);
 						});
 					}
@@ -307,14 +325,23 @@ export class LucidGateway {
 	 * Create a line between two card blocks
 	 * @param sourceBlockId - The ID of the source card block.
 	 * @param targetBlockId - The ID of the target card block.
+	 * @param relationshipType - The type of relationship between the codebeamer items on the two card blocks.
 	 */
 	private static async createLine(
 		sourceBlockId: string,
-		targetBlockId: string
+		targetBlockId: string,
+		relationshipType: RelationshipType
 	) {
+		const lineColor = getColorForRelationshipType(relationshipType);
+
 		this.postMessage({
 			action: MessageAction.CREATE_LINE,
-			payload: { sourceBlockId, targetBlockId },
+			payload: {
+				sourceBlockId,
+				targetBlockId,
+				relationshipType,
+				lineColor,
+			},
 		});
 	}
 

@@ -69,7 +69,12 @@ export class ImportModal extends Modal {
 					message.payload.targetBlockId
 				);
 				if (sourceBlock && targetBlock)
-					this.createLine(sourceBlock, targetBlock);
+					this.createLine(
+						sourceBlock,
+						targetBlock,
+						message.payload.relationshipType,
+						message.payload.lineColor
+					);
 		}
 	}
 
@@ -237,9 +242,15 @@ export class ImportModal extends Modal {
 	 *
 	 * @param sourceBlock - the block to connect from
 	 * @param targetBlock - the block to connect to
+	 * @param relationshipType - the type of relationship between the two blocks
 	 */
-	private createLine(sourceBlock: BlockProxy, targetBlock: BlockProxy) {
-		sourceBlock.getPage().addLine({
+	private createLine(
+		sourceBlock: BlockProxy,
+		targetBlock: BlockProxy,
+		relationshipType: string,
+		lineColor: string
+	) {
+		const line = sourceBlock.getPage().addLine({
 			endpoint1: {
 				connection: sourceBlock,
 				linkX: 0.5,
@@ -251,6 +262,9 @@ export class ImportModal extends Modal {
 				linkY: 0,
 			},
 		});
+
+		line.addTextArea(relationshipType, { location: 0.5, side: 0 });
+		line.properties.set('LineColor', lineColor);
 	}
 
 	protected icon =
