@@ -1,4 +1,5 @@
 import {
+	BlockProxy,
 	CardBlockProxy,
 	EditorClient,
 	Modal,
@@ -60,6 +61,15 @@ export class ImportModal extends Modal {
 			case 'closeModal':
 				this.hide();
 				break;
+			case 'createLine':
+				const sourceBlock = this.getCardById(
+					message.payload.sourceBlockId
+				);
+				const targetBlock = this.getCardById(
+					message.payload.targetBlockId
+				);
+				if (sourceBlock && targetBlock)
+					this.createLine(sourceBlock, targetBlock);
 		}
 	}
 
@@ -91,8 +101,6 @@ export class ImportModal extends Modal {
 
 		if (block instanceof CardBlockProxy) {
 			this.setCardData(block, cardData);
-		} else {
-			console.warn("card block couldn't be found with id: ", cardBlockId);
 		}
 	}
 
@@ -106,6 +114,8 @@ export class ImportModal extends Modal {
 		const cardBlock = this.cardBlocks.find(
 			(cardBlock) => cardBlock.id === id
 		);
+
+		if (!cardBlock) console.error(`CardBlock with id ${id} not found`);
 
 		return cardBlock;
 	}
@@ -220,6 +230,27 @@ export class ImportModal extends Modal {
 			codebeamerTrackerId: cardBlock.shapeData.get('codebeamerTrackerId'),
 		}));
 		this.sendMessage(JSON.stringify(data));
+	}
+
+	/**
+	 * creates a line connecting two block proxies
+	 *
+	 * @param sourceBlock - the block to connect from
+	 * @param targetBlock - the block to connect to
+	 */
+	private createLine(sourceBlock: BlockProxy, targetBlock: BlockProxy) {
+		sourceBlock.getPage().addLine({
+			endpoint1: {
+				connection: sourceBlock,
+				linkX: 0.5,
+				linkY: 1,
+			},
+			endpoint2: {
+				connection: targetBlock,
+				linkX: 0.5,
+				linkY: 0,
+			},
+		});
 	}
 
 	protected icon =
