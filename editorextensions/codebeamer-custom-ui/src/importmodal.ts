@@ -2,6 +2,7 @@ import {
 	BlockProxy,
 	CardBlockProxy,
 	EditorClient,
+	LineProxy,
 	Modal,
 	Viewport,
 } from 'lucid-extension-sdk';
@@ -31,6 +32,7 @@ export class ImportModal extends Modal {
 		{ totalItems: number; initialTotalItems: number; finished: boolean }
 	> = new Map();
 	cardBlocks: CardBlockProxy[] = [];
+	lines: LineProxy[] = [];
 
 	/**
 	 * Handles messages received from the frame.
@@ -57,6 +59,9 @@ export class ImportModal extends Modal {
 				break;
 			case 'getCardBlocks':
 				this.getCardBlocks();
+				break;
+			case 'getLines':
+				this.getLines();
 				break;
 			case 'closeModal':
 				this.hide();
@@ -230,9 +235,42 @@ export class ImportModal extends Modal {
 
 		// Map the card blocks to the codebeamer item ids and send them to the modal
 		const data = cardBlocks.map((cardBlock) => ({
-			cardBlock: cardBlock,
+			cardBlockId: cardBlock.id,
 			codebeamerItemId: cardBlock.shapeData.get('codebeamerItemId'),
 			codebeamerTrackerId: cardBlock.shapeData.get('codebeamerTrackerId'),
+		}));
+		this.sendMessage(JSON.stringify(data));
+	}
+
+	/**
+	 * Retrieves and sends the list of Lines to the modal.
+	 */
+	private getLines(): void {
+		const lines = this.viewport
+			.getCurrentPage()
+			?.allLines.filter(
+				(line) => line instanceof LineProxy
+			) as LineProxy[];
+
+		// Save lines to the class to be able to access them later
+		this.lines = lines;
+
+		// Filter out lines that are not connected to card blocks
+		const linesConnectedToCardBlocks = lines.filter((line) => {
+			const sourceBlock = line.getUpstreamConnection();
+			const targetBlock = line.getDownstreamConnection();
+			return (
+				sourceBlock instanceof CardBlockProxy &&
+				targetBlock instanceof CardBlockProxy
+			);
+		});
+
+		// Map the lines to the card block ids and send them to the modal
+		const data = linesConnectedToCardBlocks.map((line) => ({
+			lineId: line.id,
+			sourceBlockId: (line.getUpstreamConnection() as CardBlockProxy).id,
+			targetBlockId: (line.getDownstreamConnection() as CardBlockProxy)
+				.id,
 		}));
 		this.sendMessage(JSON.stringify(data));
 	}

@@ -61,6 +61,16 @@ export class MessageHandler {
 	}
 
 	/**
+	 * Requests lines from the parent window and registers a callback to handle the response.
+	 * @param {function} callback - The callback function that will be called with the received line data.
+	 */
+	getLines(callback: (data: LineData[]) => void) {
+		this.subscribeCallback(callback);
+
+		LucidGateway.requestLineData();
+	}
+
+	/**
 	 * Register a callback function to handle messages.
 	 * @param callback - The callback function to register.
 	 */
@@ -134,6 +144,7 @@ export interface StartImportPayload {
  */
 export enum MessageAction {
 	GET_CARD_BLOCKS = 'getCardBlocks',
+	GET_LINES = 'getLines',
 	IMPORT_ITEM = 'importItem',
 	UPDATE_CARD = 'updateCard',
 	CREATE_LINE = 'createLine',
@@ -145,11 +156,18 @@ export enum MessageAction {
  * Interface for card block data.
  */
 export interface CardBlockData {
-	cardBlock: {
-		id: string;
-	};
+	cardBlockId: string;
 	codebeamerItemId: number;
 	codebeamerTrackerId: number;
+}
+
+/**
+ * Interface for line data
+ */
+export interface LineData {
+	lineId: string;
+	sourceBlockId: string;
+	targetBlockId: string;
 }
 
 export class LucidGateway {
@@ -285,42 +303,6 @@ export class LucidGateway {
 				`Failed fetching association ${sourceCodebeamerItemId}.`
 			);
 		}
-
-		// associations.forEach(async function (association) {
-		// 	try {
-		// 		const associationRes = await fetch(
-		// 			`${
-		// 				store.getState().boardSettings.cbAddress
-		// 			}/api/v3/associations/${association.associationId}`,
-		// 			requestArgs
-		// 		);
-		// 		const associationJson =
-		// 			(await associationRes.json()) as Association;
-
-		// 		createConnector(
-		// 			startCardId,
-		// 			association.targetBlockId,
-		// 			associationJson.type.name,
-		// 			boardData,
-		// 			metadata
-		// 		);
-		// 	} catch (e: any) {
-		// 		const message = `Failed fetching association ${association.associationId}.`;
-		// 		console.warn(message);
-		// 		miro.board.notifications.showError(message);
-		// 		logError(message);
-		// 	}
-		// });
-
-		// downstreamRefIds.forEach(async function (downstreamRefId) {
-		// 	createConnector(
-		// 		startCardId,
-		// 		downstreamRefId,
-		// 		RelationshipType.DOWNSTREAM,
-		// 		boardData,
-		// 		metadata
-		// 	);
-		// });
 	}
 
 	/**
@@ -448,6 +430,15 @@ export class LucidGateway {
 	public static requestCardBlockData() {
 		this.postMessage({
 			action: MessageAction.GET_CARD_BLOCKS,
+		});
+	}
+
+	/**
+	 * Request line data from the parent window.
+	 */
+	public static requestLineData() {
+		this.postMessage({
+			action: MessageAction.GET_LINES,
 		});
 	}
 
