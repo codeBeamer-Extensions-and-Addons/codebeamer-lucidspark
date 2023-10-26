@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
-import { MessageHandler } from '../api/lucidGateway';
+import { MessageHandler, CardBlockData } from '../api/lucidGateway';
 
 /**
  * Queries the CardBlocks present on the Lucid board
@@ -18,14 +18,14 @@ export const useImportedItems = () => {
 	 * This does mean that this plugin is currently not 100% compatible with others that would create Card Blocks.
 	 */
 	React.useEffect(() => {
-		const handleCardBlocksData = (data: any) => {
+		const handleCardBlocksData = (data: CardBlockData[]) => {
 			const cardBlockCodebeamerItemIdPairs = data.map(
 				(x: {
-					cardBlock: { id: string };
+					cardBlockId: string;
 					codebeamerItemId: number;
 					codebeamerTrackerId: number;
 				}) => ({
-					cardBlockId: x.cardBlock.id,
+					cardBlockId: x.cardBlockId,
 					itemId: x.codebeamerItemId,
 					trackerId: x.codebeamerTrackerId,
 				})
