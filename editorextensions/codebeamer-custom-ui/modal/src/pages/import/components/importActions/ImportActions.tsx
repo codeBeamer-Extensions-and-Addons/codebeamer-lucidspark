@@ -1,5 +1,4 @@
 import React from 'react';
-import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 
 import './importActions.css';
 
@@ -8,9 +7,11 @@ export default function ImportActions(props: {
 	totalCount: number;
 	importedItemsCount: number;
 	unImportedItemsCount: number;
-	onImportSelected: Function;
-	onImportAll: Function;
-	onSync: Function;
+	relationsCount: number;
+	onImportSelected: () => void;
+	onImportAll: () => void;
+	onSync: () => void;
+	onRelations: () => void;
 }) {
 	return (
 		<div className="w-100 flex-row">
@@ -64,6 +65,15 @@ export default function ImportActions(props: {
 			>
 				<span className="icon icon-refresh mr-1 pos-adjusted-down"></span>
 				Sync ({props.importedItemsCount})
+			</button>
+			<button
+				className="button button-secondary button-small flex flex-centered"
+				disabled={props.relationsCount == 0}
+				data-test="relations"
+				onClick={() => props.onRelations()}
+			>
+				<span className="icon icon-arrow-line-shape mr-1 pos-adjusted-down"></span>
+				Show Relations & Associations ({props.relationsCount})
 			</button>
 		</div>
 	);

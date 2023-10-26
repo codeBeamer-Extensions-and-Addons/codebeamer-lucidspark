@@ -1,17 +1,19 @@
 import { AppData } from '@mirohq/websdk-types';
+import { CodeBeamerItem } from './codebeamer-item.if';
+import TrackerDetails from './trackerDetails.if';
 
 export interface ItemQueryPage {
 	page: number;
 	pageSize: number;
 	total: number;
-	items: any[];
+	items: CodeBeamerItem[];
 }
 
 export interface TrackerSearchPage {
 	page: number;
 	pageSize: number;
 	total: number;
-	trackers: any[];
+	trackers: TrackerDetails[];
 }
 
 export interface UserQueryPage {

@@ -15,6 +15,8 @@ import Updater from '../updater/Updater';
 
 import './queryResults.css';
 import { useImportedItems } from '../../../../hooks/useImportedItems';
+import { useLines } from '../../../../hooks/useLines';
+import { LucidGateway } from '../../../../api/lucidGateway';
 
 export default function QueryResults() {
 	const [page, setPage] = useState(DEFAULT_RESULT_PAGE);
@@ -23,8 +25,6 @@ export default function QueryResults() {
 	const [eos, setEos] = useState(false);
 	const [importing, setImporting] = useState(false);
 	const [synchronizing, setSynchronizing] = useState(false);
-
-	const importedItems = useImportedItems();
 
 	const intersectionObserverOptions = {
 		root: document.getElementById('queryResultsContainer'),
@@ -57,6 +57,9 @@ export default function QueryResults() {
 		pageSize: DEFAULT_ITEMS_PER_PAGE,
 		queryString: cbqlString,
 	});
+
+	const { importedItems, relations } = useImportedItems(trackerId);
+	const lines = useLines();
 
 	/**
 	 * Fetches items indirectly by increasing the observed {@link page} variable.
@@ -151,6 +154,16 @@ export default function QueryResults() {
 		setSynchronizing(true);
 	};
 
+	const handleRelations = () => {
+		data?.items.forEach(async (item) => {
+			await LucidGateway.createLinesForDownstreamRefsAndAssociations(
+				item.id,
+				importedItems
+			);
+		});
+		LucidGateway.closeModal();
+	};
+
 	//just to debug with
 	const closeModalDebugOnly = () => {
 		setImporting(false);
@@ -241,6 +254,7 @@ export default function QueryResults() {
 					onImportSelected={handleImportSelected}
 					onImportAll={handleImportAll}
 					onSync={handleSync}
+					onRelations={handleRelations}
 					importedItemsCount={importedItems.length}
 					unImportedItemsCount={
 						(data?.total ?? 0) -
@@ -252,6 +266,15 @@ export default function QueryResults() {
 								) == index
 							);
 						}).length ?? 0)
+					}
+					relationsCount={
+						relations.reduce((acc, curr) => {
+							return (
+								acc +
+								curr.downstreamReferences.length +
+								curr.outgoingAssociations.length
+							);
+						}, 0) ?? 0
 					}
 				/>
 				{importing && (

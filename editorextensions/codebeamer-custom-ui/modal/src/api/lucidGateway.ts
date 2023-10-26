@@ -94,7 +94,10 @@ export class MessageHandler {
 	 * @param data - The data received in the message.
 	 */
 	private notifyCallbacks(data: []) {
-		this.callbacks.forEach((callback) => callback(data));
+		this.callbacks.forEach((callback) => {
+			callback(data);
+			this.unsubscribeCallback(callback);
+		});
 	}
 }
 
