@@ -8,6 +8,7 @@ import { getStore } from '../../../../store/store';
 import QueryResults from './QueryResults';
 import query_multi_page from '../../../../../cypress/fixtures/query_multi-page.json';
 import query_multi_page_2 from '../../../../../cypress/fixtures/query_multi-page_2.json';
+import associationDetails from '../../../../../cypress/fixtures/associationDetails.json';
 
 describe('<QueryResults>', () => {
 	it('mounts', () => {
@@ -133,7 +134,7 @@ describe('<QueryResults>', () => {
 			.should('equal', expectedQueryString);
 	});
 
-	it('passes the count of tracker items that have not been imported yet to the Import All button', () => {
+	it('passes the count of tracker items that have not been imported yet to the "Import All" button', () => {
 		const mockImportedItems = [
 			{
 				cardBlock: { id: '1' },
@@ -230,6 +231,71 @@ describe('<QueryResults>', () => {
 		cy.getBySel('importAll').should(
 			'have.text',
 			`Import all (${expectedCount})`
+		);
+	});
+
+	it('passed the count of relations and associtions that have not been visualized yet to the "Relation & Association Visualization" button', () => {
+		const mockLines = [
+			{
+				id: '1',
+				sourceBlockId: '1',
+				targetBlockId: '2',
+			},
+		];
+		const mockImportedItems = [
+			{
+				cardBlockId: '1',
+				codebeamerItemId: 1599513,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlockId: '2',
+				codebeamerItemId: 1599512,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlockId: '3',
+				codebeamerItemId: 1599511,
+				codebeamerTrackerId: 4877085,
+			},
+		];
+
+		cy.stub(window.parent, 'postMessage')
+			.as('postMessageStub')
+			.callsFake((message) => {
+				if (message.action === 'getCardBlocks') {
+					// Handle GET_CARD_BLOCKS action
+					window.postMessage(JSON.stringify(mockImportedItems), '*');
+				} else if (message.action === 'getLines') {
+					// Handle GET_LINES action
+					window.postMessage(JSON.stringify(mockLines), '*');
+				}
+			});
+
+		const store = getStore();
+		store.dispatch(setTrackerId('4877085'));
+
+		cy.intercept('POST', `**/api/v3/items/query`, {
+			fixture: 'query_multi-page.json',
+		}).as('itemQuery');
+
+		cy.intercept('GET', `**/api/v3/items/1599513/relations`, {
+			fixture: 'itemRelationsForRelationsButton.json',
+		}).as('relationQuery');
+
+		cy.intercept('GET', `**/api/v3/associations/*`, {
+			fixture: 'associationDetails.json',
+		}).as('associationDetailsQuery');
+
+		cy.mountWithStore(<QueryResults />, { reduxStore: store });
+
+		// only the first item with id: 1599513 receives data from the fixture, looking into the fixture, it has two outgoingAssociations
+		// one of which is mocked in the mockLines array which means there is one more outgoingAssociation that doesn't have a line yet
+		const expectedMissingRelationsCount = 1;
+
+		cy.getBySel('relations').should(
+			'have.text',
+			`Show Relations & Associations (${expectedMissingRelationsCount})`
 		);
 	});
 
