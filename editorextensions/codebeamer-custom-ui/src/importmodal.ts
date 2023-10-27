@@ -63,6 +63,9 @@ export class ImportModal extends Modal {
 			case 'getLines':
 				this.getLines();
 				break;
+			case 'deleteLine':
+				this.deleteLine(message.payload.lineId);
+				break;
 			case 'closeModal':
 				this.hide();
 				break;
@@ -267,12 +270,21 @@ export class ImportModal extends Modal {
 
 		// Map the lines to the card block ids and send them to the modal
 		const data = linesConnectedToCardBlocks.map((line) => ({
-			lineId: line.id,
+			id: line.id,
 			sourceBlockId: (line.getUpstreamConnection() as CardBlockProxy).id,
 			targetBlockId: (line.getDownstreamConnection() as CardBlockProxy)
 				.id,
 		}));
 		this.sendMessage(JSON.stringify(data));
+	}
+
+	/**
+	 * Deletes a line by id
+	 * @param lineId - the id of the line to delete
+	 */
+	private deleteLine(lineId: string): void {
+		const line = this.lines.find((line) => line.id === lineId);
+		if (line) line.delete();
 	}
 
 	/**

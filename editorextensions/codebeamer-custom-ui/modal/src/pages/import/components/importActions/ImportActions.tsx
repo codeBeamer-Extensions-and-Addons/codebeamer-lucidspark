@@ -8,6 +8,7 @@ export default function ImportActions(props: {
 	importedItemsCount: number;
 	unImportedItemsCount: number;
 	relationsCount: number;
+	missingRelationsCount: number;
 	onImportSelected: () => void;
 	onImportAll: () => void;
 	onSync: () => void;
@@ -73,7 +74,9 @@ export default function ImportActions(props: {
 				onClick={() => props.onRelations()}
 			>
 				<span className="icon icon-arrow-line-shape mr-1 pos-adjusted-down"></span>
-				Show Relations & Associations ({props.relationsCount})
+				{props.relationsCount > 0 && props.missingRelationsCount == 0
+					? `Hide Relations & Associations (${props.relationsCount})`
+					: `Show Relations & Associations (${props.missingRelationsCount})`}
 			</button>
 		</div>
 	);

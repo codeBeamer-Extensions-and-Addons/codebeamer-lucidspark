@@ -169,13 +169,30 @@ export default function QueryResults() {
 
 	const handleRelations = () => {
 		const missingRelations = getMissingRelations();
-		missingRelations.forEach((relation) => {
-			LucidGateway.createLine(
-				relation.sourceBlockId,
-				relation.targetBlockId,
-				relation.type
-			);
-		});
+
+		if (missingRelations.length > 0) {
+			missingRelations.forEach((relation) => {
+				LucidGateway.createLine(
+					relation.sourceBlockId,
+					relation.targetBlockId,
+					relation.type
+				);
+			});
+		} else {
+			const linesToBeDeleted = lines.filter((line) => {
+				return relations.find((relation) => {
+					return (
+						line.sourceBlockId == relation.sourceBlockId &&
+						line.targetBlockId == relation.targetBlockId
+					);
+				});
+			});
+
+			linesToBeDeleted.forEach((line) => {
+				LucidGateway.deleteLine(line.id);
+			});
+		}
+
 		LucidGateway.closeModal();
 	};
 
@@ -282,7 +299,8 @@ export default function QueryResults() {
 							);
 						}).length ?? 0)
 					}
-					relationsCount={getMissingRelations().length}
+					relationsCount={relations.length}
+					missingRelationsCount={getMissingRelations().length}
 				/>
 				{importing && (
 					<Importer

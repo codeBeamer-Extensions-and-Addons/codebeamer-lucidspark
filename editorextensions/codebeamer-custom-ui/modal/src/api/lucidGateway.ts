@@ -3,15 +3,8 @@ import getItemColorField from './utils/getItemColorField';
 import { store } from '../store/store';
 import TrackerDetails from '../models/trackerDetails.if';
 import { CardData } from '../models/lucidCardData';
-import {
-	Association,
-	AssociationDetails,
-	RelationsQuery,
-} from '../models/api-query-types';
-import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
 import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
-import getCardBlockIds from './utils/getCardBlockIds';
 
 /**
  * Class for handling message events and callbacks.
@@ -113,7 +106,8 @@ export interface Message {
 		| ImportItemPayload
 		| UpdateCardPayload
 		| StartImportPayload
-		| CreateLinePayload;
+		| CreateLinePayload
+		| DeleteLinePayload;
 }
 
 // Interface for payload specific to the IMPORT_ITEM action
@@ -136,6 +130,11 @@ export interface CreateLinePayload {
 	lineColor: string;
 }
 
+// Interface for payload specific to the DELETE_LINE action
+export interface DeleteLinePayload {
+	lineId: string;
+}
+
 // Interface for payload specific to the START_IMPORT action
 export interface StartImportPayload {
 	id: number;
@@ -151,6 +150,7 @@ export enum MessageAction {
 	IMPORT_ITEM = 'importItem',
 	UPDATE_CARD = 'updateCard',
 	CREATE_LINE = 'createLine',
+	DELETE_LINE = 'deleteLine',
 	START_IMPORT = 'startImport',
 	CLOSE_MODAL = 'closeModal',
 }
@@ -168,9 +168,18 @@ export interface CardBlockData {
  * Interface for line data
  */
 export interface LineData {
-	lineId: string;
+	id: string;
 	sourceBlockId: string;
 	targetBlockId: string;
+}
+
+/**
+ * Structure of a Relation with the specific block ids
+ */
+export interface BlockRelation {
+	sourceBlockId: string;
+	targetBlockId: string;
+	type: RelationshipType;
 }
 
 export class LucidGateway {
@@ -342,6 +351,16 @@ export class LucidGateway {
 	public static requestLineData() {
 		this.postMessage({
 			action: MessageAction.GET_LINES,
+		});
+	}
+
+	/**
+	 * Delete a line by id
+	 */
+	public static deleteLine(lineId: string) {
+		this.postMessage({
+			action: MessageAction.DELETE_LINE,
+			payload: { lineId },
 		});
 	}
 

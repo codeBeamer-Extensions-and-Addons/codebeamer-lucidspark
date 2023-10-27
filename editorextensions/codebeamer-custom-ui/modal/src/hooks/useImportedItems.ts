@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
-import { MessageHandler, CardBlockData } from '../api/lucidGateway';
-import { store } from '../store/store';
 import {
-	RelationsQuery,
+	MessageHandler,
+	CardBlockData,
 	BlockRelation,
-	AssociationDetails,
-} from '../models/api-query-types';
+} from '../api/lucidGateway';
+import { store } from '../store/store';
+import { RelationsQuery, AssociationDetails } from '../models/api-query-types';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
 
 /**

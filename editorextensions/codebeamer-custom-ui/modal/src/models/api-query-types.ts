@@ -87,15 +87,6 @@ export interface ItemRelation {
 	type: string;
 }
 
-/**
- * Structure of a Relation with the specific block ids
- */
-export interface BlockRelation {
-	sourceBlockId: string;
-	targetBlockId: string;
-	type: RelationshipType;
-}
-
 export interface AssociationDetails {
 	id: number;
 	description: string;
