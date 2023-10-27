@@ -189,8 +189,8 @@ describe('<ImportActions>', () => {
 			});
 		});
 
-		context('Relations & Association Visualization', () => {
-			it('displays the amount of missing relations on the "Relations & Association Visualization" button', () => {
+		context('Relation & Association Visualization', () => {
+			it('displays the amount of missing relations on the "Relation & Association Visualization" button', () => {
 				const relations = [
 					{
 						sourceBlockId: '1',
@@ -230,7 +230,7 @@ describe('<ImportActions>', () => {
 				);
 			});
 
-			it('disabled the "Relations & Association Visualization" button if no relations exist', () => {
+			it('disabled the "Relation & Association Visualization" button if no relations exist', () => {
 				const relations = [];
 
 				cy.mount(
@@ -251,7 +251,7 @@ describe('<ImportActions>', () => {
 				cy.getBySel('relations').should('be.disabled');
 			});
 
-			it('displays "Show" on the "Relations & Association Visualization" button if missing relations exists', () => {
+			it('displays "Show" on the "Relation & Association Visualization" button if missing relations exists', () => {
 				const relations = [
 					{
 						sourceBlockId: '1',
@@ -288,7 +288,7 @@ describe('<ImportActions>', () => {
 				cy.getBySel('relations').should('contain.text', 'Show');
 			});
 
-			it('displays "Hide" on the "Relations & Association Visualization" button if there are no missing relations', () => {
+			it('displays "Hide" on the "Relation & Association Visualization" button if there are no missing relations', () => {
 				const relations = [
 					{
 						sourceBlockId: '1',
