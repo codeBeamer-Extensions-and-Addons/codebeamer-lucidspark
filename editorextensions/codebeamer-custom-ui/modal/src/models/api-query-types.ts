@@ -1,6 +1,7 @@
 import { AppData } from '@mirohq/websdk-types';
 import { CodeBeamerItem } from './codebeamer-item.if';
 import TrackerDetails from './trackerDetails.if';
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
 
 export interface ItemQueryPage {
 	page: number;
@@ -87,11 +88,12 @@ export interface ItemRelation {
 }
 
 /**
- * Structure of an Association
+ * Structure of a Relation with the specific block ids
  */
-export interface Association {
-	associationId: number;
-	targetItemId: number;
+export interface BlockRelation {
+	sourceBlockId: string;
+	targetBlockId: string;
+	type: RelationshipType;
 }
 
 export interface AssociationDetails {

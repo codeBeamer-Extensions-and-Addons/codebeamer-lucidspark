@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
 import { MessageHandler, CardBlockData } from '../api/lucidGateway';
 import { store } from '../store/store';
-import { RelationsQuery } from '../models/api-query-types';
+import {
+	RelationsQuery,
+	BlockRelation,
+	AssociationDetails,
+} from '../models/api-query-types';
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
 
 /**
  * Queries the CardBlocks present on the Lucid board
@@ -12,7 +17,7 @@ export const useImportedItems = (trackerId: string) => {
 	const [importedItems, setImportedItems] = useState<
 		CardBlockToItemMapping[]
 	>([]);
-	const [relations, setRelations] = useState<RelationsQuery[]>([]);
+	const [relations, setRelations] = useState<BlockRelation[]>([]);
 
 	const username = store.getState().userSettings.cbUsername;
 	const password = store.getState().userSettings.cbPassword;
@@ -52,20 +57,57 @@ export const useImportedItems = (trackerId: string) => {
 					(i) => i.trackerId == Number(trackerId)
 				);
 
-			const relations = await Promise.all(
-				importedItemsForTracker.map(async (item) => {
-					const relationsRes = await fetch(
-						`${
-							store.getState().boardSettings.cbAddress
-						}/api/v3/items/${item.itemId}/relations`,
-						requestArgs
+			importedItemsForTracker.forEach(async (item) => {
+				const relationsRes = await fetch(
+					`${store.getState().boardSettings.cbAddress}/api/v3/items/${
+						item.itemId
+					}/relations`,
+					requestArgs
+				);
+				const relationsQuery =
+					(await relationsRes.json()) as RelationsQuery;
+
+				// Iterate through the downstreamReferences and outgoingAssociations arrays
+				[
+					...relationsQuery.downstreamReferences,
+					...relationsQuery.outgoingAssociations,
+				].forEach((relation) => {
+					const targetItemId = relation.itemRevision.id;
+
+					const targetItems = importedItemsForTracker.filter(
+						(item) => item.itemId === targetItemId
 					);
-					const relations =
-						(await relationsRes.json()) as RelationsQuery;
-					return relations;
-				})
-			);
-			setRelations(relations);
+					targetItems.forEach(async (targetItem) => {
+						let relationshipType = RelationshipType.DOWNSTREAM;
+
+						if (
+							relation.type === 'OutgoingTrackerItemAssociation'
+						) {
+							const associationRes = await fetch(
+								`${
+									store.getState().boardSettings.cbAddress
+								}/api/v3/associations/${relation.id}`,
+								requestArgs
+							);
+							const associationJson =
+								(await associationRes.json()) as AssociationDetails;
+
+							relationshipType = associationJson.type
+								.name as RelationshipType;
+						}
+
+						const blockRelation = {
+							sourceBlockId: item.cardBlockId,
+							targetBlockId: targetItem.cardBlockId,
+							type: relationshipType,
+						};
+						setRelations((relations) => [
+							...relations,
+							blockRelation,
+						]);
+					});
+				});
+			});
 		};
 
 		messageHandler.getCardBlocks(handleCardBlocksData);

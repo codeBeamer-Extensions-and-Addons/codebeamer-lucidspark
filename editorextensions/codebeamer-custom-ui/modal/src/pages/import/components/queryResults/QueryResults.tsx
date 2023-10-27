@@ -61,6 +61,19 @@ export default function QueryResults() {
 	const { importedItems, relations } = useImportedItems(trackerId);
 	const lines = useLines();
 
+	const getMissingRelations = () => {
+		const missingRelations = relations.filter((relation) => {
+			return !lines.find((line) => {
+				return (
+					line.sourceBlockId == relation.sourceBlockId &&
+					line.targetBlockId == relation.targetBlockId
+				);
+			});
+		});
+
+		return missingRelations;
+	};
+
 	/**
 	 * Fetches items indirectly by increasing the observed {@link page} variable.
 	 * Also updates {@link eos}, terminating fetches when it's reached.
@@ -155,10 +168,12 @@ export default function QueryResults() {
 	};
 
 	const handleRelations = () => {
-		data?.items.forEach(async (item) => {
-			await LucidGateway.createLinesForDownstreamRefsAndAssociations(
-				item.id,
-				importedItems
+		const missingRelations = getMissingRelations();
+		missingRelations.forEach((relation) => {
+			LucidGateway.createLine(
+				relation.sourceBlockId,
+				relation.targetBlockId,
+				relation.type
 			);
 		});
 		LucidGateway.closeModal();
@@ -267,15 +282,7 @@ export default function QueryResults() {
 							);
 						}).length ?? 0)
 					}
-					relationsCount={
-						relations.reduce((acc, curr) => {
-							return (
-								acc +
-								curr.downstreamReferences.length +
-								curr.outgoingAssociations.length
-							);
-						}, 0) ?? 0
-					}
+					relationsCount={getMissingRelations().length}
 				/>
 				{importing && (
 					<Importer

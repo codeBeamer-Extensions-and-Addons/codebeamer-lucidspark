@@ -208,113 +208,13 @@ export class LucidGateway {
 		});
 	}
 
-	public static async createLinesForDownstreamRefsAndAssociations(
-		sourceCodebeamerItemId: number,
-		importedItems: CardBlockToItemMapping[]
-	) {
-		const username = store.getState().userSettings.cbUsername;
-		const password = store.getState().userSettings.cbPassword;
-
-		const requestArgs = {
-			method: 'GET',
-			headers: new Headers({
-				'Content-Type': 'text/plain',
-				Authorization: `Basic ${btoa(username + ':' + password)}`,
-			}),
-		};
-
-		const sourceCardBlockIds = getCardBlockIds(
-			sourceCodebeamerItemId,
-			importedItems
-		);
-
-		try {
-			const relationsRes = await fetch(
-				`${
-					store.getState().boardSettings.cbAddress
-				}/api/v3/items/${sourceCodebeamerItemId}/relations`,
-				requestArgs
-			);
-			const relations = (await relationsRes.json()) as RelationsQuery;
-
-			const downstreamRefIds: number[] = [];
-			const associations: Association[] = [];
-			if (relations.downstreamReferences.length) {
-				relations.downstreamReferences.forEach(function (
-					downstreamReference
-				) {
-					downstreamRefIds.push(downstreamReference.itemRevision.id);
-				});
-			}
-			if (relations.outgoingAssociations.length) {
-				relations.outgoingAssociations.forEach(function (
-					outgoingAssociation
-				) {
-					const association = {
-						associationId: outgoingAssociation.id,
-						targetItemId: outgoingAssociation.itemRevision.id,
-					};
-					associations.push(association);
-				});
-			}
-
-			associations.forEach(async (association) => {
-				const associationRes = await fetch(
-					`${
-						store.getState().boardSettings.cbAddress
-					}/api/v3/associations/${association.associationId}`,
-					requestArgs
-				);
-				const associationJson =
-					(await associationRes.json()) as AssociationDetails;
-
-				const targetCardBlockIds = getCardBlockIds(
-					association.targetItemId,
-					importedItems
-				);
-
-				targetCardBlockIds.forEach((targetCardBlockId) => {
-					sourceCardBlockIds.forEach((sourceCardBlockId) => {
-						this.createLine(
-							sourceCardBlockId,
-							targetCardBlockId,
-							associationJson.type.name as RelationshipType
-						);
-					});
-				});
-			});
-
-			downstreamRefIds.forEach((downstreamRefId) => {
-				const matchingCardBlockToItemMappings = importedItems.filter(
-					(x) => x.itemId === downstreamRefId
-				);
-
-				matchingCardBlockToItemMappings.forEach(
-					(matchingCardBlockToItemMapping) => {
-						sourceCardBlockIds.forEach((sourceCardBlockId) => {
-							this.createLine(
-								sourceCardBlockId,
-								matchingCardBlockToItemMapping.cardBlockId,
-								RelationshipType.DOWNSTREAM
-							);
-						});
-					}
-				);
-			});
-		} catch (error) {
-			console.warn(
-				`Failed fetching association ${sourceCodebeamerItemId}.`
-			);
-		}
-	}
-
 	/**
 	 * Create a line between two card blocks
 	 * @param sourceBlockId - The ID of the source card block.
 	 * @param targetBlockId - The ID of the target card block.
 	 * @param relationshipType - The type of relationship between the codebeamer items on the two card blocks.
 	 */
-	private static async createLine(
+	public static async createLine(
 		sourceBlockId: string,
 		targetBlockId: string,
 		relationshipType: RelationshipType
