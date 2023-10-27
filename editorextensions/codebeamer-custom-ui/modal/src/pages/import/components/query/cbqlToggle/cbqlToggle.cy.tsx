@@ -12,29 +12,29 @@ describe('<CbqlToggle>', () => {
 		cy.mountWithStore(<CbqlToggle />);
 	});
 
-	it('displays the "Query Assistant" button by default', () => {
+	it('displays the "CBQL" button by default', () => {
 		cy.mountWithStore(<CbqlToggle />);
 
-		cy.getBySel(queryAssistant).should('exist');
+		cy.getBySel(cbqlIconSelector).should('exist');
 	});
 
 	describe('with cached setting', () => {
-		it('displays "CBQL" when "Advanced Search" is enabled in cache', () => {
+		it('displays "Query Assistant" when "Advanced Search" is enabled in cache', () => {
 			const store = getStore();
 			store.dispatch(setAdvancedSearch(true));
 
 			cy.mountWithStore(<CbqlToggle />, { reduxStore: store });
 
-			cy.getBySel(cbqlIconSelector).should('exist');
+			cy.getBySel(queryAssistant).should('exist');
 		});
 
-		it('displays "Query Assistant" when "Advanced Search" is disabled in cache', () => {
+		it('displays "CBQL" when "Advanced Search" is disabled in cache', () => {
 			const store = getStore();
 			store.dispatch(setAdvancedSearch(false));
 
 			cy.mountWithStore(<CbqlToggle />, { reduxStore: store });
 
-			cy.getBySel(queryAssistant).should('exist');
+			cy.getBySel(cbqlIconSelector).should('exist');
 		});
 	});
 
