@@ -37,6 +37,7 @@ export const useImportedItems = (trackerId: string) => {
 	 * This does mean that this plugin is currently not 100% compatible with others that would create Card Blocks.
 	 */
 	React.useEffect(() => {
+		setRelations([]);
 		const handleCardBlocksData = async (data: CardBlockData[]) => {
 			const cardBlockCodebeamerItemIdPairs = data.map(
 				(x: {
@@ -74,7 +75,7 @@ export const useImportedItems = (trackerId: string) => {
 				].forEach((relation) => {
 					const targetItemId = relation.itemRevision.id;
 
-					const targetItems = importedItemsForTracker.filter(
+					const targetItems = cardBlockCodebeamerItemIdPairs.filter(
 						(item) => item.itemId === targetItemId
 					);
 					targetItems.forEach(async (targetItem) => {
@@ -111,7 +112,7 @@ export const useImportedItems = (trackerId: string) => {
 		};
 
 		messageHandler.getCardBlocks(handleCardBlocksData);
-	}, []);
+	}, [trackerId]);
 
 	return { importedItems, relations };
 };
