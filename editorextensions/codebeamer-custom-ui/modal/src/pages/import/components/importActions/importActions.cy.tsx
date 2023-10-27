@@ -13,6 +13,9 @@ describe('<ImportActions>', () => {
 				onSync={() => {}}
 				importedItemsCount={0}
 				unImportedItemsCount={0}
+				onRelations={() => {}}
+				relationsCount={0}
+				missingRelationsCount={0}
 			/>
 		);
 	});
@@ -28,6 +31,9 @@ describe('<ImportActions>', () => {
 					onSync={() => {}}
 					importedItemsCount={0}
 					unImportedItemsCount={0}
+					onRelations={() => {}}
+					relationsCount={0}
+					missingRelationsCount={0}
 				/>
 			);
 
@@ -47,6 +53,9 @@ describe('<ImportActions>', () => {
 					onSync={() => {}}
 					importedItemsCount={0}
 					unImportedItemsCount={0}
+					onRelations={() => {}}
+					relationsCount={0}
+					missingRelationsCount={0}
 				/>
 			);
 
@@ -63,6 +72,9 @@ describe('<ImportActions>', () => {
 					onSync={() => {}}
 					importedItemsCount={0}
 					unImportedItemsCount={15}
+					onRelations={() => {}}
+					relationsCount={0}
+					missingRelationsCount={0}
 				/>
 			);
 
@@ -81,6 +93,9 @@ describe('<ImportActions>', () => {
 					onSync={() => {}}
 					importedItemsCount={0}
 					unImportedItemsCount={0}
+					onRelations={() => {}}
+					relationsCount={0}
+					missingRelationsCount={0}
 				/>
 			);
 
@@ -107,6 +122,9 @@ describe('<ImportActions>', () => {
 					onSync={() => {}}
 					importedItemsCount={0}
 					unImportedItemsCount={items.length}
+					onRelations={() => {}}
+					relationsCount={0}
+					missingRelationsCount={0}
 				/>
 			);
 
@@ -132,6 +150,9 @@ describe('<ImportActions>', () => {
 						onSync={() => {}}
 						importedItemsCount={items.length}
 						unImportedItemsCount={0}
+						onRelations={() => {}}
+						relationsCount={0}
+						missingRelationsCount={0}
 					/>
 				);
 
@@ -156,10 +177,191 @@ describe('<ImportActions>', () => {
 						onSync={handler}
 						importedItemsCount={items.length}
 						unImportedItemsCount={0}
+						onRelations={() => {}}
+						relationsCount={0}
+						missingRelationsCount={0}
 					/>
 				);
 
 				cy.getBySel('sync').click();
+
+				cy.get('@handler').should('have.been.calledOnce');
+			});
+		});
+
+		context('Relations & Association Visualization', () => {
+			it('displays the amount of missing relations on the "Relations & Association Visualization" button', () => {
+				const relations = [
+					{
+						sourceBlockId: '1',
+						targetBlockId: '3',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '2',
+						targetBlockId: '4',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '3',
+						targetBlockId: '5',
+						type: 'downstream',
+					},
+				];
+
+				cy.mount(
+					<ImportActions
+						selectedCount={0}
+						totalCount={0}
+						onImportSelected={() => {}}
+						onImportAll={() => {}}
+						onSync={() => {}}
+						importedItemsCount={0}
+						unImportedItemsCount={0}
+						onRelations={() => {}}
+						relationsCount={0}
+						missingRelationsCount={relations.length}
+					/>
+				);
+
+				cy.getBySel('relations').should(
+					'contain.text',
+					relations.length
+				);
+			});
+
+			it('disabled the "Relations & Association Visualization" button if no relations exist', () => {
+				const relations = [];
+
+				cy.mount(
+					<ImportActions
+						selectedCount={0}
+						totalCount={0}
+						onImportSelected={() => {}}
+						onImportAll={() => {}}
+						onSync={() => {}}
+						importedItemsCount={0}
+						unImportedItemsCount={0}
+						onRelations={() => {}}
+						relationsCount={relations.length}
+						missingRelationsCount={0}
+					/>
+				);
+
+				cy.getBySel('relations').should('be.disabled');
+			});
+
+			it('displays "Show" on the "Relations & Association Visualization" button if missing relations exists', () => {
+				const relations = [
+					{
+						sourceBlockId: '1',
+						targetBlockId: '3',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '2',
+						targetBlockId: '4',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '3',
+						targetBlockId: '5',
+						type: 'downstream',
+					},
+				];
+
+				cy.mount(
+					<ImportActions
+						selectedCount={0}
+						totalCount={0}
+						onImportSelected={() => {}}
+						onImportAll={() => {}}
+						onSync={() => {}}
+						importedItemsCount={0}
+						unImportedItemsCount={0}
+						onRelations={() => {}}
+						relationsCount={relations.length}
+						missingRelationsCount={relations.length}
+					/>
+				);
+
+				cy.getBySel('relations').should('contain.text', 'Show');
+			});
+
+			it('displays "Hide" on the "Relations & Association Visualization" button if there are no missing relations', () => {
+				const relations = [
+					{
+						sourceBlockId: '1',
+						targetBlockId: '3',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '2',
+						targetBlockId: '4',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '3',
+						targetBlockId: '5',
+						type: 'downstream',
+					},
+				];
+
+				cy.mount(
+					<ImportActions
+						selectedCount={0}
+						totalCount={0}
+						onImportSelected={() => {}}
+						onImportAll={() => {}}
+						onSync={() => {}}
+						importedItemsCount={0}
+						unImportedItemsCount={0}
+						onRelations={() => {}}
+						relationsCount={relations.length}
+						missingRelationsCount={0}
+					/>
+				);
+
+				cy.getBySel('relations').should('contain.text', 'Hide');
+			});
+
+			it('calls the passed handler when clicking the "Sync" button', () => {
+				const handler = cy.spy().as('handler');
+
+				const relations = [
+					{
+						sourceBlockId: '1',
+						targetBlockId: '3',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '2',
+						targetBlockId: '4',
+						type: 'downstream',
+					},
+					{
+						sourceBlockId: '3',
+						targetBlockId: '5',
+						type: 'downstream',
+					},
+				];
+
+				cy.mount(
+					<ImportActions
+						selectedCount={0}
+						totalCount={0}
+						onImportSelected={() => {}}
+						onImportAll={() => {}}
+						onSync={() => {}}
+						importedItemsCount={0}
+						unImportedItemsCount={0}
+						onRelations={handler}
+						relationsCount={relations.length}
+						missingRelationsCount={relations.length}
+					/>
+				);
+
+				cy.getBySel('relations').click();
 
 				cy.get('@handler').should('have.been.calledOnce');
 			});
