@@ -234,7 +234,7 @@ describe('<QueryResults>', () => {
 		);
 	});
 
-	it('passed the count of relations and associtions that have not been visualized yet to the "Relation & Association Visualization" button', () => {
+	it.only('passed the count of relations and associations that have not been visualized yet to the "Relation & Association Visualization" button', () => {
 		const mockLines = [
 			{
 				id: '1',
@@ -278,6 +278,11 @@ describe('<QueryResults>', () => {
 		cy.intercept('POST', `**/api/v3/items/query`, {
 			fixture: 'query_multi-page.json',
 		}).as('itemQuery');
+
+		cy.intercept('GET', `**/api/v3/items/*/relations`, {
+			statusCode: 200,
+			body: { downstreamReferences: [], outgoingAssociations: [] },
+		}).as('emptyRelationQuery');
 
 		cy.intercept('GET', `**/api/v3/items/1599513/relations`, {
 			fixture: 'itemRelationsForRelationsButton.json',
