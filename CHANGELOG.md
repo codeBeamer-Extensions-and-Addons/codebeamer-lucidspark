@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Changed
 
+-   Fixed the issue where the Assisted query input was not used as the default query input
+
 ## Released
 
 ### [1.1.0]
