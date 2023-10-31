@@ -26,7 +26,7 @@ export default function Importer(props: {
 
 	const [loaded, setLoaded] = useState(0);
 
-	const importedItems = useImportedItems();
+	const { importedItems } = useImportedItems();
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.

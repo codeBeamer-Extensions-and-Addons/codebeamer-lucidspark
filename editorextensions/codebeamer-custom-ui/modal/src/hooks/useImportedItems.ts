@@ -13,7 +13,7 @@ import { RelationshipType } from '../enums/associationRelationshipType.enum';
  * Queries the CardBlocks present on the Lucid board
  * @returns An array of ${@link CardBlockToItemMapping}s matching the CardBlocks on the board.
  */
-export const useImportedItems = (trackerId: string) => {
+export const useImportedItems = (trackerId?: string) => {
 	const [importedItems, setImportedItems] = useState<
 		CardBlockToItemMapping[]
 	>([]);
@@ -52,6 +52,7 @@ export const useImportedItems = (trackerId: string) => {
 			);
 			setImportedItems(cardBlockCodebeamerItemIdPairs);
 
+			if (!trackerId) return;
 			// Get the Relations for each imported item thats in the current tracker
 			const importedItemsForTracker =
 				cardBlockCodebeamerItemIdPairs.filter(
@@ -59,55 +60,64 @@ export const useImportedItems = (trackerId: string) => {
 				);
 
 			importedItemsForTracker.forEach(async (item) => {
-				const relationsRes = await fetch(
-					`${store.getState().boardSettings.cbAddress}/api/v3/items/${
-						item.itemId
-					}/relations`,
-					requestArgs
-				);
-				const relationsQuery =
-					(await relationsRes.json()) as RelationsQuery;
-
-				// Iterate through the downstreamReferences and outgoingAssociations arrays
-				[
-					...relationsQuery.downstreamReferences,
-					...relationsQuery.outgoingAssociations,
-				].forEach((relation) => {
-					const targetItemId = relation.itemRevision.id;
-
-					const targetItems = cardBlockCodebeamerItemIdPairs.filter(
-						(item) => item.itemId === targetItemId
+				try {
+					const relationsRes = await fetch(
+						`${
+							store.getState().boardSettings.cbAddress
+						}/api/v3/items/${item.itemId}/relations`,
+						requestArgs
 					);
-					targetItems.forEach(async (targetItem) => {
-						let relationshipType = RelationshipType.DOWNSTREAM;
+					const relationsQuery =
+						(await relationsRes.json()) as RelationsQuery;
 
-						if (
-							relation.type === 'OutgoingTrackerItemAssociation'
-						) {
-							const associationRes = await fetch(
-								`${
-									store.getState().boardSettings.cbAddress
-								}/api/v3/associations/${relation.id}`,
-								requestArgs
+					// Iterate through the downstreamReferences and outgoingAssociations arrays
+					[
+						...relationsQuery.downstreamReferences,
+						...relationsQuery.outgoingAssociations,
+					].forEach((relation) => {
+						const targetItemId = relation.itemRevision.id;
+
+						const targetItems =
+							cardBlockCodebeamerItemIdPairs.filter(
+								(item) => item.itemId === targetItemId
 							);
-							const associationJson =
-								(await associationRes.json()) as AssociationDetails;
+						targetItems.forEach(async (targetItem) => {
+							let relationshipType = RelationshipType.DOWNSTREAM;
 
-							relationshipType = associationJson.type
-								.name as RelationshipType;
-						}
+							if (
+								relation.type ===
+								'OutgoingTrackerItemAssociation'
+							) {
+								const associationRes = await fetch(
+									`${
+										store.getState().boardSettings.cbAddress
+									}/api/v3/associations/${relation.id}`,
+									requestArgs
+								);
+								const associationJson =
+									(await associationRes.json()) as AssociationDetails;
 
-						const blockRelation = {
-							sourceBlockId: item.cardBlockId,
-							targetBlockId: targetItem.cardBlockId,
-							type: relationshipType,
-						};
-						setRelations((relations) => [
-							...relations,
-							blockRelation,
-						]);
+								relationshipType = associationJson.type
+									.name as RelationshipType;
+							}
+
+							const blockRelation = {
+								sourceBlockId: item.cardBlockId,
+								targetBlockId: targetItem.cardBlockId,
+								type: relationshipType,
+							};
+							setRelations((relations) => [
+								...relations,
+								blockRelation,
+							]);
+						});
 					});
-				});
+				} catch (error) {
+					console.warn(
+						`Failed to fetch relations for item ${item.itemId}:`,
+						error
+					);
+				}
 			});
 		};
 
