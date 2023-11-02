@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -   Relation & Association Visualization Button
     -   Creates lines between cards based on the relations and associations of the codebeamer items
-    -   Applies to the codebeamer items in the current tracker to give the user more control over the visualization
+    -   Once the button has been pressed all outgoing associations and downstream references will be found for each item in the current tracker, the relation will still be visualized if the target item is from another tracker
     -   The button displays the number of relations and associations that haven't been visualized yet.
     -   If all relations and associations have been visualized, the button is labeled with "Hide ..." and removes all visualized relations and associations in the current tracker from the board
 
