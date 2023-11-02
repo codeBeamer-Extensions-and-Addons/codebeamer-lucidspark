@@ -242,7 +242,8 @@ export class ImportModal extends Modal {
 			codebeamerItemId: cardBlock.shapeData.get('codebeamerItemId'),
 			codebeamerTrackerId: cardBlock.shapeData.get('codebeamerTrackerId'),
 		}));
-		this.sendMessage(JSON.stringify(data));
+		const message = { payload: data, action: 'getCardBlocks' };
+		this.sendMessage(JSON.stringify(message));
 	}
 
 	/**
@@ -275,7 +276,8 @@ export class ImportModal extends Modal {
 			targetBlockId: (line.getDownstreamConnection() as CardBlockProxy)
 				.id,
 		}));
-		this.sendMessage(JSON.stringify(data));
+		const message = { payload: data, action: 'getLines' };
+		this.sendMessage(JSON.stringify(message));
 	}
 
 	/**

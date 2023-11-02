@@ -10,7 +10,7 @@ import { getColorForRelationshipType } from './utils/getColorForRelationshipType
  * Class for handling message events and callbacks.
  */
 export class MessageHandler {
-	private callbacks: ((data: []) => void)[] = [];
+	private callbacks: Map<MessageAction, ((data: []) => void)[]> = new Map();
 
 	/**
 	 * Private instance to hold the singleton instance.
@@ -48,8 +48,7 @@ export class MessageHandler {
 	 * @param {function} callback - The callback function that will be called with the received card block data.
 	 */
 	getCardBlocks(callback: (data: CardBlockData[]) => void) {
-		this.subscribeCallback(callback);
-
+		this.subscribeCallback(MessageAction.GET_CARD_BLOCKS, callback);
 		LucidGateway.requestCardBlockData();
 	}
 
@@ -58,39 +57,36 @@ export class MessageHandler {
 	 * @param {function} callback - The callback function that will be called with the received line data.
 	 */
 	getLines(callback: (data: LineData[]) => void) {
-		this.subscribeCallback(callback);
-
+		this.subscribeCallback(MessageAction.GET_LINES, callback);
 		LucidGateway.requestLineData();
 	}
 
-	/**
-	 * Register a callback function to handle messages.
-	 * @param callback - The callback function to register.
-	 */
-	subscribeCallback(callback: (data: []) => void) {
-		this.callbacks.push(callback);
+	subscribeCallback(action: MessageAction, callback: (data: []) => void) {
+		const actionCallbacks = this.callbacks.get(action) || [];
+		actionCallbacks.push(callback);
+		this.callbacks.set(action, actionCallbacks);
 	}
 
-	/**
-	 * Unregister a previously registered callback function.
-	 * @param callback - The callback function to unregister.
-	 */
-	unsubscribeCallback(callback: (data: []) => void) {
-		const index = this.callbacks.indexOf(callback);
+	unsubscribeCallback(action: MessageAction, callback: (data: []) => void) {
+		const actionCallbacks = this.callbacks.get(action) || [];
+		const index = actionCallbacks.indexOf(callback);
 		if (index !== -1) {
-			this.callbacks.splice(index, 1);
+			actionCallbacks.splice(index, 1);
 		}
+		this.callbacks.set(action, actionCallbacks);
 	}
 
 	/**
 	 * Notifies registered callbacks with message data.
 	 * @param data - The data received in the message.
 	 */
-	private notifyCallbacks(data: []) {
-		this.callbacks.forEach((callback) => {
-			callback(data);
-			this.unsubscribeCallback(callback);
-		});
+	private notifyCallbacks(data: IncomingMessage) {
+		const actionCallbacks = this.callbacks.get(data.action);
+		if (actionCallbacks) {
+			actionCallbacks.forEach((callback) => {
+				callback(data.payload as []);
+			});
+		}
 	}
 }
 
@@ -108,6 +104,11 @@ export interface Message {
 		| StartImportPayload
 		| CreateLinePayload
 		| DeleteLinePayload;
+}
+
+export interface IncomingMessage {
+	action: MessageAction;
+	payload: LineData[] | CardBlockData[];
 }
 
 // Interface for payload specific to the IMPORT_ITEM action
