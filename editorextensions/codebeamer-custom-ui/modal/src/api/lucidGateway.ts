@@ -85,6 +85,7 @@ export class MessageHandler {
 		if (actionCallbacks) {
 			actionCallbacks.forEach((callback) => {
 				callback(data.payload as []);
+				this.unsubscribeCallback(data.action, callback);
 			});
 		}
 	}
