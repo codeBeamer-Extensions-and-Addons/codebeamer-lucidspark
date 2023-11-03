@@ -102,7 +102,13 @@ describe('<Importer>', () => {
 		cy.stub(window.parent, 'postMessage')
 			.as('boardGetStub')
 			.callsFake(() => {
-				window.postMessage(JSON.stringify(mockImportedItems), '*');
+				window.postMessage(
+					JSON.stringify({
+						payload: mockImportedItems,
+						action: 'getCardBlocks',
+					}),
+					'*'
+				);
 			});
 
 		const items: string[] = ['1', '2', '3'];
@@ -149,7 +155,13 @@ describe('<Importer>', () => {
 			cy.stub(window.parent, 'postMessage')
 				.as('boardGetStub')
 				.callsFake(() => {
-					window.postMessage(JSON.stringify(mockImportedItems), '*');
+					window.postMessage(
+						JSON.stringify({
+							payload: mockImportedItems,
+							action: 'getCardBlocks',
+						}),
+						'*'
+					);
 				});
 
 			const mockQueryString = 'item.id IN (1,2,3,4)';
