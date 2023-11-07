@@ -8,7 +8,6 @@ import { getStore } from '../../../../store/store';
 import QueryResults from './QueryResults';
 import query_multi_page from '../../../../../cypress/fixtures/query_multi-page.json';
 import query_multi_page_2 from '../../../../../cypress/fixtures/query_multi-page_2.json';
-import associationDetails from '../../../../../cypress/fixtures/associationDetails.json';
 
 describe('<QueryResults>', () => {
 	it('mounts', () => {
@@ -33,7 +32,10 @@ describe('<QueryResults>', () => {
 
 		cy.stub(window.parent, 'postMessage').callsFake(() => {
 			const data = [itemOne, itemTwo];
-			window.postMessage(JSON.stringify(data), '*');
+			window.postMessage(
+				JSON.stringify({ payload: data, action: 'getCardBlocks' }),
+				'*'
+			);
 		});
 
 		const store = getStore();
@@ -205,7 +207,13 @@ describe('<QueryResults>', () => {
 		cy.stub(window.parent, 'postMessage')
 			.as('boardGetStub')
 			.callsFake(() => {
-				window.postMessage(JSON.stringify(mockImportedItems), '*');
+				window.postMessage(
+					JSON.stringify({
+						payload: mockImportedItems,
+						action: 'getCardBlocks',
+					}),
+					'*'
+				);
 			});
 
 		const store = getStore();
@@ -234,7 +242,7 @@ describe('<QueryResults>', () => {
 		);
 	});
 
-	it.only('passed the count of relations and associations that have not been visualized yet to the "Relation & Association Visualization" button', () => {
+	it('passed the count of relations and associations that have not been visualized yet to the "Relation & Association Visualization" button', () => {
 		const mockLines = [
 			{
 				id: '1',
@@ -265,10 +273,22 @@ describe('<QueryResults>', () => {
 			.callsFake((message) => {
 				if (message.action === 'getCardBlocks') {
 					// Handle GET_CARD_BLOCKS action
-					window.postMessage(JSON.stringify(mockImportedItems), '*');
+					window.postMessage(
+						JSON.stringify({
+							payload: mockImportedItems,
+							action: message.action,
+						}),
+						'*'
+					);
 				} else if (message.action === 'getLines') {
 					// Handle GET_LINES action
-					window.postMessage(JSON.stringify(mockLines), '*');
+					window.postMessage(
+						JSON.stringify({
+							payload: mockLines,
+							action: message.action,
+						}),
+						'*'
+					);
 				}
 			});
 
@@ -279,10 +299,14 @@ describe('<QueryResults>', () => {
 			fixture: 'query_multi-page.json',
 		}).as('itemQuery');
 
-		cy.intercept('GET', `**/api/v3/items/*/relations`, {
+		cy.intercept('GET', `**/api/v3/items/1599511/relations`, {
 			statusCode: 200,
 			body: { downstreamReferences: [], outgoingAssociations: [] },
-		}).as('emptyRelationQuery');
+		}).as('emptyRelationQuery1');
+		cy.intercept('GET', `**/api/v3/items/1599512/relations`, {
+			statusCode: 200,
+			body: { downstreamReferences: [], outgoingAssociations: [] },
+		}).as('emptyRelationQuery2');
 
 		cy.intercept('GET', `**/api/v3/items/1599513/relations`, {
 			fixture: 'itemRelationsForRelationsButton.json',
@@ -300,7 +324,7 @@ describe('<QueryResults>', () => {
 
 		cy.getBySel('relations').should(
 			'have.text',
-			`Show Relations & Associations (${expectedMissingRelationsCount})`
+			`Show Relations (${expectedMissingRelationsCount})`
 		);
 	});
 
