@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
-import './importActions.css';
-import DefaultOverlayTrigger from '../../../../components/defaultOverlayTrigger/DefautOverlayTrigger';
+import "./importActions.css";
+import DefaultOverlayTrigger from "../../../../components/defaultOverlayTrigger/DefautOverlayTrigger";
 
 export default function ImportActions(props: {
 	selectedCount: number;
@@ -19,6 +19,7 @@ export default function ImportActions(props: {
 		<div className="w-100 flex-row">
 			<DefaultOverlayTrigger
 				content={`Import selected items (${props.selectedCount})`}
+				placement="top"
 			>
 				<button
 					className="button button-primary button-small flex flex-centered"
@@ -45,6 +46,7 @@ export default function ImportActions(props: {
 
 			<DefaultOverlayTrigger
 				content={`Import all remaining items (${props.unImportedItemsCount})`}
+				placement="top"
 			>
 				<button
 					className="button button-primary button-small flex flex-centered"
@@ -71,6 +73,7 @@ export default function ImportActions(props: {
 
 			<DefaultOverlayTrigger
 				content={`Sync Cards with Codebeamer (${props.importedItemsCount})`}
+				placement="top"
 			>
 				<button
 					className="button button-secondary button-small flex flex-centered"
@@ -78,8 +81,7 @@ export default function ImportActions(props: {
 					data-test="sync"
 					onClick={() => props.onSync()}
 				>
-					<span className="icon icon-refresh mr-1 pos-adjusted-down clickable"></span>
-					Sync ({props.importedItemsCount})
+					<span className="icon icon-refresh pos-adjusted-down clickable"></span>
 				</button>
 			</DefaultOverlayTrigger>
 
@@ -89,6 +91,7 @@ export default function ImportActions(props: {
 						? `Hide Relations & Associations (${props.relationsCount})`
 						: `Show Relations & Associations (${props.missingRelationsCount})`
 				}
+				placement="top"
 			>
 				<button
 					className="button button-secondary button-small flex flex-centered"
@@ -96,11 +99,7 @@ export default function ImportActions(props: {
 					data-test="relations"
 					onClick={() => props.onRelations()}
 				>
-					<span className="icon icon-arrow-line-shape mr-1 pos-adjusted-down clickable"></span>
-					{props.relationsCount > 0 &&
-					props.missingRelationsCount == 0
-						? `Hide Relations (${props.relationsCount})`
-						: `Show Relations (${props.missingRelationsCount})`}
+					<span className="icon icon-arrow-line-shape pos-adjusted-down clickable"></span>
 				</button>
 			</DefaultOverlayTrigger>
 		</div>
