@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { useGetItemsQuery } from "../../../../api/codeBeamerApi";
 import {
 	DEFAULT_ITEMS_PER_PAGE,
 	DEFAULT_RESULT_PAGE,
-} from '../../../../constants/cb-import-defaults';
-import { ItemListView } from '../../../../models/itemListView';
-import { ItemQueryResultView } from '../../../../models/itemQueryResultView';
-import { RootState } from '../../../../store/store';
-import ImportActions from '../importActions/ImportActions';
-import Importer from '../importer/Importer';
-import QueryResult from '../queryResult/QueryResult';
-import Updater from '../updater/Updater';
+} from "../../../../constants/cb-import-defaults";
+import { ItemListView } from "../../../../models/itemListView";
+import { ItemQueryResultView } from "../../../../models/itemQueryResultView";
+import { RootState } from "../../../../store/store";
+import ImportActions from "../importActions/ImportActions";
+import Importer from "../importer/Importer";
+import QueryResult from "../queryResult/QueryResult";
+import Updater from "../updater/Updater";
 
-import './queryResults.css';
-import { useImportedItems } from '../../../../hooks/useImportedItems';
-import { useLines } from '../../../../hooks/useLines';
-import { LucidGateway } from '../../../../api/lucidGateway';
+import "./queryResults.css";
+import { useImportedItems } from "../../../../hooks/useImportedItems";
+import { useLines } from "../../../../hooks/useLines";
+import { LucidGateway } from "../../../../api/LucidGateway";
 
 export default function QueryResults() {
 	const [page, setPage] = useState(DEFAULT_RESULT_PAGE);
@@ -27,8 +27,8 @@ export default function QueryResults() {
 	const [synchronizing, setSynchronizing] = useState(false);
 
 	const intersectionObserverOptions = {
-		root: document.getElementById('queryResultsContainer'),
-		rootMargin: '0px',
+		root: document.getElementById("queryResultsContainer"),
+		rootMargin: "0px",
 		threshold: 1,
 	};
 
@@ -93,10 +93,7 @@ export default function QueryResults() {
 	 * @param item Item in question
 	 * @param checked Value to set the Item's "selected" property to (== its checkbox' "checked" value)
 	 */
-	const toggleItemSelected = (
-		item: ItemQueryResultView,
-		checked: boolean
-	) => {
+	const toggleItemSelected = (item: ItemQueryResultView, checked: boolean) => {
 		setItems(
 			items.map((i) => {
 				if (i.id != item.id) return i;
@@ -126,15 +123,13 @@ export default function QueryResults() {
 				setItems([
 					...items,
 					...data.items.map(
-						(i: ItemListView) =>
-							new ItemQueryResultView(i.id, i.name)
+						(i: ItemListView) => new ItemQueryResultView(i.id, i.name)
 					),
 				]);
 			} else {
 				setItems(
 					data.items.map(
-						(i: ItemListView) =>
-							new ItemQueryResultView(i.id, i.name)
+						(i: ItemListView) => new ItemQueryResultView(i.id, i.name)
 					)
 				);
 			}
@@ -143,7 +138,7 @@ export default function QueryResults() {
 
 	React.useEffect(() => {
 		const lastItem = document.querySelector(
-			'#queryResults tbody tr:last-child'
+			"#queryResults tbody tr:last-child"
 		);
 		if (lastItem) {
 			lazyLoadObserver.observe(lastItem);
@@ -229,11 +224,7 @@ export default function QueryResults() {
 	} else if (trackerId) {
 		return (
 			<div>
-				<table
-					className="table"
-					id="queryResults"
-					data-test="resultsTable"
-				>
+				<table className="table" id="queryResults" data-test="resultsTable">
 					<thead>
 						<tr>
 							<td>Imported</td>
@@ -269,11 +260,7 @@ export default function QueryResults() {
 								></td>
 							)}
 							{eos && (
-								<td
-									colSpan={3}
-									className="muted"
-									data-test="eosInfo"
-								>
+								<td colSpan={3} className="muted" data-test="eosInfo">
 									End of stream
 								</td>
 							)}
@@ -293,9 +280,7 @@ export default function QueryResults() {
 						(importedItems.filter((item, index, array) => {
 							return (
 								item.trackerId == Number(trackerId) &&
-								array.findIndex(
-									(i) => i.itemId == item.itemId
-								) == index
+								array.findIndex((i) => i.itemId == item.itemId) == index
 							);
 						}).length ?? 0)
 					}

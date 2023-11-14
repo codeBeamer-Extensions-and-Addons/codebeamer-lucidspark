@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import Spinner from 'react-bootstrap/Spinner';
-import { useSelector } from 'react-redux';
-import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
-import { LucidGateway } from '../../../../api/lucidGateway';
+import React, { useState } from "react";
+import Modal from "react-bootstrap/Modal";
+import Spinner from "react-bootstrap/Spinner";
+import { useSelector } from "react-redux";
+import { useGetItemsQuery } from "../../../../api/codeBeamerApi";
+import { LucidGateway } from "../../../../api/LucidGateway";
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
-} from '../../../../constants/cb-import-defaults';
-import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
-import { RootState } from '../../../../store/store';
-import { useImportedItems } from '../../../../hooks/useImportedItems';
+} from "../../../../constants/cb-import-defaults";
+import { CodeBeamerItem } from "../../../../models/codebeamer-item.if";
+import { RootState } from "../../../../store/store";
+import { useImportedItems } from "../../../../hooks/useImportedItems";
 
-import './importer.css';
+import "./importer.css";
 
 export default function Importer(props: {
 	items: string[];
@@ -20,9 +20,7 @@ export default function Importer(props: {
 	queryString?: string;
 	onClose?: Function;
 }) {
-	const { cbqlString } = useSelector(
-		(state: RootState) => state.userSettings
-	);
+	const { cbqlString } = useSelector((state: RootState) => state.userSettings);
 
 	const [loaded, setLoaded] = useState(0);
 
@@ -34,13 +32,13 @@ export default function Importer(props: {
 	const getMainQueryString = () => {
 		const mainQuery = cbqlString;
 		const selectedItemsFilter = props.items.length
-			? ` AND item.id IN (${props.items.join(',')})`
-			: '';
+			? ` AND item.id IN (${props.items.join(",")})`
+			: "";
 		const importedItemsFilter = importedItems.length
 			? ` AND item.id NOT IN (${importedItems
 					.map((i) => i.itemId)
-					.join(',')})`
-			: '';
+					.join(",")})`
+			: "";
 
 		if (props.queryString) {
 			return `${props.queryString}${importedItemsFilter}`;
@@ -64,11 +62,11 @@ export default function Importer(props: {
 			LucidGateway.startImport(importId, items.length);
 			const _items: CodeBeamerItem[] = structuredClone(items);
 			for (let i = 0; i < _items.length; i++) {
-				console.log('Item no. ' + i + ' of ' + _items.length);
+				console.log("Item no. " + i + " of " + _items.length);
 				if (_items[i].categories?.length) {
 					if (
 						_items[i].categories.find(
-							(c) => c.name == 'Folder' || c.name == 'Information'
+							(c) => c.name == "Folder" || c.name == "Information"
 						)
 					) {
 						continue;

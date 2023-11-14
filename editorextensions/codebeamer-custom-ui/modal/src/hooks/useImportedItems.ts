@@ -1,32 +1,30 @@
-import React, { useState } from 'react';
-import { CardBlockToItemMapping } from '../models/cardBlockToItemMapping.if';
-import {
-	MessageHandler,
-	CardBlockData,
-	BlockRelation,
-} from '../api/lucidGateway';
-import { store } from '../store/store';
-import { RelationsQuery, AssociationDetails } from '../models/api-query-types';
-import { RelationshipType } from '../enums/associationRelationshipType.enum';
+import React, { useState } from "react";
+import { CardBlockToItemMapping } from "../models/cardBlockToItemMapping.if";
+import { store } from "../store/store";
+import { RelationsQuery, AssociationDetails } from "../models/api-query-types";
+import { RelationshipType } from "../enums/associationRelationshipType.enum";
+import { CardBlockToCodeBeamerItemMapping } from "../models/lucidCardData";
+import { MessageHandler } from "../api/MessageHandler";
+import { BlockRelation } from "../models/lucidLineData";
 
 /**
  * Queries the CardBlocks present on the Lucid board
  * @returns An array of ${@link CardBlockToItemMapping}s matching the CardBlocks on the board.
  */
 export const useImportedItems = (trackerId?: string) => {
-	const [importedItems, setImportedItems] = useState<
-		CardBlockToItemMapping[]
-	>([]);
+	const [importedItems, setImportedItems] = useState<CardBlockToItemMapping[]>(
+		[]
+	);
 	const [relations, setRelations] = useState<BlockRelation[]>([]);
 
 	const username = store.getState().userSettings.cbUsername;
 	const password = store.getState().userSettings.cbPassword;
 
 	const requestArgs = {
-		method: 'GET',
+		method: "GET",
 		headers: new Headers({
-			'Content-Type': 'text/plain',
-			Authorization: `Basic ${btoa(username + ':' + password)}`,
+			"Content-Type": "text/plain",
+			Authorization: `Basic ${btoa(username + ":" + password)}`,
 		}),
 	};
 
@@ -38,7 +36,9 @@ export const useImportedItems = (trackerId?: string) => {
 	 */
 	React.useEffect(() => {
 		setRelations([]);
-		const handleCardBlocksData = async (data: CardBlockData[]) => {
+		const handleCardBlocksData = async (
+			data: CardBlockToCodeBeamerItemMapping[]
+		) => {
 			const cardBlockCodebeamerItemIdPairs = data.map(
 				(x: {
 					cardBlockId: string;
@@ -54,17 +54,16 @@ export const useImportedItems = (trackerId?: string) => {
 
 			if (!trackerId) return;
 			// Get the Relations for each imported item thats in the current tracker
-			const importedItemsForTracker =
-				cardBlockCodebeamerItemIdPairs.filter(
-					(i) => i.trackerId == Number(trackerId)
-				);
+			const importedItemsForTracker = cardBlockCodebeamerItemIdPairs.filter(
+				(i) => i.trackerId == Number(trackerId)
+			);
 
 			importedItemsForTracker.forEach(async (item) => {
 				try {
 					const relationsRes = await fetch(
-						`${
-							store.getState().boardSettings.cbAddress
-						}/api/v3/items/${item.itemId}/relations`,
+						`${store.getState().boardSettings.cbAddress}/api/v3/items/${
+							item.itemId
+						}/relations`,
 						requestArgs
 					);
 					const relationsQuery =
@@ -77,17 +76,13 @@ export const useImportedItems = (trackerId?: string) => {
 					].forEach((relation) => {
 						const targetItemId = relation.itemRevision.id;
 
-						const targetItems =
-							cardBlockCodebeamerItemIdPairs.filter(
-								(item) => item.itemId === targetItemId
-							);
+						const targetItems = cardBlockCodebeamerItemIdPairs.filter(
+							(item) => item.itemId === targetItemId
+						);
 						targetItems.forEach(async (targetItem) => {
 							let relationshipType = RelationshipType.DOWNSTREAM;
 
-							if (
-								relation.type ===
-								'OutgoingTrackerItemAssociation'
-							) {
+							if (relation.type === "OutgoingTrackerItemAssociation") {
 								const associationRes = await fetch(
 									`${
 										store.getState().boardSettings.cbAddress
@@ -106,10 +101,7 @@ export const useImportedItems = (trackerId?: string) => {
 								targetBlockId: targetItem.cardBlockId,
 								type: relationshipType,
 							};
-							setRelations((relations) => [
-								...relations,
-								blockRelation,
-							]);
+							setRelations((relations) => [...relations, blockRelation]);
 						});
 					});
 				} catch (error) {

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
-import { MessageHandler, LineData } from '../api/lucidGateway';
+import React, { useState } from "react";
+import { MessageHandler } from "../api/MessageHandler";
+import { LucidLineData } from "../models/lucidLineData";
 
 /**
  * Queries the Lines present on the Lucid board
  * @returns An array of ${@link LineToBlocksMapping}s matching the Lines on the board.
  */
 export const useLines = () => {
-	const [lines, setLines] = useState<LineData[]>([]);
+	const [lines, setLines] = useState<LucidLineData[]>([]);
 
 	const messageHandler = MessageHandler.getInstance();
 
@@ -14,7 +15,7 @@ export const useLines = () => {
 	 * Queries the editor extension for the currently existing Lines on the board.
 	 */
 	React.useEffect(() => {
-		const handleLinesData = (data: LineData[]) => {
+		const handleLinesData = (data: LucidLineData[]) => {
 			setLines(data);
 		};
 

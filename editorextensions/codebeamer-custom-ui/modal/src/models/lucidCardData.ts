@@ -16,3 +16,12 @@ export interface CardData {
 		y: number;
 	};
 }
+
+/**
+ * Interface for card block data.
+ */
+export interface CardBlockToCodeBeamerItemMapping {
+	cardBlockId: string;
+	codebeamerItemId: number;
+	codebeamerTrackerId: number;
+}
