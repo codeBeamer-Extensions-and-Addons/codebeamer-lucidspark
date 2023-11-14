@@ -1,15 +1,17 @@
-import { CardBlockToItemMapping } from '../../models/cardBlockToItemMapping.if';
+import { CardBlockToCodebeamerItemMapping } from "../../models/lucidCardData";
 
 export default function getCardBlockIds(
 	codeBeamerItemId: number,
-	importedItems: CardBlockToItemMapping[]
+	importedItems: CardBlockToCodebeamerItemMapping[]
 ) {
-	const matchingCardBlockToItemMappings = importedItems.filter(
-		(x) => x.itemId === codeBeamerItemId
+	const matchingCardBlockToCodebeamerItemMappings = importedItems.filter(
+		(x) => x.codebeamerItemId === codeBeamerItemId
 	);
-	const cardBlockIds = matchingCardBlockToItemMappings.map((data) => {
-		return data.cardBlockId;
-	});
+	const cardBlockIds = matchingCardBlockToCodebeamerItemMappings.map(
+		(data) => {
+			return data.cardBlockId;
+		}
+	);
 
 	return cardBlockIds;
 }

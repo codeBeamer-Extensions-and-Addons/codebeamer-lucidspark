@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import { CardBlockToItemMapping } from "../models/cardBlockToItemMapping.if";
 import { store } from "../store/store";
 import { RelationsQuery, AssociationDetails } from "../models/api-query-types";
 import { RelationshipType } from "../enums/associationRelationshipType.enum";
-import { CardBlockToCodeBeamerItemMapping } from "../models/lucidCardData";
+import { CardBlockToCodebeamerItemMapping } from "../models/lucidCardData";
 import { MessageHandler } from "../api/MessageHandler";
 import { BlockRelation } from "../models/lucidLineData";
 
 /**
  * Queries the CardBlocks present on the Lucid board
- * @returns An array of ${@link CardBlockToItemMapping}s matching the CardBlocks on the board.
+ * @returns An array of ${@link CardBlockToCodebeamerItemMapping}s matching the CardBlocks on the board.
  */
 export const useImportedItems = (trackerId?: string) => {
-	const [importedItems, setImportedItems] = useState<CardBlockToItemMapping[]>(
-		[]
-	);
+	const [importedItems, setImportedItems] = useState<
+		CardBlockToCodebeamerItemMapping[]
+	>([]);
 	const [relations, setRelations] = useState<BlockRelation[]>([]);
+	const [isLoadingRelations, setIsLoadingRelations] = useState(false);
+	const [areAllRelationsLoaded, setAreAllRelationsLoaded] = useState(false);
+	const itemsThreshold = 50;
 
 	const username = store.getState().userSettings.cbUsername;
 	const password = store.getState().userSettings.cbPassword;
@@ -31,90 +33,123 @@ export const useImportedItems = (trackerId?: string) => {
 	const messageHandler = MessageHandler.getInstance();
 
 	/**
-	 * Queries the editor extension for the currently existing cardBlocks on the board.
-	 * This does mean that this plugin is currently not 100% compatible with others that would create Card Blocks.
+	 * Fetches the relations for the given items.
+	 * @param items The items to fetch the relations for
 	 */
-	React.useEffect(() => {
-		setRelations([]);
-		const handleCardBlocksData = async (
-			data: CardBlockToCodeBeamerItemMapping[]
-		) => {
-			const cardBlockCodebeamerItemIdPairs = data.map(
-				(x: {
-					cardBlockId: string;
-					codebeamerItemId: number;
-					codebeamerTrackerId: number;
-				}) => ({
-					cardBlockId: x.cardBlockId,
-					itemId: x.codebeamerItemId,
-					trackerId: x.codebeamerTrackerId,
-				})
-			);
-			setImportedItems(cardBlockCodebeamerItemIdPairs);
+	const fetchRelations = async (
+		allItemsOnBoard: CardBlockToCodebeamerItemMapping[]
+	) => {
+		setIsLoadingRelations(true);
 
-			if (!trackerId) return;
-			// Get the Relations for each imported item thats in the current tracker
-			const importedItemsForTracker = cardBlockCodebeamerItemIdPairs.filter(
-				(i) => i.trackerId == Number(trackerId)
-			);
+		const importedItemsForTracker = allItemsOnBoard.filter(
+			(i) => i.codebeamerTrackerId == Number(trackerId)
+		);
 
-			importedItemsForTracker.forEach(async (item) => {
-				try {
+		let blockRelations: BlockRelation[] = [];
+
+		try {
+			const allBlockRelations = await Promise.all(
+				importedItemsForTracker.map(async (item) => {
 					const relationsRes = await fetch(
 						`${store.getState().boardSettings.cbAddress}/api/v3/items/${
-							item.itemId
+							item.codebeamerItemId
 						}/relations`,
 						requestArgs
 					);
 					const relationsQuery =
 						(await relationsRes.json()) as RelationsQuery;
 
-					// Iterate through the downstreamReferences and outgoingAssociations arrays
-					[
-						...relationsQuery.downstreamReferences,
-						...relationsQuery.outgoingAssociations,
-					].forEach((relation) => {
-						const targetItemId = relation.itemRevision.id;
+					// Process relations
+					const relationPromises = relationsQuery.downstreamReferences
+						.concat(relationsQuery.outgoingAssociations)
+						.map(async (relation) => {
+							const targetItemId = relation.itemRevision.id;
 
-						const targetItems = cardBlockCodebeamerItemIdPairs.filter(
-							(item) => item.itemId === targetItemId
-						);
-						targetItems.forEach(async (targetItem) => {
-							let relationshipType = RelationshipType.DOWNSTREAM;
+							const targetItems = allItemsOnBoard.filter(
+								(innerItem) =>
+									innerItem.codebeamerItemId === targetItemId
+							);
 
-							if (relation.type === "OutgoingTrackerItemAssociation") {
-								const associationRes = await fetch(
-									`${
-										store.getState().boardSettings.cbAddress
-									}/api/v3/associations/${relation.id}`,
-									requestArgs
-								);
-								const associationJson =
-									(await associationRes.json()) as AssociationDetails;
+							return Promise.all(
+								targetItems.map(async (targetItem) => {
+									let relationshipType = RelationshipType.DOWNSTREAM;
 
-								relationshipType = associationJson.type
-									.name as RelationshipType;
-							}
+									if (
+										relation.type === "OutgoingTrackerItemAssociation"
+									) {
+										const associationRes = await fetch(
+											`${
+												store.getState().boardSettings.cbAddress
+											}/api/v3/associations/${relation.id}`,
+											requestArgs
+										);
+										const associationJson =
+											(await associationRes.json()) as AssociationDetails;
 
-							const blockRelation = {
-								sourceBlockId: item.cardBlockId,
-								targetBlockId: targetItem.cardBlockId,
-								type: relationshipType,
-							};
-							setRelations((relations) => [...relations, blockRelation]);
+										relationshipType = associationJson.type
+											.name as RelationshipType;
+									}
+
+									const blockRelation = {
+										sourceBlockId: item.cardBlockId,
+										targetBlockId: targetItem.cardBlockId,
+										type: relationshipType,
+									};
+
+									return blockRelation;
+								})
+							);
 						});
-					});
-				} catch (error) {
-					console.warn(
-						`Failed to fetch relations for item ${item.itemId}:`,
-						error
-					);
-				}
-			});
+
+					// Wait for all relation processing to complete
+					const relations = await Promise.all(relationPromises);
+					// Flatten the array of arrays into a single array
+					return relations.flat();
+				})
+			);
+
+			// Flatten the array of arrays into a single array of relations
+			blockRelations = allBlockRelations.flat();
+			setRelations(blockRelations);
+		} catch (error) {
+			console.warn("Failed to fetch relations:", error);
+		}
+		setIsLoadingRelations(false);
+		setAreAllRelationsLoaded(true);
+		return blockRelations;
+	};
+
+	/**
+	 * Queries the editor extension for the currently existing cardBlocks on the board.
+	 * This does mean that this plugin is currently not 100% compatible with others that would create Card Blocks.
+	 */
+	React.useEffect(() => {
+		setRelations([]);
+		setAreAllRelationsLoaded(false);
+		const handleCardBlocksData = async (
+			data: CardBlockToCodebeamerItemMapping[]
+		) => {
+			setImportedItems(data);
+
+			if (!trackerId) return;
+			// Get the Relations for each imported item thats in the current tracker if there are less than 50
+			if (
+				data.filter((i) => i.codebeamerTrackerId == Number(trackerId))
+					.length <= itemsThreshold
+			) {
+				const blockRelations = await fetchRelations(data);
+				setRelations(blockRelations);
+			}
 		};
 
 		messageHandler.getCardBlocks(handleCardBlocksData);
 	}, [trackerId]);
 
-	return { importedItems, relations };
+	return {
+		importedItems,
+		relations,
+		isLoadingRelations,
+		fetchRelations,
+		areAllRelationsLoaded,
+	};
 };

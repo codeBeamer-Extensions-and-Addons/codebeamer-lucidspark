@@ -10,6 +10,8 @@ export default function ImportActions(props: {
 	unImportedItemsCount: number;
 	relationsCount: number;
 	missingRelationsCount: number;
+	areAllRelationsLoaded: boolean;
+	isRelationsLoading: boolean;
 	onImportSelected: () => void;
 	onImportAll: () => void;
 	onSync: () => void;
@@ -87,15 +89,21 @@ export default function ImportActions(props: {
 
 			<DefaultOverlayTrigger
 				content={
-					props.relationsCount > 0 && props.missingRelationsCount == 0
-						? `Hide Relations & Associations (${props.relationsCount})`
-						: `Show Relations & Associations (${props.missingRelationsCount})`
+					props.areAllRelationsLoaded
+						? props.relationsCount > 0 &&
+						  props.missingRelationsCount === 0
+							? `Hide Relations & Associations (${props.relationsCount})`
+							: `Show Relations & Associations (${props.missingRelationsCount})`
+						: "Toggle Relations & Associations"
 				}
 				placement="top"
 			>
 				<button
 					className="button button-secondary button-small flex flex-centered"
-					disabled={props.relationsCount == 0}
+					disabled={
+						props.isRelationsLoading ||
+						(props.areAllRelationsLoaded && props.relationsCount == 0)
+					}
 					data-test="relations"
 					onClick={() => props.onRelations()}
 				>

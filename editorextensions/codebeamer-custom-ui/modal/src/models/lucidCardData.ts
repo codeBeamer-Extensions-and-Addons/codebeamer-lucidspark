@@ -20,7 +20,7 @@ export interface CardData {
 /**
  * Interface for card block data.
  */
-export interface CardBlockToCodeBeamerItemMapping {
+export interface CardBlockToCodebeamerItemMapping {
 	cardBlockId: string;
 	codebeamerItemId: number;
 	codebeamerTrackerId: number;

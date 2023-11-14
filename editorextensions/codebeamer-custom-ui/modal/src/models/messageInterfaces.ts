@@ -1,5 +1,5 @@
 import { RelationshipType } from "../enums/associationRelationshipType.enum";
-import { CardBlockToCodeBeamerItemMapping, CardData } from "./lucidCardData";
+import { CardBlockToCodebeamerItemMapping, CardData } from "./lucidCardData";
 import { LucidLineData } from "./lucidLineData";
 
 /**
@@ -20,7 +20,7 @@ export interface Message {
 
 export interface IncomingMessage {
 	action: MessageAction;
-	payload: LucidLineData[] | CardBlockToCodeBeamerItemMapping[];
+	payload: LucidLineData[] | CardBlockToCodebeamerItemMapping[];
 }
 
 // Interface for payload specific to the IMPORT_ITEM action

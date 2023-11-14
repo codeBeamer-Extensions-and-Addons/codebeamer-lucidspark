@@ -17,6 +17,7 @@ import "./queryResults.css";
 import { useImportedItems } from "../../../../hooks/useImportedItems";
 import { useLines } from "../../../../hooks/useLines";
 import { LucidGateway } from "../../../../api/LucidGateway";
+import { BlockRelation } from "../../../../models/lucidLineData";
 
 export default function QueryResults() {
 	const [page, setPage] = useState(DEFAULT_RESULT_PAGE);
@@ -58,11 +59,17 @@ export default function QueryResults() {
 		queryString: cbqlString,
 	});
 
-	const { importedItems, relations } = useImportedItems(trackerId);
+	const {
+		importedItems,
+		relations,
+		isLoadingRelations,
+		fetchRelations,
+		areAllRelationsLoaded,
+	} = useImportedItems(trackerId);
 	const lines = useLines();
 
-	const getMissingRelations = () => {
-		const missingRelations = relations.filter((relation) => {
+	const getMissingRelations = (allRelations: BlockRelation[]) => {
+		const missingRelations = allRelations.filter((relation) => {
 			return !lines.find((line) => {
 				return (
 					line.sourceBlockId == relation.sourceBlockId &&
@@ -162,8 +169,18 @@ export default function QueryResults() {
 		setSynchronizing(true);
 	};
 
-	const handleRelations = () => {
-		const missingRelations = getMissingRelations();
+	const handleRelations = async () => {
+		let blockRelations = relations;
+		console.log("normal relations", blockRelations.length);
+
+		if (!areAllRelationsLoaded) {
+			blockRelations = await fetchRelations(importedItems);
+			console.log("blockRelations", blockRelations.length);
+		}
+
+		const missingRelations = getMissingRelations(blockRelations);
+		console.log("missing relations", missingRelations.length);
+		console.log("are relations loading", isLoadingRelations);
 
 		if (missingRelations.length > 0) {
 			missingRelations.forEach((relation) => {
@@ -239,12 +256,12 @@ export default function QueryResults() {
 								key={i.id}
 								checked={
 									importedItems.find(
-										(imported) => imported.itemId == i.id
+										(imported) => imported.codebeamerItemId == i.id
 									) !== undefined
 								}
 								disabled={
 									importedItems.find(
-										(imported) => imported.itemId == i.id
+										(imported) => imported.codebeamerItemId == i.id
 									) !== undefined
 								}
 								onSelect={toggleItemSelected}
@@ -279,13 +296,17 @@ export default function QueryResults() {
 						(data?.total ?? 0) -
 						(importedItems.filter((item, index, array) => {
 							return (
-								item.trackerId == Number(trackerId) &&
-								array.findIndex((i) => i.itemId == item.itemId) == index
+								item.codebeamerTrackerId == Number(trackerId) &&
+								array.findIndex(
+									(i) => i.codebeamerItemId == item.codebeamerItemId
+								) == index
 							);
 						}).length ?? 0)
 					}
 					relationsCount={relations.length}
-					missingRelationsCount={getMissingRelations().length}
+					missingRelationsCount={getMissingRelations(relations).length}
+					areAllRelationsLoaded={areAllRelationsLoaded}
+					isRelationsLoading={isLoadingRelations}
 				/>
 				{importing && (
 					<Importer

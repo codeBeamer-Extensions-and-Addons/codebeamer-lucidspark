@@ -1,4 +1,4 @@
-import { CardBlockToCodeBeamerItemMapping } from "../models/lucidCardData";
+import { CardBlockToCodebeamerItemMapping } from "../models/lucidCardData";
 import { LucidLineData } from "../models/lucidLineData";
 import { IncomingMessage, MessageAction } from "../models/messageInterfaces";
 import { LucidGateway } from "./LucidGateway";
@@ -44,7 +44,7 @@ export class MessageHandler {
 	 * Requests card blocks from the parent window and registers a callback to handle the response.
 	 * @param {function} callback - The callback function that will be called with the received card block data.
 	 */
-	getCardBlocks(callback: (data: CardBlockToCodeBeamerItemMapping[]) => void) {
+	getCardBlocks(callback: (data: CardBlockToCodebeamerItemMapping[]) => void) {
 		this.subscribeCallback(MessageAction.GET_CARD_BLOCKS, callback);
 		LucidGateway.requestCardBlockData();
 	}
