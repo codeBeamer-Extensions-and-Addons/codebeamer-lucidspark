@@ -1,5 +1,5 @@
 import React from "react";
-
+import Spinner from "react-bootstrap/Spinner";
 import "./importActions.css";
 import DefaultOverlayTrigger from "../../../../components/defaultOverlayTrigger/DefautOverlayTrigger";
 
@@ -83,7 +83,8 @@ export default function ImportActions(props: {
 					data-test="sync"
 					onClick={() => props.onSync()}
 				>
-					<span className="icon icon-refresh pos-adjusted-down clickable"></span>
+					<span className="icon icon-refresh mr-1 pos-adjusted-down clickable"></span>
+					({props.importedItemsCount})
 				</button>
 			</DefaultOverlayTrigger>
 
@@ -102,12 +103,27 @@ export default function ImportActions(props: {
 					className="button button-secondary button-small flex flex-centered"
 					disabled={
 						props.isRelationsLoading ||
-						(props.areAllRelationsLoaded && props.relationsCount == 0)
+						(props.areAllRelationsLoaded && props.relationsCount === 0)
 					}
 					data-test="relations"
 					onClick={() => props.onRelations()}
 				>
-					<span className="icon icon-arrow-line-shape pos-adjusted-down clickable"></span>
+					<span
+						className={`icon icon-arrow-line-shape ${
+							props.areAllRelationsLoaded ? "mr-1" : ""
+						} pos-adjusted-down clickable`}
+					></span>
+
+					{props.isRelationsLoading ? (
+						<Spinner animation="border" variant="secondary" />
+					) : props.areAllRelationsLoaded ? (
+						props.relationsCount > 0 &&
+						props.missingRelationsCount === 0 ? (
+							`(${props.relationsCount})`
+						) : (
+							`(${props.missingRelationsCount})`
+						)
+					) : null}
 				</button>
 			</DefaultOverlayTrigger>
 		</div>

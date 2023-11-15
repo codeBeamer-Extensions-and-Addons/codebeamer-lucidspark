@@ -44,11 +44,13 @@ export class LucidGateway {
 
 	/**
 	 * Create a line between two card blocks
+	 * @param importId - The ID of the import.
 	 * @param sourceBlockId - The ID of the source card block.
 	 * @param targetBlockId - The ID of the target card block.
 	 * @param relationshipType - The type of relationship between the codebeamer items on the two card blocks.
 	 */
 	public static async createLine(
+		importId: number,
 		sourceBlockId: string,
 		targetBlockId: string,
 		relationshipType: RelationshipType
@@ -58,6 +60,7 @@ export class LucidGateway {
 		this.postMessage({
 			action: MessageAction.CREATE_LINE,
 			payload: {
+				importId,
 				sourceBlockId,
 				targetBlockId,
 				relationshipType,
@@ -181,11 +184,13 @@ export class LucidGateway {
 
 	/**
 	 * Delete a line by id
+	 * @param importId - The ID of the import.
+	 * @param lineId - The ID of the line to delete.
 	 */
-	public static deleteLine(lineId: string) {
+	public static deleteLine(importId: number, lineId: string) {
 		this.postMessage({
 			action: MessageAction.DELETE_LINE,
-			payload: { lineId },
+			payload: { importId, lineId },
 		});
 	}
 

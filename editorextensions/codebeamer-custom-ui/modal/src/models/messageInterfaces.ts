@@ -37,6 +37,7 @@ export interface UpdateCardPayload {
 
 // Interface for payload specific to the CREATE_LINE action
 export interface CreateLinePayload {
+	importId: number;
 	sourceBlockId: string;
 	targetBlockId: string;
 	relationshipType: RelationshipType;
@@ -45,6 +46,7 @@ export interface CreateLinePayload {
 
 // Interface for payload specific to the DELETE_LINE action
 export interface DeleteLinePayload {
+	importId: number;
 	lineId: string;
 }
 

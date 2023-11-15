@@ -17,7 +17,7 @@ import "./queryResults.css";
 import { useImportedItems } from "../../../../hooks/useImportedItems";
 import { useLines } from "../../../../hooks/useLines";
 import { LucidGateway } from "../../../../api/LucidGateway";
-import { BlockRelation } from "../../../../models/lucidLineData";
+import { BlockRelation, LucidLineData } from "../../../../models/lucidLineData";
 
 export default function QueryResults() {
 	const [page, setPage] = useState(DEFAULT_RESULT_PAGE);
@@ -26,6 +26,15 @@ export default function QueryResults() {
 	const [eos, setEos] = useState(false);
 	const [importing, setImporting] = useState(false);
 	const [synchronizing, setSynchronizing] = useState(false);
+	const [missingRelations, setMissingRelations] = useState<BlockRelation[]>(
+		[]
+	);
+	const [relationsToDelete, setRelationsToDelete] = useState<LucidLineData[]>(
+		[]
+	);
+	const [importingMode, setImportingMode] = useState<
+		"import" | "createLines" | "deleteLines"
+	>("");
 
 	const intersectionObserverOptions = {
 		root: document.getElementById("queryResultsContainer"),
@@ -156,12 +165,14 @@ export default function QueryResults() {
 		setItemsToImport(
 			items.filter((i) => i.selected).map((i) => i.id.toString())
 		);
+		setImportingMode("import");
 		setImporting(true);
 	};
 
 	const handleImportAll = () => {
 		// passing an empty array == "Which one would you like to import? Yes."
 		setItemsToImport([]);
+		setImportingMode("import");
 		setImporting(true);
 	};
 
@@ -171,41 +182,31 @@ export default function QueryResults() {
 
 	const handleRelations = async () => {
 		let blockRelations = relations;
-		console.log("normal relations", blockRelations.length);
+
+		setImporting(true);
 
 		if (!areAllRelationsLoaded) {
 			blockRelations = await fetchRelations(importedItems);
-			console.log("blockRelations", blockRelations.length);
 		}
 
 		const missingRelations = getMissingRelations(blockRelations);
-		console.log("missing relations", missingRelations.length);
-		console.log("are relations loading", isLoadingRelations);
+		console.log("missing relations: ", missingRelations.length);
 
 		if (missingRelations.length > 0) {
-			missingRelations.forEach((relation) => {
-				LucidGateway.createLine(
-					relation.sourceBlockId,
-					relation.targetBlockId,
-					relation.type
-				);
-			});
+			setMissingRelations(missingRelations);
+			setImportingMode("createLines");
 		} else {
 			const linesToBeDeleted = lines.filter((line) => {
-				return relations.find((relation) => {
+				return blockRelations.find((relation) => {
 					return (
 						line.sourceBlockId == relation.sourceBlockId &&
 						line.targetBlockId == relation.targetBlockId
 					);
 				});
 			});
-
-			linesToBeDeleted.forEach((line) => {
-				LucidGateway.deleteLine(line.id);
-			});
+			setRelationsToDelete(linesToBeDeleted);
+			setImportingMode("deleteLines");
 		}
-
-		LucidGateway.closeModal();
 	};
 
 	//just to debug with
@@ -310,12 +311,16 @@ export default function QueryResults() {
 				/>
 				{importing && (
 					<Importer
+						mode={importingMode}
 						items={itemsToImport}
 						totalItems={
 							itemsToImport.length > 0
 								? itemsToImport.length
 								: data?.total
 						}
+						relationsToCreate={missingRelations}
+						relationsToDelete={relationsToDelete}
+						isLoadingRelations={isLoadingRelations}
 					/>
 				)}
 				{synchronizing && <Updater items={importedItems} />}
