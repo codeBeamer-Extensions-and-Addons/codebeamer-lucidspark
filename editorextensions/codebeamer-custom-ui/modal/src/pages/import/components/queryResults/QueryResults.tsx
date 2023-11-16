@@ -18,6 +18,8 @@ import { useImportedItems } from "../../../../hooks/useImportedItems";
 import { useLines } from "../../../../hooks/useLines";
 import { LucidGateway } from "../../../../api/LucidGateway";
 import { BlockRelation, LucidLineData } from "../../../../models/lucidLineData";
+import SyncButton from "../syncButton/syncButton";
+import RelationsButton from "../relationsButton/relationsButton";
 
 export default function QueryResults() {
 	const [page, setPage] = useState(DEFAULT_RESULT_PAGE);
@@ -32,8 +34,9 @@ export default function QueryResults() {
 	const [relationsToDelete, setRelationsToDelete] = useState<LucidLineData[]>(
 		[]
 	);
+	// "" state is used while fetching relations and then switches to the correct mode once the data if fetched to start creating or deleting lines
 	const [importingMode, setImportingMode] = useState<
-		"import" | "createLines" | "deleteLines"
+		"import" | "createLines" | "deleteLines" | ""
 	>("");
 
 	const intersectionObserverOptions = {
@@ -285,30 +288,36 @@ export default function QueryResults() {
 						</tr>
 					</tfoot>
 				</table>
-				<ImportActions
-					selectedCount={items.filter((i) => i.selected).length}
-					totalCount={data?.total ?? 0}
-					onImportSelected={handleImportSelected}
-					onImportAll={handleImportAll}
-					onSync={handleSync}
-					onRelations={handleRelations}
-					importedItemsCount={importedItems.length}
-					unImportedItemsCount={
-						(data?.total ?? 0) -
-						(importedItems.filter((item, index, array) => {
-							return (
-								item.codebeamerTrackerId == Number(trackerId) &&
-								array.findIndex(
-									(i) => i.codebeamerItemId == item.codebeamerItemId
-								) == index
-							);
-						}).length ?? 0)
-					}
-					relationsCount={relations.length}
-					missingRelationsCount={getMissingRelations(relations).length}
-					areAllRelationsLoaded={areAllRelationsLoaded}
-					isRelationsLoading={isLoadingRelations}
-				/>
+				<div className="w-100 flex-row">
+					<ImportActions
+						selectedCount={items.filter((i) => i.selected).length}
+						onImportSelected={handleImportSelected}
+						onImportAll={handleImportAll}
+						unImportedItemsCount={
+							(data?.total ?? 0) -
+							(importedItems.filter((item, index, array) => {
+								return (
+									item.codebeamerTrackerId == Number(trackerId) &&
+									array.findIndex(
+										(i) => i.codebeamerItemId == item.codebeamerItemId
+									) == index
+								);
+							}).length ?? 0)
+						}
+					/>
+					<SyncButton
+						importedItemsCount={importedItems.length}
+						onSync={handleSync}
+					/>
+					<RelationsButton
+						relationsCount={relations.length}
+						missingRelationsCount={getMissingRelations(relations).length}
+						areAllRelationsLoaded={areAllRelationsLoaded}
+						isRelationsLoading={isLoadingRelations}
+						onRelations={handleRelations}
+					/>
+				</div>
+
 				{importing && (
 					<Importer
 						mode={importingMode}

@@ -20,7 +20,7 @@ export default function Importer(props: {
 	totalItems?: number;
 	queryString?: string;
 	onClose?: Function;
-	mode: "import" | "createLines" | "deleteLines";
+	mode: "import" | "createLines" | "deleteLines" | "";
 	relationsToCreate?: BlockRelation[];
 	relationsToDelete?: LucidLineData[];
 	isLoadingRelations?: boolean;
