@@ -130,7 +130,6 @@ export const useImportedItems = (trackerId?: string) => {
 		const handleCardBlocksData = async (
 			data: CardBlockToCodebeamerItemMapping[]
 		) => {
-			if (trackerId == '4877085') console.log('data: ', data.length);
 			setImportedItems(data);
 
 			if (!trackerId) return;
