@@ -1,26 +1,26 @@
-import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import Spinner from "react-bootstrap/Spinner";
-import { useSelector } from "react-redux";
-import { useGetItemsQuery } from "../../../../api/codeBeamerApi";
-import { LucidGateway } from "../../../../api/LucidGateway";
+import React, { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import Spinner from 'react-bootstrap/Spinner';
+import { useSelector } from 'react-redux';
+import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
+import { LucidGateway } from '../../../../api/LucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
-} from "../../../../constants/cb-import-defaults";
-import { CodeBeamerItem } from "../../../../models/codebeamer-item.if";
-import { RootState } from "../../../../store/store";
-import { useImportedItems } from "../../../../hooks/useImportedItems";
-import { BlockRelation, LucidLineData } from "../../../../models/lucidLineData";
+} from '../../../../constants/cb-import-defaults';
+import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
+import { RootState } from '../../../../store/store';
+import { useImportedItems } from '../../../../hooks/useImportedItems';
+import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 
-import "./importer.css";
+import './importer.css';
 
 export default function Importer(props: {
 	items: string[];
 	totalItems?: number;
 	queryString?: string;
 	onClose?: Function;
-	mode: "import" | "createLines" | "deleteLines" | "";
+	mode: 'import' | 'createLines' | 'deleteLines' | '';
 	relationsToCreate?: BlockRelation[];
 	relationsToDelete?: LucidLineData[];
 	isLoadingRelations?: boolean;
@@ -37,13 +37,13 @@ export default function Importer(props: {
 	const getMainQueryString = () => {
 		const mainQuery = cbqlString;
 		const selectedItemsFilter = props.items.length
-			? ` AND item.id IN (${props.items.join(",")})`
-			: "";
+			? ` AND item.id IN (${props.items.join(',')})`
+			: '';
 		const importedItemsFilter = importedItems.length
 			? ` AND item.id NOT IN (${importedItems
 					.map((i) => i.codebeamerItemId)
-					.join(",")})`
-			: "";
+					.join(',')})`
+			: '';
 
 		if (props.queryString) {
 			return `${props.queryString}${importedItemsFilter}`;
@@ -55,11 +55,14 @@ export default function Importer(props: {
 	//* applies all currently active filters by using the stored cbqlString,
 	//* then further filters out only the selected items (or takes all of 'em)
 
-	const { data, error, isLoading } = useGetItemsQuery({
-		page: DEFAULT_RESULT_PAGE,
-		pageSize: MAX_ITEMS_PER_IMPORT,
-		queryString: getMainQueryString(),
-	});
+	const { data, error, isLoading } =
+		props.mode === 'import'
+			? useGetItemsQuery({
+					page: DEFAULT_RESULT_PAGE,
+					pageSize: MAX_ITEMS_PER_IMPORT,
+					queryString: getMainQueryString(),
+			  })
+			: { data: undefined, error: undefined, isLoading: false };
 
 	React.useEffect(() => {
 		const processImport = async () => {
@@ -71,7 +74,7 @@ export default function Importer(props: {
 					if (_items[i].categories?.length) {
 						if (
 							_items[i].categories.find(
-								(c) => c.name == "Folder" || c.name == "Information"
+								(c) => c.name == 'Folder' || c.name == 'Information'
 							)
 						) {
 							continue;
@@ -90,7 +93,7 @@ export default function Importer(props: {
 			}
 		};
 
-		if (props.mode === "import") {
+		if (props.mode === 'import') {
 			if (data) {
 				processImport().catch((err) => console.error(err));
 			}
@@ -127,11 +130,11 @@ export default function Importer(props: {
 			if (error) {
 				if (props.onClose) props.onClose();
 			} else if (props.relationsToCreate) {
-				if (props.mode === "createLines") {
+				if (props.mode === 'createLines') {
 					createLines(props.relationsToCreate as BlockRelation[]).catch(
 						(err) => console.error(err)
 					);
-				} else if (props.mode === "deleteLines") {
+				} else if (props.mode === 'deleteLines') {
 					deleteLines(props.relationsToDelete as LucidLineData[]).catch(
 						(err) => console.error(err)
 					);
@@ -139,11 +142,11 @@ export default function Importer(props: {
 			}
 		};
 
-		if (props.mode === "createLines") {
+		if (props.mode === 'createLines') {
 			if (props.relationsToCreate && !props.isLoadingRelations) {
 				processLines().catch((err) => console.error(err));
 			}
-		} else if (props.mode === "deleteLines") {
+		} else if (props.mode === 'deleteLines') {
 			if (props.relationsToDelete && !props.isLoadingRelations) {
 				processLines().catch((err) => console.error(err));
 			}
@@ -173,9 +176,9 @@ export default function Importer(props: {
 								<Spinner animation="border" variant="primary" />
 								<br />
 								<span>
-									{props.mode === "import"
-										? "Creating cards"
-										: props.mode === "createLines"
+									{props.mode === 'import'
+										? 'Creating cards'
+										: props.mode === 'createLines'
 										? `Visualizing ${props.relationsToCreate?.length} Relations & Associations`
 										: `Deleting ${props.relationsToDelete?.length} Relations & Associations`}
 								</span>
