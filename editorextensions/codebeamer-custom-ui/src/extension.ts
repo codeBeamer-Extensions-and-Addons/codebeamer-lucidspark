@@ -19,4 +19,4 @@ menu.addMenuItem({
 	iconUrl: icon,
 });
 
-console.log('codebeamer-cards extension loaded @v1.1');
+console.log('codebeamer-cards extension loaded @v1.2-alpha.1');
