@@ -10,17 +10,17 @@ import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,
 } from '../../../../constants/cb-import-defaults';
-import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
 
 import '../importer/importer.css';
+import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
 
 /**
  * Twin of {@link Importer}, but for updating.
  */
 export default function Updater(props: {
-	items: CardBlockToItemMapping[];
+	items: CardBlockToCodebeamerItemMapping[];
 	onClose?: () => void;
 }) {
 	// My programming skills were insufficient to adequately generalize Importer & Updater. They only differ in a few (but supposedly essential) cases.
@@ -37,7 +37,7 @@ export default function Updater(props: {
 		page: DEFAULT_RESULT_PAGE,
 		pageSize: MAX_ITEMS_PER_SYNCH,
 		queryString: `item.id IN (${props.items
-			.map((i) => i.itemId)
+			.map((i) => i.codebeamerItemId)
 			.join(',')})`,
 	});
 
@@ -74,7 +74,7 @@ export default function Updater(props: {
 				_items[i].tracker.color = color;
 
 				const cardBlockId = props.items.find(
-					(item) => item.itemId == _items[i].id
+					(item) => item.codebeamerItemId == _items[i].id
 				)?.cardBlockId;
 				if (!cardBlockId) {
 					// miro.board.notifications.showError(

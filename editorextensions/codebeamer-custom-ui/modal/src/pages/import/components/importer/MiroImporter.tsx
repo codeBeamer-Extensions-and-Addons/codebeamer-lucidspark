@@ -48,9 +48,8 @@ export default function Importer(props: {
 				await LucidGateway.createAppCard(
 					importId,
 					_items[i],
-					props.items.find(
-						(m) => m.id == _items[i].id.toString().trim()
-					)?.coordinates
+					props.items.find((m) => m.id == _items[i].id.toString().trim())
+						?.coordinates
 				);
 			}
 		};

@@ -1,17 +1,20 @@
 import { AppData } from '@mirohq/websdk-types';
+import { CodeBeamerItem } from './codebeamer-item.if';
+import TrackerDetails from './trackerDetails.if';
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
 
 export interface ItemQueryPage {
 	page: number;
 	pageSize: number;
 	total: number;
-	items: any[];
+	items: CodeBeamerItem[];
 }
 
 export interface TrackerSearchPage {
 	page: number;
 	pageSize: number;
 	total: number;
-	trackers: any[];
+	trackers: TrackerDetails[];
 }
 
 export interface UserQueryPage {
@@ -82,14 +85,6 @@ export interface ItemRelation {
 		version?: number;
 	};
 	type: string;
-}
-
-/**
- * Structure of an Association
- */
-export interface Association {
-	associationId: number;
-	targetItemId: number;
 }
 
 export interface AssociationDetails {

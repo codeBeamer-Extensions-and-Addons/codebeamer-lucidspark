@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CardBlockToItemMapping } from '../../../../models/cardBlockToItemMapping.if';
+import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
 import { getStore } from '../../../../store/store';
 import Updater from './Updater';
 
@@ -31,10 +31,10 @@ describe('<Updater>', () => {
 	});
 
 	it('fetches the details of the items passed as props', () => {
-		const items: CardBlockToItemMapping[] = [
-			{ itemId: 1, trackerId: 1, cardBlockId: '' },
-			{ itemId: 2, trackerId: 1, cardBlockId: '' },
-			{ itemId: 3, trackerId: 1, cardBlockId: '' },
+		const items: CardBlockToCodebeamerItemMapping[] = [
+			{ codebeamerItemId: 1, codebeamerTrackerId: 1, cardBlockId: '1' },
+			{ codebeamerItemId: 2, codebeamerTrackerId: 1, cardBlockId: '2' },
+			{ codebeamerItemId: 3, codebeamerTrackerId: 1, cardBlockId: '3' },
 		];
 		const store = getStore();
 
@@ -53,10 +53,10 @@ describe('<Updater>', () => {
 		const progressBarSelector = 'importProgress';
 
 		it('shows the total amount of items to import based on the passed items array', () => {
-			const items: CardBlockToItemMapping[] = [
-				{ itemId: 1, trackerId: 1, cardBlockId: '' },
-				{ itemId: 2, trackerId: 1, cardBlockId: '' },
-				{ itemId: 3, trackerId: 1, cardBlockId: '' },
+			const items: CardBlockToCodebeamerItemMapping[] = [
+				{ codebeamerItemId: 1, codebeamerTrackerId: 1, cardBlockId: '1' },
+				{ codebeamerItemId: 2, codebeamerTrackerId: 1, cardBlockId: '2' },
+				{ codebeamerItemId: 3, codebeamerTrackerId: 1, cardBlockId: '3' },
 			];
 			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
 
