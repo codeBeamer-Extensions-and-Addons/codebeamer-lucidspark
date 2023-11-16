@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MessageHandler } from '../api/MessageHandler';
+import { MessageHandler } from '../api/messageHandler';
 import { LucidLineData } from '../models/lucidLineData';
 import { MessageAction } from '../models/messageInterfaces';
 

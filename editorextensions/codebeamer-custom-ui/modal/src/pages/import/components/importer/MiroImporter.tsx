@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import ProgressBar from "react-bootstrap/ProgressBar";
-import Spinner from "react-bootstrap/Spinner";
-import { useGetItemsQuery } from "../../../../api/codeBeamerApi";
-import { LucidGateway } from "../../../../api/LucidGateway";
+import React, { useState } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import Spinner from 'react-bootstrap/Spinner';
+import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
+import { LucidGateway } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
-} from "../../../../constants/cb-import-defaults";
-import { CodeBeamerItem } from "../../../../models/codebeamer-item.if";
-import { CompressedItem } from "../settings/miroImport/MiroImport";
+} from '../../../../constants/cb-import-defaults';
+import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
+import { CompressedItem } from '../settings/miroImport/MiroImport';
 
-import "./importer.css";
+import './importer.css';
 
 export default function Importer(props: {
 	items: CompressedItem[];
@@ -21,7 +21,7 @@ export default function Importer(props: {
 	 * Produces the query string for the import.
 	 */
 	const getMainQueryString = () => {
-		return `item.id IN (${props.items.map((i) => i.id).join(",")})`;
+		return `item.id IN (${props.items.map((i) => i.id).join(',')})`;
 	};
 
 	const { data, error, isLoading } = useGetItemsQuery({
@@ -36,11 +36,11 @@ export default function Importer(props: {
 			LucidGateway.startImport(importId, items.length);
 			const _items: CodeBeamerItem[] = structuredClone(items);
 			for (let i = 0; i < _items.length; i++) {
-				console.log("Item no. " + i + " of " + _items.length);
+				console.log('Item no. ' + i + ' of ' + _items.length);
 				if (_items[i].categories?.length) {
 					if (
 						_items[i].categories.find(
-							(c) => c.name == "Folder" || c.name == "Information"
+							(c) => c.name == 'Folder' || c.name == 'Information'
 						)
 					) {
 						continue;

@@ -1,25 +1,25 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
-import { useGetItemsQuery } from "../../../../api/codeBeamerApi";
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
 import {
 	DEFAULT_ITEMS_PER_PAGE,
 	DEFAULT_RESULT_PAGE,
-} from "../../../../constants/cb-import-defaults";
-import { ItemListView } from "../../../../models/itemListView";
-import { ItemQueryResultView } from "../../../../models/itemQueryResultView";
-import { RootState } from "../../../../store/store";
-import ImportActions from "../importActions/ImportActions";
-import Importer from "../importer/Importer";
-import QueryResult from "../queryResult/QueryResult";
-import Updater from "../updater/Updater";
+} from '../../../../constants/cb-import-defaults';
+import { ItemListView } from '../../../../models/itemListView';
+import { ItemQueryResultView } from '../../../../models/itemQueryResultView';
+import { RootState } from '../../../../store/store';
+import ImportActions from '../importActions/ImportActions';
+import Importer from '../importer/Importer';
+import QueryResult from '../queryResult/QueryResult';
+import Updater from '../updater/Updater';
 
-import "./queryResults.css";
-import { useImportedItems } from "../../../../hooks/useImportedItems";
-import { useLines } from "../../../../hooks/useLines";
-import { LucidGateway } from "../../../../api/LucidGateway";
-import { BlockRelation, LucidLineData } from "../../../../models/lucidLineData";
-import SyncButton from "../syncButton/syncButton";
-import RelationsButton from "../relationsButton/relationsButton";
+import './queryResults.css';
+import { useImportedItems } from '../../../../hooks/useImportedItems';
+import { useLines } from '../../../../hooks/useLines';
+import { LucidGateway } from '../../../../api/lucidGateway';
+import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
+import SyncButton from '../syncButton/syncButton';
+import RelationsButton from '../relationsButton/relationsButton';
 
 export default function QueryResults() {
 	const [page, setPage] = useState(DEFAULT_RESULT_PAGE);
@@ -36,12 +36,12 @@ export default function QueryResults() {
 	);
 	// "" state is used while fetching relations and then switches to the correct mode once the data if fetched to start creating or deleting lines
 	const [importingMode, setImportingMode] = useState<
-		"import" | "createLines" | "deleteLines" | ""
-	>("");
+		'import' | 'createLines' | 'deleteLines' | ''
+	>('');
 
 	const intersectionObserverOptions = {
-		root: document.getElementById("queryResultsContainer"),
-		rootMargin: "0px",
+		root: document.getElementById('queryResultsContainer'),
+		rootMargin: '0px',
 		threshold: 1,
 	};
 
@@ -157,7 +157,7 @@ export default function QueryResults() {
 
 	React.useEffect(() => {
 		const lastItem = document.querySelector(
-			"#queryResults tbody tr:last-child"
+			'#queryResults tbody tr:last-child'
 		);
 		if (lastItem) {
 			lazyLoadObserver.observe(lastItem);
@@ -168,14 +168,14 @@ export default function QueryResults() {
 		setItemsToImport(
 			items.filter((i) => i.selected).map((i) => i.id.toString())
 		);
-		setImportingMode("import");
+		setImportingMode('import');
 		setImporting(true);
 	};
 
 	const handleImportAll = () => {
 		// passing an empty array == "Which one would you like to import? Yes."
 		setItemsToImport([]);
-		setImportingMode("import");
+		setImportingMode('import');
 		setImporting(true);
 	};
 
@@ -196,7 +196,7 @@ export default function QueryResults() {
 
 		if (missingRelations.length > 0) {
 			setMissingRelations(missingRelations);
-			setImportingMode("createLines");
+			setImportingMode('createLines');
 		} else {
 			const linesToBeDeleted = lines.filter((line) => {
 				return blockRelations.find((relation) => {
@@ -207,7 +207,7 @@ export default function QueryResults() {
 				});
 			});
 			setRelationsToDelete(linesToBeDeleted);
-			setImportingMode("deleteLines");
+			setImportingMode('deleteLines');
 		}
 	};
 

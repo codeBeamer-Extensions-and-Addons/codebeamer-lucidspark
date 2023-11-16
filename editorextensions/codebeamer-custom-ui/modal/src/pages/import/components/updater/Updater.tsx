@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import { Modal, Spinner, ProgressBar } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from 'react';
+import { Modal, Spinner, ProgressBar } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import {
 	useGetItemsQuery,
 	useGetTrackerDetailsQuery,
-} from "../../../../api/codeBeamerApi";
-import { LucidGateway } from "../../../../api/LucidGateway";
+} from '../../../../api/codeBeamerApi';
+import { LucidGateway } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_SYNCH,
-} from "../../../../constants/cb-import-defaults";
-import { CodeBeamerItem } from "../../../../models/codebeamer-item.if";
-import { RootState } from "../../../../store/store";
+} from '../../../../constants/cb-import-defaults';
+import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
+import { RootState } from '../../../../store/store';
 
-import "../importer/importer.css";
-import { CardBlockToCodebeamerItemMapping } from "../../../../models/lucidCardData";
+import '../importer/importer.css';
+import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
 
 /**
  * Twin of {@link Importer}, but for updating.
@@ -40,7 +40,7 @@ export default function Updater(props: {
 		pageSize: MAX_ITEMS_PER_SYNCH,
 		queryString: `item.id IN (${props.items
 			.map((i) => i.codebeamerItemId)
-			.join(",")})`,
+			.join(',')})`,
 	});
 
 	const {
@@ -64,7 +64,7 @@ export default function Updater(props: {
 				if (_items[i].categories?.length) {
 					if (
 						_items[i].categories.find(
-							(c) => c.name == "Folder" || c.name == "Information"
+							(c) => c.name == 'Folder' || c.name == 'Information'
 						)
 					) {
 						// miro.board.notifications.showInfo(

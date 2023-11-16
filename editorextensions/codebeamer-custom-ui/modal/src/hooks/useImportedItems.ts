@@ -3,7 +3,7 @@ import { store } from '../store/store';
 import { RelationsQuery, AssociationDetails } from '../models/api-query-types';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
 import { CardBlockToCodebeamerItemMapping } from '../models/lucidCardData';
-import { MessageHandler } from '../api/MessageHandler';
+import { MessageHandler } from '../api/messageHandler';
 import { BlockRelation } from '../models/lucidLineData';
 import { MessageAction } from '../models/messageInterfaces';
 

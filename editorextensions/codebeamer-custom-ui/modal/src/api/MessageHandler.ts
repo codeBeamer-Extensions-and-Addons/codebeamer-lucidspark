@@ -1,7 +1,7 @@
 import { CardBlockToCodebeamerItemMapping } from '../models/lucidCardData';
 import { LucidLineData } from '../models/lucidLineData';
 import { IncomingMessage, MessageAction } from '../models/messageInterfaces';
-import { LucidGateway } from './LucidGateway';
+import { LucidGateway } from './lucidGateway';
 
 /**
  * Class for handling message events and callbacks.

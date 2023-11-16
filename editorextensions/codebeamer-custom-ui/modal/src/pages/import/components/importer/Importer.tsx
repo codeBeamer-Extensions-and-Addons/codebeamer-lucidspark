@@ -3,7 +3,7 @@ import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
 import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
-import { LucidGateway } from '../../../../api/LucidGateway';
+import { LucidGateway } from '../../../../api/lucidGateway';
 import {
 	DEFAULT_RESULT_PAGE,
 	MAX_ITEMS_PER_IMPORT,
