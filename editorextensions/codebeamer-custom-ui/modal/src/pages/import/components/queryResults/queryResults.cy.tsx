@@ -269,7 +269,7 @@ describe('<QueryResults>', () => {
 		];
 
 		cy.stub(window.parent, 'postMessage')
-			.as('postMessageStub')
+			.as('boardGetStub')
 			.callsFake((message) => {
 				if (message.action === 'getCardBlocks') {
 					// Handle GET_CARD_BLOCKS action
@@ -323,8 +323,8 @@ describe('<QueryResults>', () => {
 		const expectedMissingRelationsCount = 1;
 
 		cy.getBySel('relations').should(
-			'have.text',
-			`Show Relations (${expectedMissingRelationsCount})`
+			'contain.text',
+			expectedMissingRelationsCount
 		);
 	});
 

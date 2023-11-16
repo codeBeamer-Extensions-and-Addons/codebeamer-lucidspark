@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { store } from "../store/store";
-import { RelationsQuery, AssociationDetails } from "../models/api-query-types";
-import { RelationshipType } from "../enums/associationRelationshipType.enum";
-import { CardBlockToCodebeamerItemMapping } from "../models/lucidCardData";
-import { MessageHandler } from "../api/MessageHandler";
-import { BlockRelation } from "../models/lucidLineData";
+import React, { useState } from 'react';
+import { store } from '../store/store';
+import { RelationsQuery, AssociationDetails } from '../models/api-query-types';
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
+import { CardBlockToCodebeamerItemMapping } from '../models/lucidCardData';
+import { MessageHandler } from '../api/MessageHandler';
+import { BlockRelation } from '../models/lucidLineData';
+import { MessageAction } from '../models/messageInterfaces';
 
 /**
  * Queries the CardBlocks present on the Lucid board
@@ -23,10 +24,10 @@ export const useImportedItems = (trackerId?: string) => {
 	const password = store.getState().userSettings.cbPassword;
 
 	const requestArgs = {
-		method: "GET",
+		method: 'GET',
 		headers: new Headers({
-			"Content-Type": "text/plain",
-			Authorization: `Basic ${btoa(username + ":" + password)}`,
+			'Content-Type': 'text/plain',
+			Authorization: `Basic ${btoa(username + ':' + password)}`,
 		}),
 	};
 
@@ -75,7 +76,7 @@ export const useImportedItems = (trackerId?: string) => {
 									let relationshipType = RelationshipType.DOWNSTREAM;
 
 									if (
-										relation.type === "OutgoingTrackerItemAssociation"
+										relation.type === 'OutgoingTrackerItemAssociation'
 									) {
 										const associationRes = await fetch(
 											`${
@@ -112,7 +113,7 @@ export const useImportedItems = (trackerId?: string) => {
 			blockRelations = allBlockRelations.flat();
 			setRelations(blockRelations);
 		} catch (error) {
-			console.warn("Failed to fetch relations:", error);
+			console.warn('Failed to fetch relations:', error);
 		}
 		setIsLoadingRelations(false);
 		setAreAllRelationsLoaded(true);
@@ -129,6 +130,7 @@ export const useImportedItems = (trackerId?: string) => {
 		const handleCardBlocksData = async (
 			data: CardBlockToCodebeamerItemMapping[]
 		) => {
+			if (trackerId == '4877085') console.log('data: ', data.length);
 			setImportedItems(data);
 
 			if (!trackerId) return;
@@ -143,6 +145,13 @@ export const useImportedItems = (trackerId?: string) => {
 		};
 
 		messageHandler.getCardBlocks(handleCardBlocksData);
+
+		return () => {
+			messageHandler.unsubscribeCallback(
+				MessageAction.GET_CARD_BLOCKS,
+				handleCardBlocksData
+			);
+		};
 	}, [trackerId]);
 
 	return {

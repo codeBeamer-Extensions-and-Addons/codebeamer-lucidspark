@@ -193,7 +193,6 @@ export default function QueryResults() {
 		}
 
 		const missingRelations = getMissingRelations(blockRelations);
-		console.log("missing relations: ", missingRelations.length);
 
 		if (missingRelations.length > 0) {
 			setMissingRelations(missingRelations);

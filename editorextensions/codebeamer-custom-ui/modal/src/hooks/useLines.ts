@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { MessageHandler } from "../api/MessageHandler";
-import { LucidLineData } from "../models/lucidLineData";
+import React, { useState } from 'react';
+import { MessageHandler } from '../api/MessageHandler';
+import { LucidLineData } from '../models/lucidLineData';
+import { MessageAction } from '../models/messageInterfaces';
 
 /**
  * Queries the Lines present on the Lucid board
@@ -20,6 +21,13 @@ export const useLines = () => {
 		};
 
 		messageHandler.getLines(handleLinesData);
+
+		return () => {
+			messageHandler.unsubscribeCallback(
+				MessageAction.GET_LINES,
+				handleLinesData
+			);
+		};
 	}, []);
 
 	return lines;

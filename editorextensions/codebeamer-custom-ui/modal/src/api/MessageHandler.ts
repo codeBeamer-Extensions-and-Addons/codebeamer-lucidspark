@@ -1,7 +1,7 @@
-import { CardBlockToCodebeamerItemMapping } from "../models/lucidCardData";
-import { LucidLineData } from "../models/lucidLineData";
-import { IncomingMessage, MessageAction } from "../models/messageInterfaces";
-import { LucidGateway } from "./LucidGateway";
+import { CardBlockToCodebeamerItemMapping } from '../models/lucidCardData';
+import { LucidLineData } from '../models/lucidLineData';
+import { IncomingMessage, MessageAction } from '../models/messageInterfaces';
+import { LucidGateway } from './LucidGateway';
 
 /**
  * Class for handling message events and callbacks.
@@ -21,7 +21,7 @@ export class MessageHandler {
 	 * @private
 	 */
 	private constructor() {
-		window.addEventListener("message", (e) => {
+		window.addEventListener('message', (e) => {
 			const data = JSON.parse(e.data);
 			this.notifyCallbacks(data);
 		});
@@ -65,12 +65,13 @@ export class MessageHandler {
 	}
 
 	unsubscribeCallback(action: MessageAction, callback: (data: []) => void) {
-		const actionCallbacks = this.callbacks.get(action) || [];
-		const index = actionCallbacks.indexOf(callback);
-		if (index !== -1) {
-			actionCallbacks.splice(index, 1);
+		const actionCallbacks = this.callbacks.get(action);
+		if (actionCallbacks) {
+			this.callbacks.set(
+				action,
+				actionCallbacks.filter((cb) => cb !== callback)
+			);
 		}
-		this.callbacks.set(action, actionCallbacks);
 	}
 
 	/**
@@ -82,7 +83,6 @@ export class MessageHandler {
 		if (actionCallbacks) {
 			actionCallbacks.forEach((callback) => {
 				callback(data.payload as []);
-				this.unsubscribeCallback(data.action, callback);
 			});
 		}
 	}
