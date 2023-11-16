@@ -16,7 +16,6 @@ import Updater from '../updater/Updater';
 import './queryResults.css';
 import { useImportedItems } from '../../../../hooks/useImportedItems';
 import { useLines } from '../../../../hooks/useLines';
-import { LucidGateway } from '../../../../api/lucidGateway';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 import SyncButton from '../syncButton/syncButton';
 import RelationsButton from '../relationsButton/relationsButton';
@@ -209,11 +208,6 @@ export default function QueryResults() {
 			setRelationsToDelete(linesToBeDeleted);
 			setImportingMode('deleteLines');
 		}
-	};
-
-	//just to debug with
-	const closeModalDebugOnly = () => {
-		setImporting(false);
 	};
 
 	//*********************************************************************** */
