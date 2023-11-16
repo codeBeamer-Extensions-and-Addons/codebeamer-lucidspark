@@ -71,6 +71,9 @@ img {
 	position: relative;
 	bottom: 3px;
 }
+.rotate-90 {
+	transform: rotate(90deg);
+}
 
 /**cursors*/
 
@@ -112,6 +115,9 @@ img {
 
 .m-1 {
 	margin: 1rem;
+}
+.mr-25 {
+	margin-right: 0.25rem;
 }
 .mr-1 {
 	margin-right: 1rem;
