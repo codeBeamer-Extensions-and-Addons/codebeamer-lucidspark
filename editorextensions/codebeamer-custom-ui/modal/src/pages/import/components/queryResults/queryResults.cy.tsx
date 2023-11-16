@@ -32,7 +32,10 @@ describe('<QueryResults>', () => {
 
 		cy.stub(window.parent, 'postMessage').callsFake(() => {
 			const data = [itemOne, itemTwo];
-			window.postMessage(JSON.stringify(data), '*');
+			window.postMessage(
+				JSON.stringify({ payload: data, action: 'getCardBlocks' }),
+				'*'
+			);
 		});
 
 		const store = getStore();
@@ -133,7 +136,7 @@ describe('<QueryResults>', () => {
 			.should('equal', expectedQueryString);
 	});
 
-	it('passes the count of tracker items that have not been imported yet to the Import All button', () => {
+	it('passes the count of tracker items that have not been imported yet to the "Import All" button', () => {
 		const mockImportedItems = [
 			{
 				cardBlock: { id: '1' },
@@ -204,7 +207,13 @@ describe('<QueryResults>', () => {
 		cy.stub(window.parent, 'postMessage')
 			.as('boardGetStub')
 			.callsFake(() => {
-				window.postMessage(JSON.stringify(mockImportedItems), '*');
+				window.postMessage(
+					JSON.stringify({
+						payload: mockImportedItems,
+						action: 'getCardBlocks',
+					}),
+					'*'
+				);
 			});
 
 		const store = getStore();
@@ -230,6 +239,92 @@ describe('<QueryResults>', () => {
 		cy.getBySel('importAll').should(
 			'have.text',
 			`Import all (${expectedCount})`
+		);
+	});
+
+	it('passed the count of relations and associations that have not been visualized yet to the "Relation & Association Visualization" button', () => {
+		const mockLines = [
+			{
+				id: '1',
+				sourceBlockId: '1',
+				targetBlockId: '2',
+			},
+		];
+		const mockImportedItems = [
+			{
+				cardBlockId: '1',
+				codebeamerItemId: 1599513,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlockId: '2',
+				codebeamerItemId: 1599512,
+				codebeamerTrackerId: 4877085,
+			},
+			{
+				cardBlockId: '3',
+				codebeamerItemId: 1599511,
+				codebeamerTrackerId: 4877085,
+			},
+		];
+
+		cy.stub(window.parent, 'postMessage')
+			.as('boardGetStub')
+			.callsFake((message) => {
+				if (message.action === 'getCardBlocks') {
+					// Handle GET_CARD_BLOCKS action
+					window.postMessage(
+						JSON.stringify({
+							payload: mockImportedItems,
+							action: message.action,
+						}),
+						'*'
+					);
+				} else if (message.action === 'getLines') {
+					// Handle GET_LINES action
+					window.postMessage(
+						JSON.stringify({
+							payload: mockLines,
+							action: message.action,
+						}),
+						'*'
+					);
+				}
+			});
+
+		const store = getStore();
+		store.dispatch(setTrackerId('4877085'));
+
+		cy.intercept('POST', `**/api/v3/items/query`, {
+			fixture: 'query_multi-page.json',
+		}).as('itemQuery');
+
+		cy.intercept('GET', `**/api/v3/items/1599511/relations`, {
+			statusCode: 200,
+			body: { downstreamReferences: [], outgoingAssociations: [] },
+		}).as('emptyRelationQuery1');
+		cy.intercept('GET', `**/api/v3/items/1599512/relations`, {
+			statusCode: 200,
+			body: { downstreamReferences: [], outgoingAssociations: [] },
+		}).as('emptyRelationQuery2');
+
+		cy.intercept('GET', `**/api/v3/items/1599513/relations`, {
+			fixture: 'itemRelationsForRelationsButton.json',
+		}).as('relationQuery');
+
+		cy.intercept('GET', `**/api/v3/associations/*`, {
+			fixture: 'associationDetails.json',
+		}).as('associationDetailsQuery');
+
+		cy.mountWithStore(<QueryResults />, { reduxStore: store });
+
+		// only the first item with id: 1599513 receives data from the fixture, looking into the fixture, it has two outgoingAssociations
+		// one of which is mocked in the mockLines array which means there is one more outgoingAssociation that doesn't have a line yet
+		const expectedMissingRelationsCount = 1;
+
+		cy.getBySel('relations').should(
+			'contain.text',
+			expectedMissingRelationsCount
 		);
 	});
 
