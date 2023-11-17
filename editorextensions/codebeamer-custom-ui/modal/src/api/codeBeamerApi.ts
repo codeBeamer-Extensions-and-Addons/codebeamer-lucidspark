@@ -15,7 +15,7 @@ import {
 	RelationsQuery,
 	TrackerSearchPage,
 	UserQueryPage,
-	Association,
+	AssociationDetails,
 } from '../models/api-query-types';
 import { CbqlApiQuery } from '../models/cbqlApiQuery';
 import TrackerDetails from '../models/trackerDetails.if';
@@ -137,8 +137,7 @@ export const codeBeamerApi = createApi({
 			},
 		}),
 		getFilteredUsers: builder.query<UserQueryPage, string>({
-			query: (filter) =>
-				`/rest/users/page/1?pagesize=50&filter=${filter}`,
+			query: (filter) => `/rest/users/page/1?pagesize=50&filter=${filter}`,
 		}),
 		searchTrackers: builder.query<TrackerSearchPage, CbqlApiQuery>({
 			query: (parameters) => {
@@ -193,7 +192,7 @@ export const codeBeamerApi = createApi({
 		getItemRelations: builder.query<RelationsQuery, string | number>({
 			query: (id) => `api/v3/items/${id}/relations`,
 		}),
-		getAssociation: builder.query<Association, string | number>({
+		getAssociation: builder.query<AssociationDetails, string | number>({
 			query: (id) => `/api/v3/associations/${id}`,
 		}),
 	}),

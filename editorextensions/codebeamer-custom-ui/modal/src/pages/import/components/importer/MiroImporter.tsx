@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Modal from 'react-bootstrap/Modal';
-import ProgressBar from 'react-bootstrap/ProgressBar';
 import Spinner from 'react-bootstrap/Spinner';
 import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
 import { LucidGateway } from '../../../../api/lucidGateway';
@@ -15,7 +14,7 @@ import './importer.css';
 
 export default function Importer(props: {
 	items: CompressedItem[];
-	onClose?: Function;
+	onClose?: () => void;
 }) {
 	/**
 	 * Produces the query string for the import.
@@ -49,9 +48,8 @@ export default function Importer(props: {
 				await LucidGateway.createAppCard(
 					importId,
 					_items[i],
-					props.items.find(
-						(m) => m.id == _items[i].id.toString().trim()
-					)?.coordinates
+					props.items.find((m) => m.id == _items[i].id.toString().trim())
+						?.coordinates
 				);
 			}
 		};

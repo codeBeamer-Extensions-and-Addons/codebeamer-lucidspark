@@ -24,7 +24,7 @@ const initialState: AppMessagesState = {
 	messages: [],
 };
 
-var increment = 0;
+let increment = 0;
 
 export const appMessagesSlice = createSlice({
 	name: 'appMessages',

@@ -27,7 +27,6 @@ interface Errors {
  */
 export default function AuthForm(props: {
 	loading?: boolean;
-	error?: any;
 	headerLess?: boolean;
 	successAnimation?: boolean;
 }) {
@@ -39,14 +38,12 @@ export default function AuthForm(props: {
 	const { cbUsername, cbPassword } = useSelector(
 		(state: RootState) => state.userSettings
 	);
-	const { cbAddress } = useSelector(
-		(state: RootState) => state.boardSettings
-	);
+	const { cbAddress } = useSelector((state: RootState) => state.boardSettings);
 
 	/**
 	 * Toggles the {@link showRCNHint} variable, which triggers the respective hint to show or not.
 	 */
-	const toggleRCNHint = (e: React.ChangeEvent<any>) => {
+	const toggleRCNHint = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.value.includes('retina')) {
 			setShowRCNHint(true);
 		} else {
@@ -87,7 +84,7 @@ export default function AuthForm(props: {
 
 						if (!values.cbAddress) errors.cbAddress = 'Required';
 						else if (values.cbAddress) {
-							const regex = /^https?:\/\/[a-z0-9\.]*\/cb$/;
+							const regex = /^https?:\/\/[a-z0-9.]*\/cb$/;
 							if (!values.cbAddress.match(regex))
 								errors.cbAddress =
 									'Not a valid CB Address! Must specify the protocol (HTTP(S)) and end with /cb';
@@ -117,7 +114,6 @@ export default function AuthForm(props: {
 					}}
 				>
 					{({
-						values,
 						errors,
 						touched,
 						handleChange,
@@ -140,7 +136,9 @@ export default function AuthForm(props: {
 									type="text"
 									name="cbAddress"
 									className="input"
-									onChange={(e: React.ChangeEvent<any>) => {
+									onChange={(
+										e: React.ChangeEvent<HTMLInputElement>
+									) => {
 										handleChange(e);
 										toggleRCNHint(e);
 									}}

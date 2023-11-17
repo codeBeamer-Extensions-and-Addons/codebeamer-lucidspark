@@ -1,12 +1,12 @@
 import React, { useRef } from 'react';
-import { ItemListView } from '../../../../models/itemListView';
 import './queryResult.css';
+import { ItemQueryResultView } from '../../../../models/itemQueryResultView';
 
 export default function QueryResult(props: {
-	item: ItemListView;
+	item: ItemQueryResultView;
 	checked?: boolean;
 	disabled?: boolean;
-	onSelect: Function;
+	onSelect: (item: ItemQueryResultView, checked: boolean) => void;
 }) {
 	const checkbox = useRef<HTMLInputElement>(null);
 
@@ -14,7 +14,7 @@ export default function QueryResult(props: {
 		if (checkbox.current) {
 			checkbox.current.checked = props.checked ?? false;
 		}
-	}, []);
+	}, [props.checked]);
 
 	const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
 		// Prevent event propagation to the parent tr element
@@ -33,9 +33,7 @@ export default function QueryResult(props: {
 				<input
 					type="checkbox"
 					className="checkBox clickable"
-					onChange={(e) =>
-						props.onSelect(props.item, e.target.checked)
-					}
+					onChange={(e) => props.onSelect(props.item, e.target.checked)}
 					disabled={props.disabled}
 					data-test={'itemCheck-' + props.item.id}
 					ref={checkbox}

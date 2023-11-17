@@ -7,8 +7,8 @@ export default async function getRandomizedCoordSetInViewport(): Promise<{
 	y: number;
 }> {
 	const viewport = await miro.board.viewport.get(); // top-left corner of viewport
-	let randomYOffset = Math.random() * viewport.height;
-	let randomXOffset = Math.random() * viewport.width;
+	const randomYOffset = Math.random() * viewport.height;
+	const randomXOffset = Math.random() * viewport.width;
 	const y = viewport.y + randomYOffset;
 	const x = viewport.x + randomXOffset;
 

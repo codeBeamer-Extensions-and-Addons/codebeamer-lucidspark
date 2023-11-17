@@ -15,13 +15,13 @@ export default function FilterInput() {
 
 	const { trackerId } = useSelector((state: RootState) => state.userSettings);
 
-	const { data, error, isLoading } = useGetTrackerSchemaQuery(trackerId);
+	const { data } = useGetTrackerSchemaQuery(trackerId);
 
 	return (
 		<div>
 			<Formik
 				initialValues={{ category: 'Team', value: '' }}
-				validate={(values) => {}}
+				validate={() => {}}
 				onSubmit={(values, { setFieldValue }) => {
 					const filter = {
 						slug:
@@ -37,7 +37,7 @@ export default function FilterInput() {
 					setFieldValue('value', '');
 				}}
 			>
-				{({ values, errors, touched, handleSubmit }) => (
+				{({ values, handleSubmit }) => (
 					<form onSubmit={handleSubmit}>
 						<label className="form-group-label">Filter</label>
 						<div className="input-group">

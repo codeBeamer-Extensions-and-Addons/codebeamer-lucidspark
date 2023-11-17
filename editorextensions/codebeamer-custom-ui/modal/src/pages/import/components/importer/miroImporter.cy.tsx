@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { setTrackerId } from '../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../store/store';
 import MiroImporter from './MiroImporter';
 import { CompressedItem } from '../settings/miroImport/MiroImport';

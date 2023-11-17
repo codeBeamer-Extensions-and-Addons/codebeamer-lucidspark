@@ -39,7 +39,7 @@ export default function ActiveFilters() {
 						: 'ce12'
 				}`}
 			>
-				{activeFilters.map((f, i) => (
+				{activeFilters.map((f) => (
 					<FilterCriteria
 						key={
 							`${f.slug}-${f.value}-${f.id}` /*NOT just the id, because it will be reused */
