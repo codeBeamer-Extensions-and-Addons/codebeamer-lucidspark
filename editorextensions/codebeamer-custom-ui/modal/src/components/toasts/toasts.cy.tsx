@@ -59,7 +59,7 @@ describe('<Toasts>', () => {
 
 	it('displays toasts for the messages in store', () => {
 		const store = getStore();
-		for (let message of messages) {
+		for (const message of messages) {
 			store.dispatch(displayAppMessage(message));
 		}
 
@@ -74,7 +74,7 @@ describe('<Toasts>', () => {
 
 	it('displays toasts for the messages in store containing parametrized values', () => {
 		const store = getStore();
-		for (let message of parametrizedMessages) {
+		for (const message of parametrizedMessages) {
 			store.dispatch(displayAppMessage(message));
 		}
 
@@ -126,7 +126,7 @@ describe('<Toasts>', () => {
 
 	it('displays toasts with their defined background color', () => {
 		const store = getStore();
-		for (let message of messages) {
+		for (const message of messages) {
 			store.dispatch(displayAppMessage(message));
 		}
 

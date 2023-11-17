@@ -1,11 +1,11 @@
-import { CodeBeamerItem } from "../models/codebeamer-item.if";
-import getItemColorField from "./utils/getItemColorField";
-import { store } from "../store/store";
-import TrackerDetails from "../models/trackerDetails.if";
-import { CardData } from "../models/lucidCardData";
-import { RelationshipType } from "../enums/associationRelationshipType.enum";
-import { getColorForRelationshipType } from "./utils/getColorForRelationshipType";
-import { Message, MessageAction } from "../models/messageInterfaces";
+import { CodeBeamerItem } from '../models/codebeamer-item.if';
+import getItemColorField from './utils/getItemColorField';
+import { store } from '../store/store';
+import TrackerDetails from '../models/trackerDetails.if';
+import { CardData } from '../models/lucidCardData';
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
+import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
+import { Message, MessageAction } from '../models/messageInterfaces';
 
 export class LucidGateway {
 	/**
@@ -85,8 +85,8 @@ export class LucidGateway {
 		const cbBaseAddress = store.getState().boardSettings.cbAddress;
 
 		const headers = new Headers({
-			"Content-Type": "text/plain",
-			Authorization: `Basic ${btoa(username + ":" + password)}`,
+			'Content-Type': 'text/plain',
+			Authorization: `Basic ${btoa(username + ':' + password)}`,
 		});
 
 		// if (item.descriptionFormat == DescriptionFormat.WIKI) {
@@ -111,7 +111,7 @@ export class LucidGateway {
 		try {
 			const trackerRes = await fetch(
 				`${cbBaseAddress}/api/v3/trackers/${item.tracker.id}`,
-				{ method: "GET", headers }
+				{ method: 'GET', headers }
 			);
 			const trackerJson = (await trackerRes.json()) as TrackerDetails;
 			item.tracker.keyName = trackerJson.keyName;
@@ -205,6 +205,6 @@ export class LucidGateway {
 	 * Post a message to the parent window.
 	 */
 	private static postMessage(message: Message) {
-		window.parent.postMessage(message, "*");
+		window.parent.postMessage(message, '*');
 	}
 }

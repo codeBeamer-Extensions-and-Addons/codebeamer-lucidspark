@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 // ***********************************************************
 // This example support/component.ts is processed and
 // loaded automatically before your test files.
@@ -35,10 +36,7 @@ declare global {
 	namespace Cypress {
 		interface Chainable {
 			mount: typeof mount;
-			getBySel(
-				selector: string,
-				...args: any
-			): Chainable<JQuery<Element>>;
+			getBySel(selector: string, ...args: []): Chainable<JQuery<Element>>;
 			mountWithStore(
 				component: React.ReactNode,
 				options?: MountOptions & {

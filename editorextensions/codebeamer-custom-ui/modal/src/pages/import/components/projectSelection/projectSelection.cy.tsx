@@ -10,7 +10,6 @@ import ProjectSelection from './ProjectSelection';
 const projectSelector = '.select__control';
 const projectsSelector = '.select__menu';
 const submitSelector = 'submit';
-const currentProjectSelector = 'current-project';
 const singleValueSelector = '.select__single-value';
 const userFeedbackWrapperSelector = 'user-feedback';
 const cbContextSelector = 'cb-context';

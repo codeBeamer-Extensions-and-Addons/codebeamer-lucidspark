@@ -108,18 +108,6 @@ describe('<Importer>', () => {
 	});
 
 	it('appends what items are already imported to the queryString so as not to duplicate them', () => {
-		cy.stub(window.parent, 'postMessage')
-			.as('boardGetStub')
-			.callsFake(() => {
-				window.postMessage(
-					JSON.stringify({
-						payload: mockImportedItems,
-						action: 'getCardBlocks',
-					}),
-					'*'
-				);
-			});
-
 		const items: string[] = ['1', '2', '3'];
 		const store = getStore();
 		store.dispatch(setTrackerId('1'));
@@ -133,16 +121,16 @@ describe('<Importer>', () => {
 			body: [],
 		}).as('fetch');
 
-		cy.mountWithStore(<Importer items={items} mode="import" />, {
-			reduxStore: store,
-		});
-
-		cy.get('@boardGetStub').should('be.called');
-
-		//that's just React, or my inability to properly use it - one call will be made to @fetch before the importedItems
-		//are updated. once they are, an overriding second call is made, which is the final one we want
-		cy.wait('@fetch');
-
+		cy.mountWithStore(
+			<Importer
+				items={items}
+				mode="import"
+				importedItems={mockImportedItems}
+			/>,
+			{
+				reduxStore: store,
+			}
+		);
 		cy.wait('@fetch')
 			.its('request.body.queryString')
 			.should('equal', expectedQuery);
@@ -163,18 +151,6 @@ describe('<Importer>', () => {
 		});
 
 		it('still appends what items are already imported to the queryString so as not to duplicate them', () => {
-			cy.stub(window.parent, 'postMessage')
-				.as('boardGetStub')
-				.callsFake(() => {
-					window.postMessage(
-						JSON.stringify({
-							payload: mockImportedItems,
-							action: 'getCardBlocks',
-						}),
-						'*'
-					);
-				});
-
 			const mockQueryString = 'item.id IN (1,2,3,4)';
 
 			const expectedQuery = `${mockQueryString} AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
@@ -185,14 +161,13 @@ describe('<Importer>', () => {
 			}).as('fetch');
 
 			cy.mountWithStore(
-				<Importer items={[]} mode="import" queryString={mockQueryString} />
+				<Importer
+					items={[]}
+					mode="import"
+					queryString={mockQueryString}
+					importedItems={mockImportedItems}
+				/>
 			);
-
-			cy.get('@boardGetStub').should('be.called');
-
-			//that's just React, or my inability to properly use it - one call will be made to @fetch before the importedItems
-			//are updated. once they are, an overriding second call is made, which is the final one we want
-			cy.wait('@fetch');
 
 			cy.wait('@fetch')
 				.its('request.body.queryString')

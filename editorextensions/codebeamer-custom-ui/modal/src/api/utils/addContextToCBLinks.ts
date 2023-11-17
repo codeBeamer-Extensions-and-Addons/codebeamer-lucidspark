@@ -1,5 +1,5 @@
-const hrefRegex = /href\=\"\/cb/g;
-const srcRegex = /src\=\"\/cb/g;
+const hrefRegex = /href="\/cb/g;
+const srcRegex = /src="\/cb/g;
 
 /**
  * Updates src- and href attributes in given value to absolute paths, if they start with /cb
@@ -11,7 +11,7 @@ export default function addContextToCBLinks(cbBaseUrl: string, value: string) {
 	value = value.replaceAll(hrefRegex, `href="${cbBaseUrl}`);
 	value = value.replaceAll(srcRegex, `src="${cbBaseUrl}`);
 
-	value = value.replaceAll(/\<a /g, `<a target="_blank" `);
+	value = value.replaceAll(/<a /g, `<a target="_blank" `);
 
 	return value;
 }

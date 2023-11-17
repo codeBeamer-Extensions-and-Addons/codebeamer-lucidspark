@@ -10,7 +10,7 @@ import './settings.css';
 /**
  * Wrapper for the various available settings, which it displays in a Modal.
  */
-export default function Settings(props: { onClose: Function }) {
+export default function Settings(props: { onClose: () => void }) {
 	const tabs: ITab[] = [
 		{
 			title: 'Project',

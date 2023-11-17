@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
@@ -10,26 +10,23 @@ import {
 } from '../../../../constants/cb-import-defaults';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
-import { useImportedItems } from '../../../../hooks/useImportedItems';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 
 import './importer.css';
+import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
 
 export default function Importer(props: {
 	items: string[];
 	totalItems?: number;
 	queryString?: string;
-	onClose?: Function;
+	onClose?: () => void;
 	mode: 'import' | 'createLines' | 'deleteLines' | '';
 	relationsToCreate?: BlockRelation[];
 	relationsToDelete?: LucidLineData[];
 	isLoadingRelations?: boolean;
+	importedItems?: CardBlockToCodebeamerItemMapping[];
 }) {
 	const { cbqlString } = useSelector((state: RootState) => state.userSettings);
-
-	const [loaded, setLoaded] = useState(0);
-
-	const { importedItems } = useImportedItems();
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.
@@ -39,8 +36,8 @@ export default function Importer(props: {
 		const selectedItemsFilter = props.items.length
 			? ` AND item.id IN (${props.items.join(',')})`
 			: '';
-		const importedItemsFilter = importedItems.length
-			? ` AND item.id NOT IN (${importedItems
+		const importedItemsFilter = props.importedItems
+			? ` AND item.id NOT IN (${props.importedItems
 					.map((i) => i.codebeamerItemId)
 					.join(',')})`
 			: '';
@@ -67,6 +64,7 @@ export default function Importer(props: {
 	React.useEffect(() => {
 		const processImport = async () => {
 			const importItems = async (items: CodeBeamerItem[]) => {
+				if (items.length === 0) LucidGateway.closeModal();
 				const importId = Math.ceil(Math.random() * 899) + 100;
 				LucidGateway.startImport(importId, items.length);
 				const _items: CodeBeamerItem[] = structuredClone(items);

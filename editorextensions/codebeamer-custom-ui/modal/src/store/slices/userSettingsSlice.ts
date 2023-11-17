@@ -159,7 +159,7 @@ export const userSettingsSlice = createSlice({
 			//* update the CBQL string accordingly
 			let cbql = action.payload;
 
-			for (let filter of current(state.activeFilters)) {
+			for (const filter of current(state.activeFilters)) {
 				const filterCbql = `${getQueryEntityNameForCriteria(
 					filter.fieldName,
 					state.trackerId

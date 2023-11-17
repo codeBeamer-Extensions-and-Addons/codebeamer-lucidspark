@@ -1,6 +1,6 @@
-import React from "react";
-import "./importActions.css";
-import DefaultOverlayTrigger from "../../../../components/defaultOverlayTrigger/DefautOverlayTrigger";
+import React from 'react';
+import './importActions.css';
+import DefaultOverlayTrigger from '../../../../components/defaultOverlayTrigger/DefautOverlayTrigger';
 
 export default function ImportActions(props: {
 	selectedCount: number;

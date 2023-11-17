@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Spinner, ProgressBar } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
 	useGetItemsQuery,
 	useGetTrackerDetailsQuery,
@@ -21,12 +21,10 @@ import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardDa
  */
 export default function Updater(props: {
 	items: CardBlockToCodebeamerItemMapping[];
-	onClose?: Function;
+	onClose?: () => void;
 }) {
 	// My programming skills were insufficient to adequately generalize Importer & Updater. They only differ in a few (but supposedly essential) cases.
 	// So I fell back to creating a seperate one for the Updater, with much duplication. If you know better, please go ahead.
-
-	const dispatch = useDispatch();
 
 	const { trackerId } = useSelector((state: RootState) => state.userSettings);
 
@@ -47,7 +45,6 @@ export default function Updater(props: {
 		key,
 		color,
 		error: trackerDetailsQueryError,
-		isLoading: isTrackerDetailsQueryLoading,
 	} = useGetTrackerDetailsQuery(trackerId, {
 		selectFromResult: ({ data, error, isLoading }) => ({
 			key: data?.keyName,

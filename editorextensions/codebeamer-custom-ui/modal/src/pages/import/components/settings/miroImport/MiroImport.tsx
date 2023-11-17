@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import MiroImporter from '../../importer/MiroImporter';
 
 export interface CompressedItem {
@@ -12,7 +12,7 @@ export interface CompressedItem {
 export default function MiroImport() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [file, setFile] = useState<File>();
-    const [importing, setImporting] = useState(false);
+	const [importing, setImporting] = useState(false);
 	const [itemsToImport, setItemsToImport] = useState<CompressedItem[]>([]);
 
 	const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -37,9 +37,9 @@ export default function MiroImport() {
 			const json = JSON.parse(readFile) as CompressedItem[];
 			// console.log(json);
 			setItemsToImport(json);
-            setImporting(true);
-		} catch (e: any) {
-			console.error('Error reading file: ', e.message);
+			setImporting(true);
+		} catch (error) {
+			console.error('Error reading file: ', error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -49,8 +49,8 @@ export default function MiroImport() {
 		<div className="centered">
 			<p className="mt-3" style={{ width: '150%', textAlign: 'center' }}>
 				<span>
-					Upload your exported codebeamer-cards <em>JSON</em> from our
-					Miro plugin here to import them to this Lucidspark board.
+					Upload your exported codebeamer-cards <em>JSON</em> from our Miro
+					plugin here to import them to this Lucidspark board.
 				</span>
 			</p>
 			<input className="mt-3" type="file" onChange={handleFileChange} />
@@ -64,7 +64,7 @@ export default function MiroImport() {
 			>
 				Import
 			</button>
-            {importing && <MiroImporter items={itemsToImport} />}
+			{importing && <MiroImporter items={itemsToImport} />}
 		</div>
 	);
 }

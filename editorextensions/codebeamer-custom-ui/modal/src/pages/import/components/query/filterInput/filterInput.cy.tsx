@@ -1,9 +1,6 @@
 import * as React from 'react';
 import { DefaultFilterCriteria } from '../../../../../enums/default-filter-criteria.enum';
-import {
-	addFilter,
-	setTrackerId,
-} from '../../../../../store/slices/userSettingsSlice';
+import { setTrackerId } from '../../../../../store/slices/userSettingsSlice';
 import { getStore } from '../../../../../store/store';
 import FilterInput from './FilterInput';
 
@@ -35,7 +32,7 @@ describe('<FilterInput>', () => {
 	describe('category select', () => {
 		it('displays the default Filter Criteria as options', () => {
 			cy.mountWithStore(<FilterInput />);
-			const defaults: String[] = Object.values(DefaultFilterCriteria);
+			const defaults: string[] = Object.values(DefaultFilterCriteria);
 
 			for (let i = 0; i < defaults.length; i++) {
 				cy.getBySel(categorySelectSelector)
@@ -58,7 +55,7 @@ describe('<FilterInput>', () => {
 			cy.wait('@fetchSchema');
 
 			cy.fixture('tracker_schema.json').then((json) => {
-				for (let field of json) {
+				for (const field of json) {
 					cy.getBySel(categorySelectSelector)
 						.find('option')
 						.should('contain.text', field.name);
@@ -115,12 +112,10 @@ describe('<FilterInput>', () => {
 			});
 
 			let slug: string = 'Priority';
-			let category: string = 'priority';
-			let value: string = 'down';
+			const value: string = 'down';
 
 			cy.fixture('tracker_schema.json').then((json) => {
 				slug = json[0].name;
-				category = json[0].trackerItemField;
 
 				cy.mountWithStore(<FilterInput />, { reduxStore: store });
 

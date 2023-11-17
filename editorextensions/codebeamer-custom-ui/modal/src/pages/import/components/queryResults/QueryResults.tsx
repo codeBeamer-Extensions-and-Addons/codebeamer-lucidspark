@@ -16,7 +16,6 @@ import Updater from '../updater/Updater';
 import './queryResults.css';
 import { useImportedItems } from '../../../../hooks/useImportedItems';
 import { useLines } from '../../../../hooks/useLines';
-import { LucidGateway } from '../../../../api/lucidGateway';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 import SyncButton from '../syncButton/syncButton';
 import RelationsButton from '../relationsButton/relationsButton';
@@ -61,7 +60,7 @@ export default function QueryResults() {
 		intersectionObserverOptions
 	);
 
-	const { cbqlString, trackerId, advancedSearch } = useSelector(
+	const { cbqlString, trackerId, activeFilters } = useSelector(
 		(state: RootState) => state.userSettings
 	);
 
@@ -211,11 +210,6 @@ export default function QueryResults() {
 		}
 	};
 
-	//just to debug with
-	const closeModalDebugOnly = () => {
-		setImporting(false);
-	};
-
 	//*********************************************************************** */
 	//********************************RENDER********************************* */
 	//*********************************************************************** */
@@ -293,15 +287,28 @@ export default function QueryResults() {
 						onImportSelected={handleImportSelected}
 						onImportAll={handleImportAll}
 						unImportedItemsCount={
-							(data?.total ?? 0) -
-							(importedItems.filter((item, index, array) => {
-								return (
-									item.codebeamerTrackerId == Number(trackerId) &&
-									array.findIndex(
-										(i) => i.codebeamerItemId == item.codebeamerItemId
-									) == index
-								);
-							}).length ?? 0)
+							activeFilters.length > 0
+								? (data?.total ?? 0) -
+								  (items.filter((item) => {
+										return (
+											importedItems.find(
+												(imported) =>
+													imported.codebeamerItemId == item.id
+											) !== undefined
+										);
+								  }).length ?? 0)
+								: (data?.total ?? 0) -
+								  (importedItems.filter((item, index, array) => {
+										return (
+											item.codebeamerTrackerId ==
+												Number(trackerId) &&
+											array.findIndex(
+												(i) =>
+													i.codebeamerItemId ==
+													item.codebeamerItemId
+											) == index
+										);
+								  }).length ?? 0)
 						}
 					/>
 					<SyncButton
@@ -321,6 +328,7 @@ export default function QueryResults() {
 					<Importer
 						mode={importingMode}
 						items={itemsToImport}
+						importedItems={importedItems}
 						totalItems={
 							itemsToImport.length > 0
 								? itemsToImport.length

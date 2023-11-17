@@ -8,7 +8,7 @@ import { CodeBeamerItem } from '../../models/codebeamer-item.if';
 export default function getItemColorField(
 	item: CodeBeamerItem
 ): string | undefined {
-	var colorField = item.customFields
+	const colorField = item.customFields
 		? item.customFields.find((field) => field.type === 'ColorFieldValue')
 		: undefined;
 	return colorField ? colorField.value : undefined;
