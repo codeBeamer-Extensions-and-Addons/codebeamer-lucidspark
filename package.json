@@ -1,6 +1,6 @@
 {
 	"name": "codebeamer-lucidspark",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"description": "codebeamer integration with lucidspark",
 	"main": "index.js",
 	"scripts": {
