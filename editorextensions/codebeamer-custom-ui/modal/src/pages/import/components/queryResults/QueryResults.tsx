@@ -315,6 +315,7 @@ export default function QueryResults() {
 					<Importer
 						mode={importingMode}
 						items={itemsToImport}
+						importedItems={importedItems}
 						totalItems={
 							itemsToImport.length > 0
 								? itemsToImport.length

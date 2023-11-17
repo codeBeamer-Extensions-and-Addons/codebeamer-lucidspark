@@ -10,10 +10,10 @@ import {
 } from '../../../../constants/cb-import-defaults';
 import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
-import { useImportedItems } from '../../../../hooks/useImportedItems';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 
 import './importer.css';
+import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
 
 export default function Importer(props: {
 	items: string[];
@@ -24,10 +24,9 @@ export default function Importer(props: {
 	relationsToCreate?: BlockRelation[];
 	relationsToDelete?: LucidLineData[];
 	isLoadingRelations?: boolean;
+	importedItems?: CardBlockToCodebeamerItemMapping[];
 }) {
 	const { cbqlString } = useSelector((state: RootState) => state.userSettings);
-
-	const { importedItems } = useImportedItems();
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.
@@ -37,8 +36,8 @@ export default function Importer(props: {
 		const selectedItemsFilter = props.items.length
 			? ` AND item.id IN (${props.items.join(',')})`
 			: '';
-		const importedItemsFilter = importedItems.length
-			? ` AND item.id NOT IN (${importedItems
+		const importedItemsFilter = props.importedItems
+			? ` AND item.id NOT IN (${props.importedItems
 					.map((i) => i.codebeamerItemId)
 					.join(',')})`
 			: '';
@@ -64,6 +63,8 @@ export default function Importer(props: {
 			: { data: undefined, error: undefined, isLoading: false };
 
 	React.useEffect(() => {
+		console.log('props.mode', props.mode);
+		console.log('data', JSON.stringify(data));
 		const processImport = async () => {
 			const importItems = async (items: CodeBeamerItem[]) => {
 				const importId = Math.ceil(Math.random() * 899) + 100;
@@ -93,7 +94,7 @@ export default function Importer(props: {
 		};
 
 		if (props.mode === 'import') {
-			if (data) {
+			if (data && !props.isLoadingRelations) {
 				processImport().catch((err) => console.error(err));
 			}
 		}
