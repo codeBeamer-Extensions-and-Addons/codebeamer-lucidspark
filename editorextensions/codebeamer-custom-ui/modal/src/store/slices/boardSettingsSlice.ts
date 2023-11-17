@@ -8,11 +8,11 @@ import {
 
 export interface BoardSettingsState {
 	loading: boolean;
-	cbAddress: any;
-	projectId: any;
-	inboxTrackerId: any;
-	userMapping: any[];
-	cardTagConfiguration: any;
+	cbAddress: string;
+	projectId: string;
+	inboxTrackerId: string;
+	userMapping: [];
+	cardTagConfiguration: IAppCardTagSettings;
 }
 
 const initialState: BoardSettingsState = {
@@ -21,7 +21,7 @@ const initialState: BoardSettingsState = {
 	projectId: '',
 	inboxTrackerId: '',
 	userMapping: [],
-	cardTagConfiguration: { standard: {}, trackerSpecific: {} },
+	cardTagConfiguration: { standard: {}, trackerSpecific: undefined },
 };
 
 // export const loadBoardSettings = createAsyncThunk(
@@ -75,9 +75,12 @@ export const boardSettingsSlice = createSlice({
 			state.cardTagConfiguration.standard[action.payload.property] =
 				action.payload.value;
 
+			const cardTagConfigurationString = JSON.stringify(
+				structuredClone(current(state.cardTagConfiguration))
+			);
 			localStorage.setItem(
 				BoardSetting.CARD_TAG_CONFIGURATION,
-				structuredClone(current(state.cardTagConfiguration))
+				cardTagConfigurationString
 			);
 		},
 	},

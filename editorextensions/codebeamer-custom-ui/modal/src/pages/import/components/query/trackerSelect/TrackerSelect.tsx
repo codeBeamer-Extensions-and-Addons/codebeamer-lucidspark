@@ -7,15 +7,13 @@ import { RootState } from '../../../../../store/store';
 export default function TrackerSelect() {
 	const dispatch = useDispatch();
 
-	const { projectId } = useSelector(
-		(state: RootState) => state.boardSettings
-	);
+	const { projectId } = useSelector((state: RootState) => state.boardSettings);
 
 	const { trackerId } = useSelector((state: RootState) => state.userSettings);
 
 	const { data, isLoading } = useGetTrackersQuery(projectId);
 
-	const handleSelect = (event: any) => {
+	const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		dispatch(setTrackerId(event.target.value));
 	};
 
@@ -25,9 +23,8 @@ export default function TrackerSelect() {
 	 */
 	React.useEffect(() => {
 		if (!isLoading) {
-			(
-				document.getElementById('trackerSelect') as HTMLSelectElement
-			).value = trackerId;
+			(document.getElementById('trackerSelect') as HTMLSelectElement).value =
+				trackerId;
 		}
 	}, [isLoading]);
 

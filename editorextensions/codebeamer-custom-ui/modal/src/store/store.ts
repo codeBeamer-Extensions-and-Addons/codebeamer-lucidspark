@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Middleware } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/dist/query';
 
 import userSettingsSlice from './slices/userSettingsSlice';
@@ -15,7 +15,7 @@ const configuration = {
 		appMessages: appMessagesSlice,
 		[codeBeamerApi.reducerPath]: codeBeamerApi.reducer,
 	},
-	middleware: (getDefaultMiddleware: () => any[]) =>
+	middleware: (getDefaultMiddleware: () => Middleware[]) =>
 		getDefaultMiddleware().concat(
 			codeBeamerApi.middleware,
 			rtkQueryErrorLogger

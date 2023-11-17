@@ -38,8 +38,8 @@ export default function MiroImport() {
 			// console.log(json);
 			setItemsToImport(json);
 			setImporting(true);
-		} catch (e: any) {
-			console.error('Error reading file: ', e.message);
+		} catch (error) {
+			console.error('Error reading file: ', error);
 		} finally {
 			setIsLoading(false);
 		}
@@ -49,8 +49,8 @@ export default function MiroImport() {
 		<div className="centered">
 			<p className="mt-3" style={{ width: '150%', textAlign: 'center' }}>
 				<span>
-					Upload your exported codebeamer-cards <em>JSON</em> from our
-					Miro plugin here to import them to this Lucidspark board.
+					Upload your exported codebeamer-cards <em>JSON</em> from our Miro
+					plugin here to import them to this Lucidspark board.
 				</span>
 			</p>
 			<input className="mt-3" type="file" onChange={handleFileChange} />
