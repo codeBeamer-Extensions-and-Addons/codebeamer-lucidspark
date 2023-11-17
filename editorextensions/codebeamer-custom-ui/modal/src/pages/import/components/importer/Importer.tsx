@@ -63,8 +63,6 @@ export default function Importer(props: {
 			: { data: undefined, error: undefined, isLoading: false };
 
 	React.useEffect(() => {
-		console.log('props.mode', props.mode);
-		console.log('data', JSON.stringify(data));
 		const processImport = async () => {
 			const importItems = async (items: CodeBeamerItem[]) => {
 				const importId = Math.ceil(Math.random() * 899) + 100;
