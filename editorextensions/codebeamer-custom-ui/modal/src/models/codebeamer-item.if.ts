@@ -9,9 +9,9 @@ export interface CodeBeamerItem {
 	name: string;
 	description: string;
 	descriptionFormat: string;
-	createdAt: Date;
+	createdAt: Date | string;
 	createdBy: CodeBeamerUserReference;
-	modifiedAt: Date;
+	modifiedAt: Date | string;
 	modifiedBy: CodeBeamerUserReference;
 	owners: CodeBeamerUserReference[];
 	version: number;
