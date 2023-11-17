@@ -14,7 +14,7 @@ export default function QueryResult(props: {
 		if (checkbox.current) {
 			checkbox.current.checked = props.checked ?? false;
 		}
-	}, []);
+	}, [props.checked]);
 
 	const handleCheckboxClick = (e: React.MouseEvent<HTMLInputElement>) => {
 		// Prevent event propagation to the parent tr element
@@ -33,9 +33,7 @@ export default function QueryResult(props: {
 				<input
 					type="checkbox"
 					className="checkBox clickable"
-					onChange={(e) =>
-						props.onSelect(props.item, e.target.checked)
-					}
+					onChange={(e) => props.onSelect(props.item, e.target.checked)}
 					disabled={props.disabled}
 					data-test={'itemCheck-' + props.item.id}
 					ref={checkbox}

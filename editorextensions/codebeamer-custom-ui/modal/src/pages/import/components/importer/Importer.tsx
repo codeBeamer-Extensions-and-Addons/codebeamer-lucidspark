@@ -58,13 +58,13 @@ export default function Importer(props: {
 					page: DEFAULT_RESULT_PAGE,
 					pageSize: MAX_ITEMS_PER_IMPORT,
 					queryString: getMainQueryString(),
-					// eslint-disable-next-line no-mixed-spaces-and-tabs
 			  })
 			: { data: undefined, error: undefined, isLoading: false };
 
 	React.useEffect(() => {
 		const processImport = async () => {
 			const importItems = async (items: CodeBeamerItem[]) => {
+				if (items.length === 0) LucidGateway.closeModal();
 				const importId = Math.ceil(Math.random() * 899) + 100;
 				LucidGateway.startImport(importId, items.length);
 				const _items: CodeBeamerItem[] = structuredClone(items);
@@ -92,7 +92,7 @@ export default function Importer(props: {
 		};
 
 		if (props.mode === 'import') {
-			if (data && !props.isLoadingRelations) {
+			if (data) {
 				processImport().catch((err) => console.error(err));
 			}
 		}

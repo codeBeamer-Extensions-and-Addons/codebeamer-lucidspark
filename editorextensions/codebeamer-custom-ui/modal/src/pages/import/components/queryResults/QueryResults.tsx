@@ -60,7 +60,7 @@ export default function QueryResults() {
 		intersectionObserverOptions
 	);
 
-	const { cbqlString, trackerId } = useSelector(
+	const { cbqlString, trackerId, activeFilters } = useSelector(
 		(state: RootState) => state.userSettings
 	);
 
@@ -287,15 +287,28 @@ export default function QueryResults() {
 						onImportSelected={handleImportSelected}
 						onImportAll={handleImportAll}
 						unImportedItemsCount={
-							(data?.total ?? 0) -
-							(importedItems.filter((item, index, array) => {
-								return (
-									item.codebeamerTrackerId == Number(trackerId) &&
-									array.findIndex(
-										(i) => i.codebeamerItemId == item.codebeamerItemId
-									) == index
-								);
-							}).length ?? 0)
+							activeFilters.length > 0
+								? (data?.total ?? 0) -
+								  (items.filter((item) => {
+										return (
+											importedItems.find(
+												(imported) =>
+													imported.codebeamerItemId == item.id
+											) !== undefined
+										);
+								  }).length ?? 0)
+								: (data?.total ?? 0) -
+								  (importedItems.filter((item, index, array) => {
+										return (
+											item.codebeamerTrackerId ==
+												Number(trackerId) &&
+											array.findIndex(
+												(i) =>
+													i.codebeamerItemId ==
+													item.codebeamerItemId
+											) == index
+										);
+								  }).length ?? 0)
 						}
 					/>
 					<SyncButton
