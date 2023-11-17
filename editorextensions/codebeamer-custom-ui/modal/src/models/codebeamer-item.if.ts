@@ -9,26 +9,31 @@ export interface CodeBeamerItem {
 	name: string;
 	description: string;
 	descriptionFormat: string;
-	createdAt: Date | any;
+	createdAt: Date;
 	createdBy: CodeBeamerUserReference;
-	modifiedAt: Date | any;
+	modifiedAt: Date;
 	modifiedBy: CodeBeamerUserReference;
 	owners: CodeBeamerUserReference[];
 	version: number;
 	assignedTo: CodeBeamerUserReference[];
 	tracker: CodeBeamerReference;
-	children: any[];
-	customFields: any[];
+	children: CodeBeamerReference[];
+	customFields: customField[];
 	priority: CodeBeamerReference;
 	status: CodeBeamerReference;
 	categories: CodeBeamerReference[];
 	subjects: CodeBeamerReference[];
 	teams: CodeBeamerReference[];
 	storyPoints: number;
-	versions: any[];
+	versions: CodeBeamerReference[];
 	ordinal: number;
 	typeName: string;
-	comments: any[];
+	comments: CodeBeamerReference[];
+}
+
+interface customField {
+	type: string;
+	value?: string;
 }
 
 /**
@@ -39,13 +44,13 @@ export interface CodeBeamerItem {
 export interface CodeBeamerLegacyItem {
 	id?: number;
 	uri: string;
-	tracker?: any;
-	supervisors?: any[];
+	tracker?: CodeBeamerReference;
+	supervisors?: CodeBeamerUserReference[];
 	name?: string;
-	status?: any;
-	realizedFeaturess?: any[];
-	versions?: any[];
+	status?: CodeBeamerReference;
+	realizedFeaturess?: [];
+	versions?: CodeBeamerReference[];
 	storyPoints?: number;
-	team?: any[];
-	assignedTo?: any[];
+	team?: CodeBeamerReference[];
+	assignedTo?: CodeBeamerUserReference[];
 }

@@ -19,6 +19,8 @@ export class LucidGateway {
 		item: CodeBeamerItem,
 		coordinates?: { x: number; y: number }
 	) {
+		if (item.children.length > 0) console.log(JSON.stringify(item.children));
+
 		const cardData = await this.convertToCardData(item, coordinates);
 		this.postMessage({
 			action: MessageAction.IMPORT_ITEM,
