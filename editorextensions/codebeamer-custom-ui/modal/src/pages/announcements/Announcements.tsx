@@ -34,13 +34,12 @@ export default function Announcements() {
 					data-test="close-announcements"
 				></div>
 			</span>
-			<AnnouncementArticle date={'2023-10-03'} version={'1.0'}>
+			<AnnouncementArticle date={'2023-11-17'} version={'1.2.0'}>
 				<p className="mt-5">
 					Welcome to codebeamer-cards for Lucidspark!
 					<br />
-					We&apos;re glad to have you here. This is the first version
-					of the app, and features only minimal functionality.
-					We&apos;re working hard to add more features, so stay tuned!
+					We&apos;re glad to have you here for a new release of the app
+					featuring Relation & Association Visualization
 				</p>
 			</AnnouncementArticle>
 
