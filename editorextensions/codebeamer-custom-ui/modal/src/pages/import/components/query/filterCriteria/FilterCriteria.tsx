@@ -20,7 +20,10 @@ export default function FilterCriteria(props: {
 				className="filter-remove"
 				data-test={`remove-${props.filterCriteria.id}`}
 				onClick={() => {
-					if (props.filterCriteria.id) {
+					if (
+						props.filterCriteria.id !== undefined &&
+						props.filterCriteria.id !== null
+					) {
 						props.onRemove(props.filterCriteria.id);
 					}
 				}}
