@@ -36,7 +36,7 @@ export default function Importer(props: {
 		const selectedItemsFilter = props.items.length
 			? ` AND item.id IN (${props.items.join(',')})`
 			: '';
-		const importedItemsFilter = props.importedItems
+		const importedItemsFilter = props.importedItems?.length
 			? ` AND item.id NOT IN (${props.importedItems
 					.map((i) => i.codebeamerItemId)
 					.join(',')})`
