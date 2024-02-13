@@ -2,13 +2,7 @@ import React from 'react';
 import Modal from 'react-bootstrap/Modal';
 import Spinner from 'react-bootstrap/Spinner';
 import { useSelector } from 'react-redux';
-import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
 import { LucidGateway } from '../../../../api/lucidGateway';
-import {
-	DEFAULT_RESULT_PAGE,
-	MAX_ITEMS_PER_IMPORT,
-} from '../../../../constants/cb-import-defaults';
-import { CodeBeamerItem } from '../../../../models/codebeamer-item.if';
 import { RootState } from '../../../../store/store';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 
@@ -49,60 +43,22 @@ export default function Importer(props: {
 		}
 	};
 
-	//* applies all currently active filters by using the stored cbqlString,
-	//* then further filters out only the selected items (or takes all of 'em)
-
-	const { data, error, isLoading } =
-		props.mode === 'import'
-			? useGetItemsQuery({
-					page: DEFAULT_RESULT_PAGE,
-					pageSize: MAX_ITEMS_PER_IMPORT,
-					queryString: getMainQueryString(),
-			  })
-			: { data: undefined, error: undefined, isLoading: false };
-
 	React.useEffect(() => {
 		const processImport = async () => {
-			const importItems = async (items: CodeBeamerItem[]) => {
-				if (items.length === 0) LucidGateway.closeModal();
-				const importId = Math.ceil(Math.random() * 899) + 100;
-				LucidGateway.startImport(importId, items.length);
-				const _items: CodeBeamerItem[] = structuredClone(items);
-				for (let i = 0; i < _items.length; i++) {
-					if (_items[i].categories?.length) {
-						if (
-							_items[i].categories.find(
-								(c) => c.name == 'Folder' || c.name == 'Information'
-							)
-						) {
-							continue;
-						}
-					}
-					await LucidGateway.createAppCard(importId, _items[i]);
-				}
-			};
-
-			if (error) {
-				if (props.onClose) props.onClose();
-			} else if (data) {
-				importItems(data.items as CodeBeamerItem[]).catch((err) =>
-					console.error(err)
-				);
-			}
+			const queryString = getMainQueryString();
+			LucidGateway.import(queryString);
 		};
 
 		if (props.mode === 'import') {
-			if (data) {
-				processImport().catch((err) => console.error(err));
-			}
+			processImport().catch((err) => console.error(err));
 		}
-	}, [data, props.mode]);
+	}, [props.mode]);
 
 	React.useEffect(() => {
 		const processLines = async () => {
 			const createLines = async (relations: BlockRelation[]) => {
 				const importId = Math.ceil(Math.random() * 899) + 100;
-				LucidGateway.startImport(importId, relations.length);
+				LucidGateway.startLineImport(importId, relations.length);
 				const _relations: BlockRelation[] = structuredClone(relations);
 				for (let i = 0; i < _relations.length; i++) {
 					const relation = _relations[i];
@@ -117,7 +73,7 @@ export default function Importer(props: {
 
 			const deleteLines = async (relations: LucidLineData[]) => {
 				const importId = Math.ceil(Math.random() * 899) + 100;
-				LucidGateway.startImport(importId, relations.length);
+				LucidGateway.startLineImport(importId, relations.length);
 				const _relations: LucidLineData[] = structuredClone(relations);
 				for (let i = 0; i < _relations.length; i++) {
 					const relation = _relations[i];
@@ -125,18 +81,14 @@ export default function Importer(props: {
 				}
 			};
 
-			if (error) {
-				if (props.onClose) props.onClose();
-			} else if (props.relationsToCreate) {
-				if (props.mode === 'createLines') {
-					createLines(props.relationsToCreate as BlockRelation[]).catch(
-						(err) => console.error(err)
-					);
-				} else if (props.mode === 'deleteLines') {
-					deleteLines(props.relationsToDelete as LucidLineData[]).catch(
-						(err) => console.error(err)
-					);
-				}
+			if (props.mode === 'createLines') {
+				createLines(props.relationsToCreate as BlockRelation[]).catch(
+					(err) => console.error(err)
+				);
+			} else if (props.mode === 'deleteLines') {
+				deleteLines(props.relationsToDelete as LucidLineData[]).catch(
+					(err) => console.error(err)
+				);
 			}
 		};
 
@@ -151,6 +103,7 @@ export default function Importer(props: {
 		}
 	}, [props.mode]);
 
+	const isLoading = true;
 	return (
 		<Modal show centered>
 			<Modal.Header

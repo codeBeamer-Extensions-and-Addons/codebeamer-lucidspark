@@ -1,5 +1,5 @@
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
-import { CardBlockToCodebeamerItemMapping, CardData } from './lucidCardData';
+import { CardBlockToCodebeamerItemMapping } from './lucidCardData';
 import { LucidLineData } from './lucidLineData';
 
 /**
@@ -11,28 +11,15 @@ import { LucidLineData } from './lucidLineData';
 export interface Message {
 	action: MessageAction;
 	payload?:
-		| ImportItemPayload
-		| UpdateCardPayload
-		| StartImportPayload
+		| StartLineImportPayload
 		| CreateLinePayload
-		| DeleteLinePayload;
+		| DeleteLinePayload
+		| ImportPayload;
 }
 
 export interface IncomingMessage {
 	action: MessageAction;
 	payload: LucidLineData[] | CardBlockToCodebeamerItemMapping[];
-}
-
-// Interface for payload specific to the IMPORT_ITEM action
-export interface ImportItemPayload {
-	importId: number;
-	cardData: CardData;
-}
-
-// Interface for payload specific to the UPDATE_CARD action
-export interface UpdateCardPayload {
-	cardData: CardData;
-	cardBlockId: string;
 }
 
 // Interface for payload specific to the CREATE_LINE action
@@ -50,10 +37,15 @@ export interface DeleteLinePayload {
 	lineId: string;
 }
 
-// Interface for payload specific to the START_IMPORT action
-export interface StartImportPayload {
+// Interface for payload specific to the START_LINE_IMPORT action
+export interface StartLineImportPayload {
 	id: number;
 	totalItems: number;
+}
+
+// Interface for payload specific to the IMPORT action
+export interface ImportPayload {
+	queryString: string;
 }
 
 /**
@@ -63,10 +55,9 @@ export enum MessageAction {
 	GET_CARD_BLOCKS = 'getCardBlocks',
 	GET_LINES = 'getLines',
 	GET_OAUTH_TOKEN = 'getOAuthToken',
-	IMPORT_ITEM = 'importItem',
-	UPDATE_CARD = 'updateCard',
+	IMPORT = 'import',
 	CREATE_LINE = 'createLine',
 	DELETE_LINE = 'deleteLine',
-	START_IMPORT = 'startImport',
+	START_LINE_IMPORT = 'startLineImport',
 	CLOSE_MODAL = 'closeModal',
 }

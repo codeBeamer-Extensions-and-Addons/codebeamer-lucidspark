@@ -41,7 +41,10 @@ export class ImportModal extends Modal {
 	 */
 	protected async messageFromFrame(message: Message): Promise<void> {
 		switch (message.action) {
-			case 'startImport':
+			case 'import':
+				console.log('payload: ', message.payload);
+				break;
+			case 'startLineImport':
 				this.imports.set(message.payload.id, {
 					totalItems: message.payload.totalItems,
 					initialTotalItems: message.payload.totalItems,
