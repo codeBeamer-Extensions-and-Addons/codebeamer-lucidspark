@@ -13,11 +13,26 @@
 				"DOWNLOAD",
 				"SHOW_MODAL",
 				"CUSTOM_UI",
-				"NETWORK"
+				"NETWORK",
+				"OAUTH_TOKEN"
 			]
 		}
 	],
 	"shapeLibraries": [],
-	"oauthProviders": [],
+	"oauthProviders": [
+		{
+			"name": "google",
+			"title": "Google",
+			"grantType": "authorizationCode",
+			"tokenUrl": "https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/auth/token",
+			"refreshTokenUrl": "https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/auth/refresh",
+			"authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
+			"scopes": ["openid"],
+			"domainWhitelist": [
+				"https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/"
+			],
+			"clientAuthentication": "basic"
+		}
+	],
 	"dataConnectors": []
 }
