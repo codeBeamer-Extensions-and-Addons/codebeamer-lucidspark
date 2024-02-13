@@ -58,6 +58,15 @@ export class MessageHandler {
 		LucidGateway.requestLineData();
 	}
 
+	/**
+	 * Requests the OAuth token from the parent window which is stored by Lucid.
+	 * @param {function} callback - The callback function that will be called with the received OAuth Token.
+	 */
+	getOAuthToken(callback: (data: string[]) => void) {
+		this.subscribeCallback(MessageAction.GET_OAUTH_TOKEN, callback);
+		LucidGateway.requestOAuthToken();
+	}
+
 	subscribeCallback(action: MessageAction, callback: (data: []) => void) {
 		const actionCallbacks = this.callbacks.get(action) || [];
 		actionCallbacks.push(callback);

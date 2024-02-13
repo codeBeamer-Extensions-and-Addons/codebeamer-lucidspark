@@ -3,10 +3,7 @@ import * as React from 'react';
 import './auth.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store/store';
-import {
-	setCredentials,
-	setTrackerId,
-} from '../../store/slices/userSettingsSlice';
+import { setTrackerId } from '../../store/slices/userSettingsSlice';
 import {
 	setCbAddress,
 	setProjectId,
@@ -15,8 +12,6 @@ import { useState } from 'react';
 
 interface Errors {
 	cbAddress?: string;
-	cbUsername?: string;
-	cbPassword?: string;
 }
 
 /**
@@ -35,9 +30,6 @@ export default function AuthForm(props: {
 	const [animateSuccess, setAnimateSuccess] = useState(false);
 	const [showRCNHint, setShowRCNHint] = useState(false);
 
-	const { cbUsername, cbPassword } = useSelector(
-		(state: RootState) => state.userSettings
-	);
 	const { cbAddress } = useSelector((state: RootState) => state.boardSettings);
 
 	/**
@@ -75,8 +67,6 @@ export default function AuthForm(props: {
 				<Formik
 					initialValues={{
 						cbAddress: cbAddress,
-						cbUsername: cbUsername,
-						cbPassword: cbPassword,
 					}}
 					enableReinitialize={true}
 					validate={(values) => {
@@ -84,13 +74,11 @@ export default function AuthForm(props: {
 
 						if (!values.cbAddress) errors.cbAddress = 'Required';
 						else if (values.cbAddress) {
-							const regex = /^https?:\/\/[a-z0-9.]*\/cb$/;
+							const regex = /^https?:\/\/[a-z0-9.-]*\/cb$/;
 							if (!values.cbAddress.match(regex))
 								errors.cbAddress =
 									'Not a valid CB Address! Must specify the protocol (HTTP(S)) and end with /cb';
 						}
-						if (!values.cbUsername) errors.cbUsername = 'Required';
-						if (!values.cbPassword) errors.cbPassword = 'Required';
 
 						if (Object.keys(errors).length) {
 							return errors;
@@ -99,12 +87,6 @@ export default function AuthForm(props: {
 					onSubmit={async (values, { setSubmitting }) => {
 						setSubmitting(true);
 						dispatch(setCbAddress(values.cbAddress));
-						dispatch(
-							setCredentials({
-								username: values.cbUsername,
-								password: values.cbPassword,
-							})
-						);
 						if (values.cbAddress != cbAddress) {
 							dispatch(setProjectId(''));
 							dispatch(setTrackerId(''));
@@ -158,48 +140,6 @@ export default function AuthForm(props: {
 										data-test="rcnHint"
 									>
 										RCN connection required
-									</div>
-								)}
-							</div>
-
-							<div
-								className={`form-group ${
-									touched.cbUsername && errors.cbUsername
-										? 'error'
-										: ''
-								}`}
-							>
-								<label>CB Username</label>
-								<Field
-									type="text"
-									name="cbUsername"
-									className="input"
-									data-test="cbUsername"
-								/>
-								{errors.cbUsername && touched.cbUsername && (
-									<div className="status-text m-1">
-										{errors.cbUsername}
-									</div>
-								)}
-							</div>
-
-							<div
-								className={`form-group ${
-									touched.cbPassword && errors.cbPassword
-										? 'error'
-										: ''
-								}`}
-							>
-								<label>CB Password</label>
-								<Field
-									type="password"
-									name="cbPassword"
-									className="input"
-									data-test="cbPassword"
-								/>
-								{errors.cbPassword && touched.cbPassword && (
-									<div className="status-text m-1">
-										{errors.cbPassword}
 									</div>
 								)}
 							</div>

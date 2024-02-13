@@ -25,7 +25,9 @@ import {
 	CodeBeamerItem,
 	CodeBeamerLegacyItem,
 } from '../models/codebeamer-item.if';
-import { CodeBeamerUserReference } from '../models/codebeamer-user-reference.if';
+import { LucidGateway } from './lucidGateway';
+import { setOAuthToken } from '../store/slices/userSettingsSlice';
+import { useDispatch } from 'react-redux';
 
 const dynamicBaseQuery: BaseQueryFn<
 	string | FetchArgs,
@@ -36,17 +38,22 @@ const dynamicBaseQuery: BaseQueryFn<
 		(api.getState() as RootState).boardSettings.cbAddress ||
 		'https://codebeamer.com/cb'
 	}`;
+
+	const token =
+		(api.getState() as RootState).userSettings.oAuthToken ||
+		(await LucidGateway.getOAuthToken());
+
+	if (!(api.getState() as RootState).userSettings.oAuthToken) {
+		// save to store for other parts of the plugin to use
+		const dispatch = useDispatch();
+		dispatch(setOAuthToken({ oAuthToken: token }));
+	}
+
 	const rawBaseQuery = fetchBaseQuery({
 		baseUrl,
-		prepareHeaders: (headers, { getState }) => {
-			const token = btoa(
-				`${(getState() as RootState).userSettings.cbUsername}:${
-					(getState() as RootState).userSettings.cbPassword
-				}`
-			);
-
+		prepareHeaders: (headers) => {
 			if (token) {
-				headers.set('Authorization', `Basic ${token}`);
+				headers.set('Authorization', `Bearer ${token}`);
 			}
 
 			return headers;
@@ -61,20 +68,19 @@ const dynamicBaseQuery: BaseQueryFn<
 export const codeBeamerApi = createApi({
 	baseQuery: dynamicBaseQuery,
 	endpoints: (builder) => ({
-		testAuthentication: builder.query<
-			CodeBeamerUserReference,
-			{ cbAddress: string; cbUsername: string; cbPassword: string }
-		>({
-			query: (payload) => {
-				return {
-					url: `/api/v3/users/findByName?name=${payload.cbUsername}`,
-					method: 'GET',
-					responseHandler: async (response) => {
-						return (await response.json()) as CodeBeamerUserReference;
-					},
-				};
-			},
-		}),
+		testAuthentication: builder.query<ProjectListView, { cbAddress: string }>(
+			{
+				query: () => {
+					return {
+						url: `/api/v3/projects`,
+						method: 'GET',
+						responseHandler: async (response) => {
+							return (await response.json()) as ProjectListView;
+						},
+					};
+				},
+			}
+		),
 		getUserByName: builder.query<string, string>({
 			query: (name) => `/api/v3/users/findByName?name=${name}`,
 		}),

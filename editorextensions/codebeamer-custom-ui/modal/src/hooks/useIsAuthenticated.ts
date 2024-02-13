@@ -14,14 +14,8 @@ export const useIsAuthenticated = () => {
 		(state: RootState) => state.boardSettings
 	);
 
-	const { cbUsername, cbPassword } = useSelector(
-		(state: RootState) => state.userSettings
-	);
-
 	const { data, error, isLoading } = useTestAuthenticationQuery({
 		cbAddress,
-		cbUsername,
-		cbPassword,
 	});
 
 	if (error || !data || !data.id) return [false, loading || isLoading];

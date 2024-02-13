@@ -6,6 +6,7 @@ import { CardData } from '../models/lucidCardData';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
 import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
 import { Message, MessageAction } from '../models/messageInterfaces';
+import { MessageHandler } from './messageHandler';
 
 export class LucidGateway {
 	/**
@@ -80,13 +81,12 @@ export class LucidGateway {
 		coordinates?: { x: number; y: number }
 	): Promise<CardData> {
 		const description = item.description;
-		const username = store.getState().userSettings.cbUsername;
-		const password = store.getState().userSettings.cbPassword;
+		const oAuthToken = store.getState().userSettings.oAuthToken;
 		const cbBaseAddress = store.getState().boardSettings.cbAddress;
 
 		const headers = new Headers({
 			'Content-Type': 'text/plain',
-			Authorization: `Basic ${btoa(username + ':' + password)}`,
+			Authorization: `Bearer ${oAuthToken}`,
 		});
 
 		// if (item.descriptionFormat == DescriptionFormat.WIKI) {
@@ -179,6 +179,31 @@ export class LucidGateway {
 	public static requestLineData() {
 		this.postMessage({
 			action: MessageAction.GET_LINES,
+		});
+	}
+
+	/**
+	 * Request the OAuth token from the parent window.
+	 */
+	public static requestOAuthToken() {
+		this.postMessage({
+			action: MessageAction.GET_OAUTH_TOKEN,
+		});
+	}
+
+	/**
+	 * Get the OAuth token from Lucid.
+	 * @returns The OAuth token.
+	 */
+	public static async getOAuthToken(): Promise<string> {
+		return new Promise((resolve, reject) => {
+			MessageHandler.getInstance().getOAuthToken((data) => {
+				if (data && data.length > 0) {
+					return resolve(data[0]);
+				} else {
+					return reject(new Error('OAuth token not received from Lucid.'));
+				}
+			});
 		});
 	}
 

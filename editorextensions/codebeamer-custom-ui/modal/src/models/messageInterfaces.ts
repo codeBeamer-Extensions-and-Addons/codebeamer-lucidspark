@@ -1,6 +1,6 @@
-import { RelationshipType } from "../enums/associationRelationshipType.enum";
-import { CardBlockToCodebeamerItemMapping, CardData } from "./lucidCardData";
-import { LucidLineData } from "./lucidLineData";
+import { RelationshipType } from '../enums/associationRelationshipType.enum';
+import { CardBlockToCodebeamerItemMapping, CardData } from './lucidCardData';
+import { LucidLineData } from './lucidLineData';
 
 /**
  * Interface for a message object with an action and payload.
@@ -60,12 +60,13 @@ export interface StartImportPayload {
  * action enum for message actions
  */
 export enum MessageAction {
-	GET_CARD_BLOCKS = "getCardBlocks",
-	GET_LINES = "getLines",
-	IMPORT_ITEM = "importItem",
-	UPDATE_CARD = "updateCard",
-	CREATE_LINE = "createLine",
-	DELETE_LINE = "deleteLine",
-	START_IMPORT = "startImport",
-	CLOSE_MODAL = "closeModal",
+	GET_CARD_BLOCKS = 'getCardBlocks',
+	GET_LINES = 'getLines',
+	GET_OAUTH_TOKEN = 'getOAuthToken',
+	IMPORT_ITEM = 'importItem',
+	UPDATE_CARD = 'updateCard',
+	CREATE_LINE = 'createLine',
+	DELETE_LINE = 'deleteLine',
+	START_IMPORT = 'startImport',
+	CLOSE_MODAL = 'closeModal',
 }

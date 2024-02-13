@@ -1,6 +1,6 @@
 import { setProjectId } from '../../store/slices/boardSettingsSlice';
 import {
-	setCredentials,
+	setOAuthToken,
 	setShowAnnouncements,
 } from '../../store/slices/userSettingsSlice';
 import { getStore } from '../../store/store';
@@ -28,21 +28,16 @@ describe('<Content>', () => {
 	});
 
 	describe('uses cached values to automate procedures', () => {
-		const username = 'anon';
-		const password = '123';
-
 		beforeEach(() => {
-			cy.intercept('GET', `**/api/v3/users/findByName*`, {
+			cy.intercept('GET', `**/api/v3/projects`, {
 				statusCode: 200,
-				body: { id: 1 },
+				body: [{ id: 1, name: 'Test Project' }],
 			}).as('auth');
 		});
 
 		it('checks whether it can connect to the cached codeBeamer instance when opened', () => {
 			const store = getStore();
-			store.dispatch(
-				setCredentials({ username: username, password: password })
-			);
+			store.dispatch(setOAuthToken({ oAuthToken: 'test token' }));
 
 			cy.mountWithStore(<Content />, { reduxStore: store });
 
@@ -51,9 +46,7 @@ describe('<Content>', () => {
 
 		it('proceeds to the project selection when authenticated successfully', () => {
 			const store = getStore();
-			store.dispatch(
-				setCredentials({ username: username, password: password })
-			);
+			store.dispatch(setOAuthToken({ oAuthToken: 'test token' }));
 
 			cy.mountWithStore(<Content />, { reduxStore: store });
 
@@ -62,9 +55,7 @@ describe('<Content>', () => {
 
 		it('proceeds to the import component when authenticated & a project is already selected', () => {
 			const store = getStore();
-			store.dispatch(
-				setCredentials({ username: username, password: password })
-			);
+			store.dispatch(setOAuthToken({ oAuthToken: 'test token' }));
 			store.dispatch(setProjectId(1));
 
 			cy.mountWithStore(<Content />, { reduxStore: store });
