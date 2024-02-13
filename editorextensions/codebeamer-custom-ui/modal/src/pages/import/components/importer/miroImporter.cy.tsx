@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { getStore } from '../../../../store/store';
 import MiroImporter from './MiroImporter';
 import { CompressedItem } from '../settings/miroImport/MiroImport';
 
@@ -30,7 +29,8 @@ describe('<MiroImporter>', () => {
 		cy.get('@handler').should('have.been.calledOnce');
 	});
 
-	it('fetches the details of the items passed as props', () => {
+	it('sends the items to the editor extension  passed as props', () => {
+		cy.stub(window.parent, 'postMessage').as('postMessageStub');
 		const items: CompressedItem[] = [
 			{ id: '1', coordinates: { x: 0, y: 0 } },
 			{ id: '2', coordinates: { x: 0, y: 0 } },
@@ -39,54 +39,15 @@ describe('<MiroImporter>', () => {
 
 		const expectedQuery = `item.id IN (1,2,3)`;
 
-		cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
 		cy.mountWithStore(<MiroImporter items={items} />, {});
 
-		cy.wait('@fetch')
-			.its('request.body.queryString')
-			.should('equal', expectedQuery);
-	});
-
-	it('fetches the tracker details of the items passed as props', () => {
-		const items: CompressedItem[] = [
-			{ id: '1', coordinates: { x: 0, y: 0 } },
-			{ id: '2', coordinates: { x: 0, y: 0 } },
-			{ id: '3', coordinates: { x: 0, y: 0 } },
-		];
-		const store = getStore();
-
-		cy.intercept('POST', '**/wiki2html');
-
-		cy.intercept('POST', '**/api/v3/items/query', {
-			fixture: 'query_diff_trackers.json',
-		}).as('fetch');
-
-		cy.intercept('GET', '**/api/v3/trackers/101').as('trackerFetchOne');
-		cy.intercept('GET', '**/api/v3/trackers/102').as('trackerFetchTwo');
-		cy.intercept('GET', '**/api/v3/trackers/103').as('trackerFetchThree');
-		cy.intercept('GET', '**/api/v3/trackers/104').as('trackerFetchFour');
-
-		cy.mountWithStore(<MiroImporter items={items} />, {
-			reduxStore: store,
-		});
-
-		cy.wait('@fetch');
-
-		cy.wait('@trackerFetchOne').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/101');
-		});
-
-		cy.wait('@trackerFetchTwo').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/102');
-		});
-
-		cy.wait('@trackerFetchThree').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/103');
-		});
-
-		cy.wait('@trackerFetchFour').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/104');
-		});
+		cy.get('@postMessageStub').should(
+			'have.been.calledWith',
+			{
+				action: 'import',
+				payload: { queryString: expectedQuery },
+			},
+			'*'
+		);
 	});
 });

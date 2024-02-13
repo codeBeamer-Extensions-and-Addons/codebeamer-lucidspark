@@ -33,81 +33,52 @@ describe('<Importer>', () => {
 		cy.get('@handler').should('have.been.calledOnce');
 	});
 
-	it('fetches the details of the items passed as props', () => {
+	it('sends the items to the editor extension  passed as props', () => {
+		cy.stub(window.parent, 'postMessage').as('postMessageStub');
 		const items: string[] = ['1', '2', '3'];
 		const store = getStore();
 		store.dispatch(setTrackerId('1'));
 
 		const expectedQuery = `tracker.id IN (1) AND item.id IN (1,2,3)`;
 
-		cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
 		cy.mountWithStore(<Importer items={items} mode="import" />, {
 			reduxStore: store,
 		});
 
-		cy.wait('@fetch')
-			.its('request.body.queryString')
-			.should('equal', expectedQuery);
+		cy.get('@postMessageStub').should(
+			'have.been.calledWith',
+			{
+				action: 'import',
+				payload: { queryString: expectedQuery },
+			},
+			'*'
+		);
 	});
 
-	it('fetches the tracker details of the items passed as props', () => {
-		const items: string[] = ['1', '2', '3', '4'];
-		const store = getStore();
-
-		cy.intercept('POST', '**/wiki2html');
-
-		cy.intercept('POST', '**/api/v3/items/query', {
-			fixture: 'query_diff_trackers.json',
-		}).as('fetch');
-
-		cy.intercept('GET', '**/api/v3/trackers/101').as('trackerFetchOne');
-		cy.intercept('GET', '**/api/v3/trackers/102').as('trackerFetchTwo');
-		cy.intercept('GET', '**/api/v3/trackers/103').as('trackerFetchThree');
-		cy.intercept('GET', '**/api/v3/trackers/104').as('trackerFetchFour');
-
-		cy.mountWithStore(<Importer items={items} mode="import" />, {
-			reduxStore: store,
-		});
-
-		cy.wait('@fetch');
-
-		cy.wait('@trackerFetchOne').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/101');
-		});
-
-		cy.wait('@trackerFetchTwo').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/102');
-		});
-
-		cy.wait('@trackerFetchThree').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/103');
-		});
-
-		cy.wait('@trackerFetchFour').then((interception) => {
-			expect(interception.request.url).to.contain('trackers/104');
-		});
-	});
-
-	it('fetches the details of all items in the selected tracker (without any additional filter criteria) when passing an empty array as prop', () => {
+	it('send all items in the selected tracker to the editor extension (without any additional filter criteria) when passing an empty array as prop', () => {
+		cy.stub(window.parent, 'postMessage').as('postMessageStub');
 		const items: string[] = [];
 		const store = getStore();
 		store.dispatch(setTrackerId('1'));
 
 		const expectedQuery = `tracker.id IN (1)`;
 
-		cy.intercept('POST', '**/api/v3/items/query').as('fetch');
-
 		cy.mountWithStore(<Importer items={items} mode="import" />, {
 			reduxStore: store,
 		});
 
-		cy.wait('@fetch')
-			.its('request.body.queryString')
-			.should('equal', expectedQuery);
+		cy.get('@postMessageStub').should(
+			'have.been.calledWith',
+			{
+				action: 'import',
+				payload: { queryString: expectedQuery },
+			},
+			'*'
+		);
 	});
 
 	it('appends what items are already imported to the queryString so as not to duplicate them', () => {
+		cy.stub(window.parent, 'postMessage').as('postMessageStub');
 		const items: string[] = ['1', '2', '3'];
 		const store = getStore();
 		store.dispatch(setTrackerId('1'));
@@ -115,11 +86,6 @@ describe('<Importer>', () => {
 		const expectedQuery = `tracker.id IN (1) AND item.id IN (${items.join(
 			','
 		)}) AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
-
-		cy.intercept('POST', '**/api/v3/items/query', {
-			statusCode: 200,
-			body: [],
-		}).as('fetch');
 
 		cy.mountWithStore(
 			<Importer
@@ -131,34 +97,40 @@ describe('<Importer>', () => {
 				reduxStore: store,
 			}
 		);
-		cy.wait('@fetch')
-			.its('request.body.queryString')
-			.should('equal', expectedQuery);
+		cy.get('@postMessageStub').should(
+			'have.been.calledWith',
+			{
+				action: 'import',
+				payload: { queryString: expectedQuery },
+			},
+			'*'
+		);
 	});
 
 	context('prop queryString', () => {
 		it('fetches the details of the items specified in the queryString if one is specified', () => {
+			cy.stub(window.parent, 'postMessage').as('postMessageStub');
 			const mockQueryString = 'item.id IN (1,2,3,4)';
-			cy.intercept('POST', '**/api/v3/items/query').as('fetch');
 
 			cy.mountWithStore(
 				<Importer items={[]} mode="import" queryString={mockQueryString} />
 			);
 
-			cy.wait('@fetch')
-				.its('request.body.queryString')
-				.should('equal', mockQueryString);
+			cy.get('@postMessageStub').should(
+				'have.been.calledWith',
+				{
+					action: 'import',
+					payload: { queryString: mockQueryString },
+				},
+				'*'
+			);
 		});
 
 		it('still appends what items are already imported to the queryString so as not to duplicate them', () => {
+			cy.stub(window.parent, 'postMessage').as('postMessageStub');
 			const mockQueryString = 'item.id IN (1,2,3,4)';
 
 			const expectedQuery = `${mockQueryString} AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
-
-			cy.intercept('POST', '**/api/v3/items/query', {
-				statusCode: 200,
-				body: [],
-			}).as('fetch');
 
 			cy.mountWithStore(
 				<Importer
@@ -169,9 +141,14 @@ describe('<Importer>', () => {
 				/>
 			);
 
-			cy.wait('@fetch')
-				.its('request.body.queryString')
-				.should('equal', expectedQuery);
+			cy.get('@postMessageStub').should(
+				'have.been.calledWith',
+				{
+					action: 'import',
+					payload: { queryString: expectedQuery },
+				},
+				'*'
+			);
 		});
 	});
 
@@ -196,7 +173,7 @@ describe('<Importer>', () => {
 					lineColor: '#000000',
 				};
 				cy.get('@postMessageStub').should(
-					'not.have.been.calledWith',
+					'have.been.calledWithMatch',
 					{
 						action: 'createLine',
 						payload: linePayload,
@@ -223,7 +200,7 @@ describe('<Importer>', () => {
 					lineId: line.id,
 				};
 				cy.get('@postMessageStub').should(
-					'not.have.been.calledWith',
+					'have.been.calledWithMatch',
 					{
 						action: 'deleteLine',
 						payload: linePayload,

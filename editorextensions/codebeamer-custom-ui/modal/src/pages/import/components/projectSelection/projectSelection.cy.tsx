@@ -71,9 +71,7 @@ describe('<ProjectSelection>', () => {
 			cy.getBySel(submitSelector).click();
 
 			cy.get('@dispatch').then((dispatch) =>
-				expect(dispatch).to.have.been.calledWith(
-					setProjectId(project.id)
-				)
+				expect(dispatch).to.have.been.calledWith(setProjectId(project.id))
 			);
 		});
 
@@ -89,9 +87,7 @@ describe('<ProjectSelection>', () => {
 			cy.getBySel(submitSelector).click();
 
 			cy.get('@dispatch').then((dispatch) =>
-				expect(dispatch).to.have.been.calledWith(
-					setTrackerId(trackerId)
-				)
+				expect(dispatch).to.have.been.calledWith(setTrackerId(trackerId))
 			);
 		});
 
