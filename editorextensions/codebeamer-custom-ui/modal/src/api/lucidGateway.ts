@@ -7,6 +7,8 @@ import { RelationshipType } from '../enums/associationRelationshipType.enum';
 import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
 import { Message, MessageAction } from '../models/messageInterfaces';
 import { MessageHandler } from './messageHandler';
+import { useDispatch } from 'react-redux';
+import { setOAuthToken } from '../store/slices/userSettingsSlice';
 
 export class LucidGateway {
 	/**
@@ -199,7 +201,8 @@ export class LucidGateway {
 		return new Promise((resolve, reject) => {
 			MessageHandler.getInstance().getOAuthToken((data) => {
 				if (data && data.length > 0) {
-					return resolve(data[0]);
+					const token = data[0];
+					return resolve(token);
 				} else {
 					return reject(new Error('OAuth token not received from Lucid.'));
 				}

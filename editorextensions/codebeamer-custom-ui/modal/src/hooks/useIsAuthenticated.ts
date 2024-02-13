@@ -17,7 +17,8 @@ export const useIsAuthenticated = () => {
 	const { data, error, isLoading } = useTestAuthenticationQuery({
 		cbAddress,
 	});
+	console.log(data);
 
-	if (error || !data || !data.id) return [false, loading || isLoading];
+	if (error || !data || !data[0].id) return [false, loading || isLoading];
 	else return [true, loading || isLoading];
 };

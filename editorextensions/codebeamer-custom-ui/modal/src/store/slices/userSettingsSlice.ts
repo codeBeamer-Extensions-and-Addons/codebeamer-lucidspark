@@ -22,7 +22,7 @@ export interface UserSettingsState {
 const initialState: UserSettingsState = {
 	cbAddress: localStorage.getItem(UserSetting.CB_ADDRESS) ?? '',
 	cbqlString: localStorage.getItem(UserSetting.CBQL_STRING) ?? '',
-	oAuthToken: localStorage.getItem(UserSetting.OAuth_Token) ?? '',
+	oAuthToken: sessionStorage.getItem(UserSetting.OAuth_Token) ?? '',
 	trackerId: localStorage.getItem(UserSetting.SELECTED_TRACKER) ?? '',
 	advancedSearch: localStorage.getItem(UserSetting.ADVANCED_SEARCH_ENABLED)
 		? localStorage.getItem(UserSetting.ADVANCED_SEARCH_ENABLED) == 'true'

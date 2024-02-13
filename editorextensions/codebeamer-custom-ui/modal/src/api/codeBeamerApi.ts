@@ -25,9 +25,6 @@ import {
 	CodeBeamerItem,
 	CodeBeamerLegacyItem,
 } from '../models/codebeamer-item.if';
-import { LucidGateway } from './lucidGateway';
-import { setOAuthToken } from '../store/slices/userSettingsSlice';
-import { useDispatch } from 'react-redux';
 
 const dynamicBaseQuery: BaseQueryFn<
 	string | FetchArgs,
@@ -39,22 +36,17 @@ const dynamicBaseQuery: BaseQueryFn<
 		'https://codebeamer.com/cb'
 	}`;
 
-	const token =
-		(api.getState() as RootState).userSettings.oAuthToken ||
-		(await LucidGateway.getOAuthToken());
-
-	if (!(api.getState() as RootState).userSettings.oAuthToken) {
-		// save to store for other parts of the plugin to use
-		const dispatch = useDispatch();
-		dispatch(setOAuthToken({ oAuthToken: token }));
-	}
-
 	const rawBaseQuery = fetchBaseQuery({
 		baseUrl,
 		prepareHeaders: (headers) => {
+			const token = (api.getState() as RootState).userSettings.oAuthToken;
 			if (token) {
-				headers.set('Authorization', `Bearer ${token}`);
+				headers.set(
+					'Authorization',
+					`Bearer ${(api.getState() as RootState).userSettings.oAuthToken}`
+				);
 			}
+			headers.set('Content-Type', 'application/json');
 
 			return headers;
 		},
