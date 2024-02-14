@@ -37,8 +37,8 @@
 	"dataConnectors": [
 		{
 			"name": "codebeamer",
-			"oauthProviderName": "http://localhost:3001?kind=action&name=",
-			"callbackBaseUrl": "",
+			"oauthProviderName": "google",
+			"callbackBaseUrl": "http://localhost:3001?kind=action&name=",
 			"dataActions": { "Import": "Import" }
 		}
 	]
