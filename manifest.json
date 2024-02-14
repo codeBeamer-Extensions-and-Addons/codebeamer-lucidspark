@@ -34,5 +34,12 @@
 			"clientAuthentication": "basic"
 		}
 	],
-	"dataConnectors": []
+	"dataConnectors": [
+		{
+			"name": "codebeamer",
+			"oauthProviderName": "http://localhost:3001?kind=action&name=",
+			"callbackBaseUrl": "",
+			"dataActions": { "Import": "Import" }
+		}
+	]
 }
