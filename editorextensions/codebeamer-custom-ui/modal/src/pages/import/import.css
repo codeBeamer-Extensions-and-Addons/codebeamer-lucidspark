@@ -1,9 +1,0 @@
-div,
-p {
-	margin: 0;
-}
-.import {
-	padding-top: var(--space-xsmall);
-	padding-left: 3em;
-	padding-right: 3em;
-}

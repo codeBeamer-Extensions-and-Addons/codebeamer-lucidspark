@@ -1,7 +1,12 @@
 // common names
 
 export const DataConnectorName = 'codebeamer';
-export const CollectionName = 'Items';
+export const DataSourceName = 'codebeamer';
+export const CollectionName = 'codebeamer-items';
+export const OAuthProvider = 'google';
+
+export const baseUrl =
+	'https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/cb';
 
 export enum DataAction {
 	Import = 'Import',
@@ -13,8 +18,9 @@ export enum DataAction {
  * Therefore, this enumeration only lists the presumably most common properties. To decide what's "most common", only trackers
  * and Stakeholder-requirements in the Retina (custom codeBeamer) Toolchains project at Roche Diagnostics were considered.
  */
+
 export enum DefaultFieldNames {
-	Summary = 'Summary',
+	Name = 'Name',
 	Description = 'Description',
 	Id = 'Id',
 	Teams = 'Teams',

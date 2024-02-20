@@ -4,7 +4,7 @@
 	"extensions": [
 		{
 			"name": "codebeamer-custom-ui",
-			"title": "codebeamer-custom-ui",
+			"title": "cb-cards",
 			"products": ["chart", "spark"],
 			"codePath": "editorextensions/codebeamer-custom-ui/bin/extension.js",
 			"scopes": [
