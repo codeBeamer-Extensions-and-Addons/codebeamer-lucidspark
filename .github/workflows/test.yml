@@ -19,5 +19,8 @@ jobs:
            with:
               node-version: '14'
 
+         - name: install node packages
+           run: npm install && cd dataconnectors/codebeamer && npm install
+
          - name: run tests
-           run: npm install && cd dataconnectors/codebeamer && npm install && npm test
+           run: npm test
