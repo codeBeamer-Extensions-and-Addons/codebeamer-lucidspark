@@ -36,6 +36,7 @@ export class CodebeamerImportModal {
 	private readonly trackerField = 'tracker';
 
 	public async getSearchFields(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		searchSoFar: Map<string, SerializedFieldType>
 	): Promise<ExtensionCardFieldDefinition[]> {
 		const projects = await this.codebeamerClient.getProjects();

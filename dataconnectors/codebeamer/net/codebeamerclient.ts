@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ProjectListView } from '../../../common/models/projectListView.if';
 import { TrackerListView } from '../../../common/models/trackerListView.if';
 import { ItemQueryPage } from '../../../common/models/api-query-types';
