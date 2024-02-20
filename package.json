@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"bundle": "lucid-package bundle",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "cd dataconnectors/codebeamer && npm test"
 	},
 	"repository": {
 		"type": "git",
