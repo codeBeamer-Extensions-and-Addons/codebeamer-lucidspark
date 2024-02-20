@@ -56,6 +56,12 @@ export interface FieldOptions {
 	name: string;
 	type?: string;
 }
+export interface FieldValue {
+	fieldId: number;
+	type: string;
+	name: string;
+	value: unknown;
+}
 
 /**
  * Structure of a response from the /api/v3/items/{id}/relations endpoint

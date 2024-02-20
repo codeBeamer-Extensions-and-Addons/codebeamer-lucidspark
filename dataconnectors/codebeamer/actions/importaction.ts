@@ -20,7 +20,11 @@ export const importAction: (
 	if (!importBodyValidator(action.data)) {
 		throw new DataConnectorRunError(
 			404,
+<<<<<<< Updated upstream
 			'Body must be of type {itemIds: number[], trackerId: string}'
+=======
+			'Body must be of type {itemIds: number[], trackerId: number}'
+>>>>>>> Stashed changes
 		);
 	}
 	const { itemIds, trackerId } = action.data;
@@ -50,12 +54,20 @@ export const importAction: (
 
 const getTaskData = async (
 	itemIds: number[],
+<<<<<<< Updated upstream
 	trackerId: string,
+=======
+	trackerId: number,
+>>>>>>> Stashed changes
 	oAuthToken: string
 ) => {
 	const codebeamerClient = new CodebeamerClient(oAuthToken);
 
+<<<<<<< Updated upstream
 	let cbqlString = getCbqlString([], '', trackerId);
+=======
+	let cbqlString = getCbqlString([], '', trackerId.toString());
+>>>>>>> Stashed changes
 	cbqlString = cbqlString.concat(` AND item.id IN (${itemIds.join(', ')})`);
 
 	const cbqlQuery: CbqlApiQuery = {

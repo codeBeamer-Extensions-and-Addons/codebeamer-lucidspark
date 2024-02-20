@@ -27,7 +27,11 @@ export class CodebeamerClient {
 		return this.parseAsAny(rawResponse) as ProjectListView[];
 	}
 
+<<<<<<< Updated upstream
 	public async getTrackers(projectId: string): Promise<TrackerListView[]> {
+=======
+	public async getTrackers(projectId: number): Promise<TrackerListView[]> {
+>>>>>>> Stashed changes
 		const rawResponse = await this.makeGetRequest(
 			`${this.baseUrl}/api/v3/projects/${projectId}/trackers`
 		);

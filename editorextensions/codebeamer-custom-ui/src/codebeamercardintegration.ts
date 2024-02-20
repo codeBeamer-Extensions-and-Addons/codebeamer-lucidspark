@@ -2,7 +2,10 @@ import {
 	LucidCardIntegration,
 	EditorClient,
 	DataSourceProxy,
+<<<<<<< Updated upstream
 	FieldDisplayType,
+=======
+>>>>>>> Stashed changes
 } from 'lucid-extension-sdk';
 import { DataConnectorName, DefaultFieldNames } from '../../../common/names';
 import { CodebeamerImportModal } from './CodebeamerImportModal';
@@ -39,6 +42,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 		return {
 			cardConfig: {
 				fieldNames: [DefaultFieldNames.Name],
+<<<<<<< Updated upstream
 				fieldDisplaySettings: new Map([
 					[
 						DefaultFieldNames.Id,
@@ -49,6 +53,8 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 						},
 					],
 				]),
+=======
+>>>>>>> Stashed changes
 			},
 			cardDetailsPanelConfig: {
 				fields: [
