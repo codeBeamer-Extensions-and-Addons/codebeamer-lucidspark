@@ -11,8 +11,10 @@ jobs:
       runs-on: ubuntu-latest
 
       steps:
-         - name: Checkout
+         - name: Checkout code
            uses: actions/checkout@v4
+           with:
+              path: 'dataconnectors/codebeamer'
 
          - name: Setup Node.js
            uses: actions/setup-node@v4
