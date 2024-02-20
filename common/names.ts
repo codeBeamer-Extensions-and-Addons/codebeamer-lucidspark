@@ -2,11 +2,7 @@
 
 export const DataConnectorName = 'codebeamer';
 export const DataSourceName = 'codebeamer';
-<<<<<<< Updated upstream
-export const CollectionName = 'codebeamer-items';
-=======
 export const CollectionName = 'items';
->>>>>>> Stashed changes
 export const OAuthProvider = 'google';
 
 export const baseUrl =

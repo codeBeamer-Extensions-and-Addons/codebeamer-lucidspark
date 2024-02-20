@@ -3,7 +3,6 @@ import {
 	FieldConstraintType,
 	ItemType,
 	ScalarFieldTypeEnum,
-	SemanticKind,
 } from 'lucid-extension-sdk';
 import { DefaultFieldNames } from '../../../common/names';
 import { SemanticFields } from 'lucid-extension-sdk/core/data/fieldtypedefinition/semanticfields';
@@ -14,7 +13,6 @@ export const codebeamerItemSchema = declareSchema({
 		[DefaultFieldNames.Id]: {
 			type: ScalarFieldTypeEnum.NUMBER,
 			constraints: [{ type: FieldConstraintType.LOCKED }],
-			mapping: [SemanticKind.Id],
 		},
 		[DefaultFieldNames.Name]: {
 			type: ScalarFieldTypeEnum.STRING,

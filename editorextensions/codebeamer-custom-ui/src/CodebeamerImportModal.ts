@@ -14,10 +14,7 @@ import {
 	CollectionName,
 	DataAction,
 	DataConnectorName,
-<<<<<<< Updated upstream
-=======
 	DataSourceName,
->>>>>>> Stashed changes
 	DefaultFieldNames,
 } from '../../../common/names';
 import getCbqlString from '../../../common/util/updateCbqlString';
@@ -51,11 +48,7 @@ export class CodebeamerImportModal {
 					const selectedProjectId = inputSoFar.get(this.projectField);
 					if (!selectedProjectId) return [];
 					const trackers = await this.codebeamerClient.getTrackers(
-<<<<<<< Updated upstream
-						selectedProjectId as string
-=======
 						selectedProjectId as number
->>>>>>> Stashed changes
 					);
 					return trackers.map((tracker) => ({
 						label: tracker.name,
@@ -103,10 +96,7 @@ export class CodebeamerImportModal {
 			syncDataSourceId?: string;
 		};
 	}> {
-<<<<<<< Updated upstream
-=======
 		const projectId = fields.get(this.projectField);
->>>>>>> Stashed changes
 		const trackerId = fields.get(this.trackerField) as number;
 
 		const codebeamerItems = trackerId
@@ -114,11 +104,7 @@ export class CodebeamerImportModal {
 					await this.codebeamerClient.getItems({
 						page: DEFAULT_RESULT_PAGE,
 						pageSize: MAX_ITEMS_PER_IMPORT,
-<<<<<<< Updated upstream
-						queryString: getCbqlString([], '', JSON.stringify(trackerId)),
-=======
 						queryString: getCbqlString([], '', trackerId.toString()),
->>>>>>> Stashed changes
 					})
 			  ).items
 			: [];
@@ -163,11 +149,7 @@ export class CodebeamerImportModal {
 			],
 			partialImportMetadata: {
 				collectionId: CollectionName,
-<<<<<<< Updated upstream
-				syncDataSourceId: JSON.stringify(trackerId),
-=======
 				syncDataSourceId: projectId?.toString(),
->>>>>>> Stashed changes
 			},
 		};
 	}
@@ -177,11 +159,6 @@ export class CodebeamerImportModal {
 		searchFields: Map<string, SerializedFieldType>
 	): Promise<{ collection: CollectionProxy; primaryKeys: string[] }> {
 		const trackerId = searchFields.get(this.trackerField);
-<<<<<<< Updated upstream
-		const trackerIdString = JSON.stringify(trackerId);
-		if (!isNumber(trackerId) || !trackerId) {
-			throw new Error('Tracker is required');
-=======
 		const projectId = searchFields.get(this.projectField);
 		if (
 			!isNumber(trackerId) ||
@@ -190,23 +167,15 @@ export class CodebeamerImportModal {
 			!isNumber(projectId)
 		) {
 			throw new Error('Tracker and Project are required');
->>>>>>> Stashed changes
 		}
 
 		await this.client.performDataAction({
 			actionName: DataAction.Import,
 			dataConnectorName: DataConnectorName,
-<<<<<<< Updated upstream
-			syncDataSourceIdNonce: trackerIdString,
-			actionData: {
-				itemIds: primaryKeys.map((pk) => JSON.parse(pk)),
-				trackerId: trackerIdString,
-=======
 			syncDataSourceIdNonce: projectId.toString(),
 			actionData: {
 				itemIds: primaryKeys.map((pk) => JSON.parse(pk)),
 				trackerId: trackerId,
->>>>>>> Stashed changes
 			},
 			asynchronous: true,
 		});
@@ -214,11 +183,7 @@ export class CodebeamerImportModal {
 		// Wait for the import to complete
 		const collection = await this.client.awaitDataImport(
 			DataConnectorName,
-<<<<<<< Updated upstream
-			trackerIdString,
-=======
 			DataSourceName,
->>>>>>> Stashed changes
 			CollectionName,
 			primaryKeys
 		);
