@@ -1,35 +1,29 @@
 name: Test
 
 on:
-    push:
-        branches: [main, develop]
-    pull_request:
-        branches: [main, develop]
+   push:
+      branches: [main, develop, oauth-prototype]
+   pull_request:
+      branches: [main, develop, oauth-prototype]
 
 jobs:
-    cypress-run:
-        runs-on: ubuntu-latest
-        strategy:
-            fail-fast: false
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
-            - name: Run tests
-              uses: cypress-io/github-action@v6
-              with:
-                  build: npm run build
-                  start: npm run start
-                  wait-on: 'http://localhost:3000'
-                  wait-on-timeout: 20
-                  browser: electron
-                  component: true
-                  record: true
-                  parallel: false
-                  working-directory: editorextensions/codebeamer-custom-ui/modal
-              env:
-                  CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
-                  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  CYPRESS_retinaBaseUrl: https://retinatest.roche.com/cb
-                  CYPRESS_cbUsername: ${{ secrets.CYPRESS_CBUSERNAME }}
-                  CYPRESS_cbPassword: ${{ secrets.CYPRESS_CBPASSWORD }}
+   test:
+      runs-on: ubuntu-latest
+
+      steps:
+         - name: Checkout code
+           uses: actions/checkout@v2
+
+         - name: Setup Node.js
+           uses: actions/setup-node@v4
+           with:
+              node-version: '14'
+
+         - name: Change working directory
+           run: cd dataconnectors/codebeamer
+
+         - name: Install dependencies
+           run: npm install
+
+         - name: Run Jasmine tests
+           run: npm test
