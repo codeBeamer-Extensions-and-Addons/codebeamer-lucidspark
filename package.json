@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"bundle": "lucid-package bundle",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"test": "cd dataconnectors/codebeamer && npm test"
 	},
 	"repository": {
 		"type": "git",
@@ -18,9 +18,17 @@
 	},
 	"homepage": "https://github.com/codeBeamer-Extensions-and-Addons/codebeamer-lucidspark#readme",
 	"devDependencies": {
-		"lucid-package": "^0.0.80"
+		"@typescript-eslint/eslint-plugin": "^6.21.0",
+		"eslint": "^8.56.0",
+		"eslint-config-standard-with-typescript": "^43.0.1",
+		"eslint-plugin-import": "^2.29.1",
+		"eslint-plugin-n": "^16.6.2",
+		"eslint-plugin-promise": "^6.1.1",
+		"lucid-package": "^0.0.80",
+		"typescript": "^5.3.3"
 	},
 	"dependencies": {
+		"lucid-extension-sdk": "^0.0.259",
 		"webpack-shell-plugin-next": "^2.3.1"
 	}
 }

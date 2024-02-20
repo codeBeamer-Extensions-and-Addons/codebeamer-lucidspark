@@ -21,7 +21,7 @@
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
 		"target": "ES2017",
-		"types": [],
+		"types": ["node"],
 		"lib": [
 			"es5",
 			"es6",
@@ -32,7 +32,5 @@
 			"esnext.asynciterable"
 		],
 		"outDir": "bin"
-	},
-	"files": ["resources/resource.d.ts"],
-	"include": ["src/**/*"]
+	}
 }

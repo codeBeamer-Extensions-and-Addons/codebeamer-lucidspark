@@ -4,7 +4,7 @@
 	"extensions": [
 		{
 			"name": "codebeamer-custom-ui",
-			"title": "codebeamer-custom-ui",
+			"title": "cb-cards",
 			"products": ["chart", "spark"],
 			"codePath": "editorextensions/codebeamer-custom-ui/bin/extension.js",
 			"scopes": [
@@ -27,12 +27,27 @@
 			"tokenUrl": "https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/auth/token",
 			"refreshTokenUrl": "https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/auth/refresh",
 			"authorizationUrl": "https://accounts.google.com/o/oauth2/v2/auth",
-			"scopes": ["openid"],
+			"scopes": [
+				"openid",
+				"https://www.googleapis.com/auth/userinfo.email",
+				"https://www.googleapis.com/auth/userinfo.profile"
+			],
 			"domainWhitelist": [
 				"https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/"
 			],
 			"clientAuthentication": "basic"
 		}
 	],
-	"dataConnectors": []
+	"dataConnectors": [
+		{
+			"name": "codebeamer",
+			"oauthProviderName": "google",
+			"callbackBaseUrl": "http://localhost:3001?kind=action&name=",
+			"dataActions": {
+				"Import": "Import",
+				"HardRefresh": "HardRefresh",
+				"Patch": "Patch"
+			}
+		}
+	]
 }
