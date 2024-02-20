@@ -19,11 +19,5 @@ jobs:
            with:
               node-version: '14'
 
-         - name: Change working directory
-           run: cd dataconnectors/codebeamer
-
-         - name: Install dependencies
-           run: npm install
-
-         - name: Run Jasmine tests
-           run: npm test
+         - name: run tests
+           run: cd dataconnectors/codebeamer && npm install && npm test
