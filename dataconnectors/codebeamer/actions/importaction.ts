@@ -1,4 +1,5 @@
 import {
+	CollectionEnumFieldNames,
 	DataConnectorAsynchronousAction,
 	DataConnectorRunError,
 } from 'lucid-extension-sdk';
@@ -13,6 +14,9 @@ import {
 	DEFAULT_ITEMS_PER_PAGE,
 } from '../../../common/constants/cb-import-defaults';
 import { importBodyValidator } from '../utils/validators';
+import { UserType, userSchema } from '../schema/userSchema';
+import { TeamType, teamSchema } from '../schema/teamSchema';
+import { StatusType, statusSchema } from '../schema/statusSchema';
 
 export const importAction: (
 	action: DataConnectorAsynchronousAction
@@ -23,14 +27,15 @@ export const importAction: (
 			'Body must be of type {itemIds: number[], trackerId: number}'
 		);
 	}
-	const { itemIds, trackerId } = action.data;
-	const itemsToAdd = await getTaskData(
+	const { itemIds, projectId, trackerId } = action.data;
+	const { items, foundUsers, foundTeams, foundStatuses } = await getTaskData(
 		itemIds,
+		projectId,
 		trackerId,
 		action.context.userCredential
 	);
 
-	action.client.update({
+	await action.client.update({
 		dataSourceName: DataSourceName,
 		collections: {
 			[CollectionName]: {
@@ -39,7 +44,34 @@ export const importAction: (
 					primaryKey: codebeamerItemSchema.primaryKey.elements,
 				},
 				patch: {
-					items: codebeamerItemSchema.fromItems(itemsToAdd),
+					items: codebeamerItemSchema.fromItems(items),
+				},
+			},
+			users: {
+				schema: {
+					fields: userSchema.array,
+					primaryKey: userSchema.primaryKey.elements,
+				},
+				patch: {
+					items: userSchema.fromItems([...foundUsers.values()]),
+				},
+			},
+			teams: {
+				schema: {
+					fields: teamSchema.array,
+					primaryKey: teamSchema.primaryKey.elements,
+				},
+				patch: {
+					items: teamSchema.fromItems([...foundTeams.values()]),
+				},
+			},
+			statuses: {
+				schema: {
+					fields: statusSchema.array,
+					primaryKey: statusSchema.primaryKey.elements,
+				},
+				patch: {
+					items: statusSchema.fromItems([...foundStatuses.values()]),
 				},
 			},
 		},
@@ -50,6 +82,7 @@ export const importAction: (
 
 const getTaskData = async (
 	itemIds: number[],
+	projectId: number,
 	trackerId: number,
 	oAuthToken: string
 ) => {
@@ -63,7 +96,69 @@ const getTaskData = async (
 		pageSize: DEFAULT_ITEMS_PER_PAGE,
 		queryString: cbqlString,
 	};
-	const fullTaskData = (await codebeamerClient.getItems(cbqlQuery)).items;
-	const formattedTaskData = fullTaskData.map(codebeamerItemDataToLucidFormat);
-	return formattedTaskData;
+	const fullItemData = (await codebeamerClient.getItems(cbqlQuery)).items;
+
+	const foundUsers = new Map<string, UserType>();
+	const foundTeams = new Map<string, TeamType>();
+	const foundStatuses = new Map<string, StatusType>();
+
+	const items = fullItemData.map((item) => {
+		const formattedItemData = codebeamerItemDataToLucidFormat(
+			item,
+			projectId
+		);
+
+		//decode oauthtoken and get profile picture url
+		const tokenPayload = oAuthToken.split('.')[1];
+		const padded = tokenPayload + '='.repeat(4 - (tokenPayload.length % 4));
+		const decodedPadded = Buffer.from(padded, 'base64').toString('utf-8');
+		const decodedToken = JSON.parse(decodedPadded);
+
+		const userIconUrl = decodedToken.picture;
+		const userEmail = decodedToken.email;
+
+		if (item.assignedTo.length > 0) {
+			for (const assignee of item.assignedTo) {
+				foundUsers.set(JSON.stringify(assignee.id.toString()), {
+					[CollectionEnumFieldNames.Id]: assignee.id.toString(),
+					[CollectionEnumFieldNames.Name]: assignee.name,
+					[CollectionEnumFieldNames.IconUrl]:
+						// set the google profile picture as the icon url if the user is the assignee
+						userEmail === assignee.email ? userIconUrl : null,
+				});
+			}
+		}
+
+		if (item.owners.length > 0) {
+			for (const owner of item.owners) {
+				foundUsers.set(JSON.stringify(owner.id.toString()), {
+					[CollectionEnumFieldNames.Id]: owner.id.toString(),
+					[CollectionEnumFieldNames.Name]: owner.name,
+					[CollectionEnumFieldNames.IconUrl]:
+						// set the google profile picture as the icon url if the user is the owner
+						userEmail === owner.email ? userIconUrl : null,
+				});
+			}
+		}
+
+		if (item.teams.length > 0) {
+			for (const team of item.teams) {
+				foundTeams.set(JSON.stringify(team.id.toString()), {
+					[CollectionEnumFieldNames.Id]: team.id.toString(),
+					[CollectionEnumFieldNames.Name]: team.name,
+				});
+			}
+		}
+
+		if (item.status) {
+			foundStatuses.set(JSON.stringify(item.status.id.toString()), {
+				[CollectionEnumFieldNames.Id]: item.status.id.toString(),
+				[CollectionEnumFieldNames.Name]: item.status.name,
+			});
+		}
+
+		return formattedItemData;
+	});
+
+	return { items, foundUsers, foundTeams, foundStatuses };
 };

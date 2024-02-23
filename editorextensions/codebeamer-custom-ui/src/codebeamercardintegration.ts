@@ -2,16 +2,205 @@ import {
 	LucidCardIntegration,
 	EditorClient,
 	DataSourceProxy,
+	FieldDisplayType,
+	OnClickHandlerKeys,
+	HorizontalBadgePos,
+	LucidCardIntegrationRegistry,
+	isNumber,
+	DataProxy,
+	DataItemProxy,
+	ExtensionCardFieldOption,
+	VerticalBadgePos,
 } from 'lucid-extension-sdk';
-import { DataConnectorName, DefaultFieldNames } from '../../../common/names';
+import {
+	CollectionName,
+	DataConnectorName,
+	DefaultFieldNames,
+} from '../../../common/names';
 import { CodebeamerImportModal } from './CodebeamerImportModal';
+import { CodebeamerClient } from './net/codebeamerclient';
+import { CbqlApiQuery } from '../../../common/models/cbqlApiQuery';
 
 export class CodebeamerCardIntegration extends LucidCardIntegration {
+	private codebeamerClient: CodebeamerClient;
+	private data: DataProxy;
 	constructor(private readonly editorClient: EditorClient) {
 		super(editorClient);
+		this.codebeamerClient = new CodebeamerClient(editorClient);
+		this.data = new DataProxy(editorClient);
 	}
 
-	public importModal = new CodebeamerImportModal(this.editorClient);
+	// Helper function to format user for search results
+	private formatDataItemProxyForSearch = (dataItemProxy: DataItemProxy) => ({
+		label: dataItemProxy.fields.get('name') as string,
+		value: dataItemProxy.fields.get('id') as string,
+		iconUrl: dataItemProxy.fields.get('iconUrl') as string,
+	});
+
+	private userSearchCallback =
+		LucidCardIntegrationRegistry.registerFieldSearchCallback(
+			this.editorClient,
+			async (search, cardData) => {
+				const projectId = cardData.get(DefaultFieldNames.ProjectId);
+				const userCollection = this.data.dataSources
+					.find((source) => source.getName() === DataConnectorName)
+					?.collections.find(
+						(collection) => collection.getName() === 'users'
+					);
+
+				if (!isNumber(projectId) || !userCollection) return [];
+
+				const decodedOauthToken = await this.editorClient
+					.getOAuthToken('google')
+					.then(async (token) => {
+						return token
+							? await this.codebeamerClient.getTokenInfo(token)
+							: undefined;
+					});
+
+				// Search for users in the existing userCollection based on the search term
+				const existingUsersInCollection = userCollection.items.filter(
+					(item) =>
+						(item.fields.get('name') as string)
+							.toLowerCase()
+							.includes(search.toLowerCase())
+				);
+
+				const searchResultsFromCodebeamer = (
+					await this.codebeamerClient.searchUsers(search, projectId)
+				).users.map((user) => {
+					let iconUrl = undefined;
+
+					// Check if user is already in the existing collection
+					const userInCollection = existingUsersInCollection.find(
+						(item) => item.fields.get('id') === user.id.toString()
+					);
+
+					// If not, then add it to the collection
+					if (!userInCollection) {
+						if (
+							decodedOauthToken &&
+							user.email === decodedOauthToken.email
+						) {
+							// Decode oauth token and get profile picture url
+							iconUrl = decodedOauthToken.picture;
+						}
+
+						userCollection.patchItems({
+							added: [
+								{
+									id: user.id.toString(),
+									name: user.name,
+									iconUrl: iconUrl,
+								},
+							],
+						});
+					}
+
+					return {
+						label: user.name,
+						value: user.id.toString(),
+						iconUrl: iconUrl,
+					};
+				});
+
+				// Merge and return the search results from both existing collection and Codebeamer
+				const mergedResults = new Map<string, ExtensionCardFieldOption>();
+				existingUsersInCollection.forEach((userItem) => {
+					const formattedUser =
+						this.formatDataItemProxyForSearch(userItem);
+					mergedResults.set(formattedUser.value, formattedUser);
+				});
+
+				searchResultsFromCodebeamer.forEach((user) => {
+					const formattedUser = {
+						label: user.label,
+						value: user.value,
+						iconUrl: user.iconUrl,
+					};
+					mergedResults.set(formattedUser.value, formattedUser);
+				});
+
+				return Array.from(mergedResults.values());
+			}
+		);
+
+	private teamSearchCallback =
+		LucidCardIntegrationRegistry.registerFieldSearchCallback(
+			this.client,
+			async (search, cardData) => {
+				const projectId = cardData.get(
+					DefaultFieldNames.ProjectId
+				) as number;
+				const teamCollection = this.data.dataSources
+					.find((source) => source.getName() === DataConnectorName)
+					?.collections.find(
+						(collection) => collection.getName() === 'teams'
+					);
+
+				if (!isNumber(projectId) || !teamCollection) return [];
+
+				const teamTracker = await this.codebeamerClient.getTeamTracker(
+					projectId
+				);
+
+				const existingTeamsInCollection = teamCollection.items.filter(
+					(item) =>
+						(item.fields.get('name') as string)
+							.toLowerCase()
+							.includes(search.toLowerCase())
+				);
+
+				const body: CbqlApiQuery = {
+					page: 1,
+					pageSize: 10,
+					queryString: `tracker.id IN (${teamTracker.id}) AND Summary LIKE '${search}%'`,
+				};
+
+				const searchResultsFromCodebeamer = (
+					await this.codebeamerClient.getItems(body)
+				).items.map((team) => {
+					// Check if team is already in the existing collection
+					const teamInCollection = existingTeamsInCollection.find(
+						(item) => item.fields.get('id') === team.id.toString()
+					);
+
+					// If not, then add it to the collection
+					if (!teamInCollection) {
+						teamCollection.patchItems({
+							added: [
+								{
+									id: team.id.toString(),
+									name: team.name,
+								},
+							],
+						});
+					}
+
+					return {
+						label: team.name,
+						value: team.id.toString(),
+					};
+				});
+
+				// Merge and return the search results from both existing collection and Codebeamer
+				const mergedResults = new Map<string, ExtensionCardFieldOption>();
+				existingTeamsInCollection.forEach((team) => {
+					const fomattedTeam = this.formatDataItemProxyForSearch(team);
+					mergedResults.set(fomattedTeam.value, fomattedTeam);
+				});
+
+				searchResultsFromCodebeamer.forEach((team) => {
+					const formattedTeam = {
+						label: team.label,
+						value: team.value,
+					};
+					mergedResults.set(formattedTeam.value, formattedTeam);
+				});
+
+				return Array.from(mergedResults.values());
+			}
+		);
 
 	public fieldConfiguration = {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -24,6 +213,12 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			selectedFields: string[]
 		) => {},
+
+		fieldValueSearchCallbacks: new Map([
+			[DefaultFieldNames.Assignee, this.userSearchCallback],
+			[DefaultFieldNames.Owner, this.userSearchCallback],
+			[DefaultFieldNames.Team, this.teamSearchCallback],
+		]),
 	};
 
 	public label = 'cb-cards';
@@ -35,18 +230,99 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public getDefaultConfig = async (dataSource: DataSourceProxy) => {
-		return {
+		return Promise.resolve({
 			cardConfig: {
 				fieldNames: [DefaultFieldNames.Name],
+				fieldDisplaySettings: new Map([
+					[
+						DefaultFieldNames.Id,
+						{
+							stencilConfig: {
+								displayType: FieldDisplayType.SquareImageBadge,
+								valueFormula: `="${this.iconUrl}"`,
+								onClickHandlerKey: OnClickHandlerKeys.OpenBrowserWindow,
+								linkFormula: '=@Link',
+								horizontalPosition: HorizontalBadgePos.RIGHT,
+								tooltipFormula:
+									'=IF(ISNOTEMPTY(LASTSYNCTIME), "Last synced " & RELATIVETIMEFORMAT(LASTSYNCTIME), "Open in Todoist")',
+								backgroundColor: '#00000000',
+							},
+						},
+					],
+					[
+						DefaultFieldNames.Assignee,
+						{
+							stencilConfig: {
+								displayType: FieldDisplayType.UserProfile,
+								tooltipFormula: `=CONCATENATE("Assigned to ", @Assignee.name)`,
+								valueFormula: `OBJECT("iconUrl", @Assignee.iconUrl,"name", @Assignee.name)`,
+								onClickHandlerKey: OnClickHandlerKeys.BasicEditPanel,
+							},
+						},
+					],
+					[
+						DefaultFieldNames.StoryPoints,
+						{
+							stencilConfig: {
+								displayType: FieldDisplayType.StandardEstimation,
+								tooltipFormula: `="Story Points: " & @StoryPoints`,
+								onClickHandlerKey: OnClickHandlerKeys.BasicEditPanel,
+								horizontalPosition: HorizontalBadgePos.RIGHT,
+								verticalPosition: VerticalBadgePos.TOP,
+							},
+						},
+					],
+					[
+						DefaultFieldNames.Status,
+						{
+							stencilConfig: {
+								displayType: FieldDisplayType.BasicTextBadge,
+								valueFormula: `=@Status.name`,
+								horizontalPosition: HorizontalBadgePos.LEFT,
+							},
+						},
+					],
+				]),
 			},
 			cardDetailsPanelConfig: {
 				fields: [
 					{
 						name: DefaultFieldNames.Name,
+						locked: false,
+					},
+					{
+						name: DefaultFieldNames.Description,
+						locked: false,
+					},
+
+					{
+						name: DefaultFieldNames.Assignee,
+						locked: false,
+					},
+					{
+						name: DefaultFieldNames.Owner,
+						locked: false,
+					},
+					{
+						name: DefaultFieldNames.Team,
+						locked: false,
+					},
+					{
+						name: DefaultFieldNames.Status,
+						locked: false,
+					},
+					{
+						name: DefaultFieldNames.StoryPoints,
+						locked: false,
+					},
+					{
+						name: DefaultFieldNames.Version,
 						locked: true,
 					},
 				],
 			},
-		};
+		});
 	};
+
+	public importModal = new CodebeamerImportModal(this.editorClient);
 }

@@ -6,9 +6,15 @@ import {
 } from 'lucid-extension-sdk';
 import { ProjectListView } from '../../../../common/models/projectListView.if';
 import { TrackerListView } from '../../../../common/models/trackerListView.if';
-import { ItemQueryPage } from '../../../../common/models/api-query-types';
+import {
+	ItemQueryPage,
+	TrackerSearchPage,
+	UserQueryPage,
+	tokenInfo,
+} from '../../../../common/models/api-query-types';
 import { CbqlApiQuery } from '../../../../common/models/cbqlApiQuery';
 import { baseUrl } from '../../../../common/names';
+import TrackerDetails from '../../../../common/models/trackerDetails.if';
 
 export class CodebeamerClient {
 	private readonly headers = {};
@@ -34,12 +40,67 @@ export class CodebeamerClient {
 		return this.parseAsAny(rawResponse) as TrackerListView[];
 	}
 
-	public async getItems(parameters: CbqlApiQuery): Promise<ItemQueryPage> {
+	public async getTracker(trackerId: number): Promise<TrackerDetails> {
+		const rawResponse = await this.makeGetRequest(
+			`${this.baseUrl}/api/v3/trackers/${trackerId}`
+		);
+		return this.parseAsAny(rawResponse) as TrackerDetails;
+	}
+
+	public async getItems(body: CbqlApiQuery): Promise<ItemQueryPage> {
 		const rawResponse = await this.makePostRequest(
 			`${this.baseUrl}/api/v3/items/query`,
-			parameters
+			body
 		);
 		return this.parseAsAny(rawResponse) as ItemQueryPage;
+	}
+
+	public async searchUsers(
+		username: string,
+		projectId: number
+	): Promise<UserQueryPage> {
+		let parameters = {};
+		if (username == '') {
+			parameters = {
+				projectId: projectId,
+			};
+		} else {
+			parameters = {
+				projectId: projectId,
+				// due to the codebeamer api, this sadly has to match the username exactly
+				name: username,
+			};
+		}
+
+		const rawResponse = await this.makePostRequest(
+			`${this.baseUrl}/api/v3/users/search`,
+			parameters
+		);
+		return this.parseAsAny(rawResponse) as UserQueryPage;
+	}
+
+	public async getTokenInfo(oAuthToken: string) {
+		const rawResponse = await this.client.xhr({
+			url: `https://oauth2.googleapis.com/tokeninfo?id_token=${oAuthToken}`,
+		});
+		return this.parseAsAny(rawResponse) as tokenInfo;
+	}
+
+	public async getTeamTracker(projectId: number) {
+		const body = {
+			types: [
+				{
+					id: 150,
+					name: 'Team',
+					type: 'TrackerTypeReference',
+				},
+			],
+		};
+		const rawResponse = await this.makePostRequest(
+			`${this.baseUrl}/api/v3/projects/${projectId}/trackers/search`,
+			body
+		);
+		return (this.parseAsAny(rawResponse) as TrackerSearchPage).trackers[0];
 	}
 
 	private errorFromResponse(response: any) {

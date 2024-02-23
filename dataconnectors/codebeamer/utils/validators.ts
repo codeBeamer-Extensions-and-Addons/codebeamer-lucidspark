@@ -6,5 +6,6 @@ import {
 
 export const importBodyValidator = objectValidator({
 	itemIds: arrayValidator(isNumber),
+	projectId: isNumber,
 	trackerId: isNumber,
 });
