@@ -4,6 +4,7 @@ import { TrackerListView } from '../../../common/models/trackerListView.if';
 import {
 	CodeBeamerItemField,
 	ItemQueryPage,
+	TransitionDetails,
 } from '../../../common/models/api-query-types';
 import { CbqlApiQuery } from '../../../common/models/cbqlApiQuery';
 import axios from 'axios';
@@ -87,6 +88,13 @@ export class CodebeamerClient {
 		return rawResponse as any as CodeBeamerUserReference;
 	}
 
+	public async getTransitions(itemId: number) {
+		const rawResponse = await this.makeGetRequest(
+			`${this.baseUrl}/api/v3/items/${itemId}/transitions`
+		);
+		return rawResponse as any as TransitionDetails[];
+	}
+
 	private async makeGetRequest(url: string, allow404?: boolean) {
 		try {
 			const { data } = await axios.get<any>(url, {
@@ -131,8 +139,11 @@ export class CodebeamerClient {
 			return data;
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				console.log('error message: ', error.message);
-				return error.message;
+				console.log(
+					'error message: ',
+					(error.response?.data as any)?.message
+				);
+				return (error.response?.data as any)?.message;
 			} else {
 				console.log('unexpected error: ', error);
 				return 'An unexpected error occurred';

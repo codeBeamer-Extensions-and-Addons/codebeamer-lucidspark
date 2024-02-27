@@ -11,7 +11,7 @@ export function codebeamerItemDataToLucidFormat(
 		[DefaultFieldNames.Id]: item.id,
 		[DefaultFieldNames.Name]: item.name,
 		[DefaultFieldNames.Description]: item.description ?? null,
-		[DefaultFieldNames.Assignee]: item.assignedTo[0]?.id.toString() ?? null,
+		[DefaultFieldNames.AssignedTo]: item.assignedTo[0]?.id.toString() ?? null,
 		[DefaultFieldNames.Link]: `${baseUrl}/item/${item.id}`,
 		[DefaultFieldNames.ProjectId]: projectId,
 		[DefaultFieldNames.TrackerId]: item.tracker.id,

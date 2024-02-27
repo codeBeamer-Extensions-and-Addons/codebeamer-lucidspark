@@ -28,7 +28,7 @@ export const codebeamerItemSchema = declareSchema({
 			type: nullable(ScalarFieldTypeEnum.STRING),
 			mapping: [SemanticFields.Description],
 		},
-		[DefaultFieldNames.Assignee]: {
+		[DefaultFieldNames.AssignedTo]: {
 			type: nullable(new CollectionEnumFieldType('users')),
 			mapping: [SemanticFields.User],
 			constraints: [{ type: FieldConstraintType.MAX_VALUE, value: 1 }],
@@ -60,9 +60,9 @@ export const codebeamerItemSchema = declareSchema({
 			constraints: [{ type: FieldConstraintType.LOCKED }],
 		},
 		[DefaultFieldNames.Status]: {
-			type: new CollectionEnumFieldType('statuses'),
+			type: nullable(new CollectionEnumFieldType('statuses')),
 			mapping: [SemanticFields.Status],
-			constraints: [{ type: FieldConstraintType.LOCKED }],
+			constraints: [{ type: FieldConstraintType.LOCKED }], // locked for now because of Jira pop up when cards fail
 		},
 		[DefaultFieldNames.Owner]: {
 			type: nullable(new CollectionEnumFieldType('users')),

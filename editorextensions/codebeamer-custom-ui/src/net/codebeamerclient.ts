@@ -9,6 +9,7 @@ import { TrackerListView } from '../../../../common/models/trackerListView.if';
 import {
 	ItemQueryPage,
 	TrackerSearchPage,
+	TransitionDetails,
 	UserQueryPage,
 	tokenInfo,
 } from '../../../../common/models/api-query-types';
@@ -101,6 +102,13 @@ export class CodebeamerClient {
 			body
 		);
 		return (this.parseAsAny(rawResponse) as TrackerSearchPage).trackers[0];
+	}
+
+	public async getTransitions(itemId: number) {
+		const rawResponse = await this.makeGetRequest(
+			`${this.baseUrl}/api/v3/items/${itemId}/transitions`
+		);
+		return this.parseAsAny(rawResponse) as TransitionDetails[];
 	}
 
 	private errorFromResponse(response: any) {

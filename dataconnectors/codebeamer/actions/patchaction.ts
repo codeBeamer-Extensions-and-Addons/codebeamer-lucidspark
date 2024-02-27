@@ -23,7 +23,6 @@ export const patchAction: (
 								primaryKey,
 								'Failed to update item in Codebeamer'
 							);
-							console.warn('error patching', err);
 						}
 					}
 				),

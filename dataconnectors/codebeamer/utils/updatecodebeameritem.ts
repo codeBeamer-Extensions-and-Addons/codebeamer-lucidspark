@@ -3,6 +3,13 @@ import { CodeBeamerItem } from '../../../common/models/codebeamer-item.if';
 import { DefaultFieldNames } from '../../../common/names';
 import { CodebeamerClient } from '../net/codebeamerclient';
 
+/**
+ * Updates a codebeamer item with the given fields
+ * @param itemId id of the item to update
+ * @param additions fields of item to be updated
+ * @param oAuthToken OAuth token for authentication
+ * @returns
+ */
 export async function updateCodebeamerItem(
 	itemId: number,
 	additions: {
@@ -18,39 +25,13 @@ export async function updateCodebeamerItem(
 	const fieldValues: CodeBeamerItemField[] = [];
 
 	for (const fieldName in additions) {
-		// convert lucid field name to codebeamer api field name
-		let codebeamerFieldName = '';
-		switch (fieldName) {
-			case DefaultFieldNames.Name:
-				codebeamerFieldName = 'name';
-				break;
-			case DefaultFieldNames.Description:
-				codebeamerFieldName = 'description';
-				break;
-			case DefaultFieldNames.StoryPoints:
-				codebeamerFieldName = 'storyPoints';
-				break;
-			case DefaultFieldNames.Assignee:
-				codebeamerFieldName = 'assignedTo';
-				break;
-			case DefaultFieldNames.Team:
-				codebeamerFieldName = 'teams';
-				break;
-			case DefaultFieldNames.Status:
-				codebeamerFieldName = 'status';
-				break;
-			case DefaultFieldNames.Version:
-				codebeamerFieldName = 'version';
-				break;
-			case DefaultFieldNames.Owner:
-				codebeamerFieldName = 'owners';
-				break;
-		}
-
 		const field = editableItemFields.find(
-			(field) => field.name === codebeamerFieldName
+			(field) => field.name === fieldName
 		);
-		if (field && field.type !== 'ChoiceFieldValue') {
+		if (
+			field &&
+			(field.type == 'IntegerFieldValue' || field.type == 'TextFieldValue')
+		) {
 			fieldValues.push({
 				fieldId: field.fieldId,
 				type: field.type,
@@ -59,21 +40,21 @@ export async function updateCodebeamerItem(
 			});
 		} else if (field && field.type === 'ChoiceFieldValue') {
 			if (
-				codebeamerFieldName === 'assignedTo' ||
-				codebeamerFieldName === 'teams' ||
-				codebeamerFieldName === 'owners'
+				fieldName === DefaultFieldNames.AssignedTo ||
+				fieldName === DefaultFieldNames.Team ||
+				fieldName === DefaultFieldNames.Owner
 			) {
 				// comments and variables were written for assignedTo but it will work for teams and owners as well
 
 				const fieldValueType =
-					codebeamerFieldName === 'assignedTo' ||
-					codebeamerFieldName === 'owners'
+					fieldName === DefaultFieldNames.AssignedTo ||
+					fieldName === DefaultFieldNames.Owner
 						? 'UserReference'
 						: 'TrackerItemReference';
 				// replace first index of assignedTo array with the new assignee
 				const assigneeId = additions[fieldName] as number;
 				const user =
-					codebeamerFieldName === 'assignedTo'
+					fieldName === DefaultFieldNames.AssignedTo
 						? await codebeamerClient.getUserById(assigneeId)
 						: await codebeamerClient.getItem(assigneeId);
 				let usersAssignedToItem = field.values;

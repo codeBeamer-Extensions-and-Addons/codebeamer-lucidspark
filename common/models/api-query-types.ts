@@ -1,4 +1,5 @@
 import { CodeBeamerItem } from './codebeamer-item.if';
+import { CodeBeamerReference } from './codebeamer-reference.if';
 import TrackerDetails from './trackerDetails.if';
 
 export interface ItemQueryPage {
@@ -122,4 +123,18 @@ export interface tokenInfo {
 	alg: string;
 	kid: string;
 	typ: string;
+}
+
+/**
+ * Structure of a transition / received in an array from the items/{itemId}/transitions endpoint
+ */
+export interface TransitionDetails {
+	id: number;
+	name: string;
+	description: string;
+	descriptionFormat: string;
+	fromStatus: CodeBeamerReference;
+	toStatus: CodeBeamerReference;
+	hidden: boolean;
+	permissions: unknown[];
 }

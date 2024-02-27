@@ -154,6 +154,9 @@ const getTaskData = async (
 			foundStatuses.set(JSON.stringify(item.status.id.toString()), {
 				[CollectionEnumFieldNames.Id]: item.status.id.toString(),
 				[CollectionEnumFieldNames.Name]: item.status.name,
+				[CollectionEnumFieldNames.Description]: null,
+				[CollectionEnumFieldNames.Color]: null,
+				[CollectionEnumFieldNames.IconUrl]: null,
 			});
 		}
 

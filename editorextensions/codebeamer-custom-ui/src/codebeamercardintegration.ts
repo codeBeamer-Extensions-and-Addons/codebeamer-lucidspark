@@ -12,11 +12,7 @@ import {
 	ExtensionCardFieldOption,
 	VerticalBadgePos,
 } from 'lucid-extension-sdk';
-import {
-	CollectionName,
-	DataConnectorName,
-	DefaultFieldNames,
-} from '../../../common/names';
+import { DataConnectorName, DefaultFieldNames } from '../../../common/names';
 import { CodebeamerImportModal } from './CodebeamerImportModal';
 import { CodebeamerClient } from './net/codebeamerclient';
 import { CbqlApiQuery } from '../../../common/models/cbqlApiQuery';
@@ -30,13 +26,20 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 		this.data = new DataProxy(editorClient);
 	}
 
-	// Helper function to format user for search results
+	/**
+	 * Helper function to format dataItemProxy for search results
+	 * @param dataItemProxy
+	 * @returns
+	 */
 	private formatDataItemProxyForSearch = (dataItemProxy: DataItemProxy) => ({
 		label: dataItemProxy.fields.get('name') as string,
 		value: dataItemProxy.fields.get('id') as string,
 		iconUrl: dataItemProxy.fields.get('iconUrl') as string,
 	});
 
+	/**
+	 * Callback to search for users
+	 */
 	private userSearchCallback =
 		LucidCardIntegrationRegistry.registerFieldSearchCallback(
 			this.editorClient,
@@ -69,7 +72,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 				const searchResultsFromCodebeamer = (
 					await this.codebeamerClient.searchUsers(search, projectId)
 				).users.map((user) => {
-					let iconUrl = undefined;
+					let iconUrl: string | undefined = '';
 
 					// Check if user is already in the existing collection
 					const userInCollection = existingUsersInCollection.find(
@@ -83,7 +86,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 							user.email === decodedOauthToken.email
 						) {
 							// Decode oauth token and get profile picture url
-							iconUrl = decodedOauthToken.picture;
+							iconUrl = decodedOauthToken.picture || undefined;
 						}
 
 						userCollection.patchItems({
@@ -125,6 +128,9 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 			}
 		);
 
+	/**
+	 * Callback to search for teams
+	 */
 	private teamSearchCallback =
 		LucidCardIntegrationRegistry.registerFieldSearchCallback(
 			this.client,
@@ -202,6 +208,66 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 			}
 		);
 
+	/**
+	 * Callback to get status options
+	 */
+	private statusOptionsCallback =
+		LucidCardIntegrationRegistry.registerFieldOptionsCallback(
+			this.client,
+			async (cardData) => {
+				const itemId = cardData.get(DefaultFieldNames.Id) as number;
+				const codebeamerDataSource = this.data.dataSources.find(
+					(source) => source.getName() === DataConnectorName
+				);
+				const statusCollection = codebeamerDataSource?.collections.find(
+					(collection) => collection.getName() === 'statuses'
+				);
+
+				if (!isNumber(itemId) || !statusCollection) return [];
+
+				const transitions = await this.codebeamerClient.getTransitions(
+					itemId
+				);
+				const toStatuses = transitions.map((transition) => {
+					return transition.toStatus;
+				});
+				const toStatusesIds = toStatuses.map((status) =>
+					status.id.toString()
+				);
+
+				const existingStatusesInCollection = statusCollection.items.filter(
+					(item) =>
+						toStatusesIds.some((id) => item.fields.get('id') === id)
+				);
+
+				return transitions.map((transition) => {
+					// Check if the toStatus is already in the existing collection
+					const statusInCollection = existingStatusesInCollection.find(
+						(item) =>
+							item.fields.get('id') === transition.toStatus.id.toString()
+					);
+
+					// If not, then add it to the collection
+					if (!statusInCollection) {
+						statusCollection.patchItems({
+							added: [
+								{
+									id: transition.toStatus.id.toString(),
+									name: transition.toStatus.name,
+								},
+							],
+						});
+					}
+
+					// return the name of the transition to mimick the behavior in Codebeamer
+					return {
+						label: transition.name,
+						value: transition.toStatus.id.toString(),
+					};
+				});
+			}
+		);
+
 	public fieldConfiguration = {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		getAllFields: (dataSource: DataSourceProxy) => {
@@ -215,9 +281,10 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 		) => {},
 
 		fieldValueSearchCallbacks: new Map([
-			[DefaultFieldNames.Assignee, this.userSearchCallback],
+			[DefaultFieldNames.AssignedTo, this.userSearchCallback],
 			[DefaultFieldNames.Owner, this.userSearchCallback],
 			[DefaultFieldNames.Team, this.teamSearchCallback],
+			[DefaultFieldNames.Status, this.statusOptionsCallback],
 		]),
 	};
 
@@ -250,12 +317,12 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 						},
 					],
 					[
-						DefaultFieldNames.Assignee,
+						DefaultFieldNames.AssignedTo,
 						{
 							stencilConfig: {
 								displayType: FieldDisplayType.UserProfile,
-								tooltipFormula: `=CONCATENATE("Assigned to ", @Assignee.name)`,
-								valueFormula: `OBJECT("iconUrl", @Assignee.iconUrl,"name", @Assignee.name)`,
+								tooltipFormula: `=CONCATENATE("Assigned to ", @'Assigned To'.name)`,
+								valueFormula: `OBJECT("iconUrl", @'Assigned To'.iconUrl,"name", @'Assigned To'.name)`,
 								onClickHandlerKey: OnClickHandlerKeys.BasicEditPanel,
 							},
 						},
@@ -296,7 +363,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 					},
 
 					{
-						name: DefaultFieldNames.Assignee,
+						name: DefaultFieldNames.AssignedTo,
 						locked: false,
 					},
 					{
@@ -309,7 +376,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 					},
 					{
 						name: DefaultFieldNames.Status,
-						locked: false,
+						locked: true,
 					},
 					{
 						name: DefaultFieldNames.StoryPoints,

@@ -1,11 +1,9 @@
 import {
 	CollectionDefinition,
-	CollectionEnumFieldType,
 	CollectionProxy,
 	EditorClient,
 	ExtensionCardFieldDefinition,
 	FieldConstraintType,
-	FieldTypeArray,
 	LucidCardIntegrationRegistry,
 	ScalarFieldTypeEnum,
 	SerializedFieldType,
@@ -17,7 +15,6 @@ import {
 	CollectionName,
 	DataAction,
 	DataConnectorName,
-	DataSourceName,
 	DefaultFieldNames,
 } from '../../../common/names';
 import getCbqlString from '../../../common/util/updateCbqlString';

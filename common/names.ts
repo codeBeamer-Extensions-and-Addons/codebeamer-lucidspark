@@ -22,14 +22,14 @@ export enum DataAction {
  */
 
 export enum DefaultFieldNames {
-	Name = 'Name',
 	Id = 'Id',
-	Assignee = 'Assignee',
+	ProjectId = 'Project Id',
+	TrackerId = 'Tracker Id',
+	Name = 'Summary',
+	AssignedTo = 'Assigned To',
 	Link = 'Link',
 	StoryPoints = 'Story Points',
 	Description = 'Description',
-	ProjectId = 'Project Id',
-	TrackerId = 'Tracker Id',
 	Team = 'Team',
 	Version = 'Version',
 	Status = 'Status',
