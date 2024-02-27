@@ -4,7 +4,10 @@ import { DataConnectorRunError } from 'lucid-extension-sdk/dataconnector/datacon
 import { fetchItemsByIds } from '../utils/fetchitemsbyids';
 import { CollectionName, DataSourceName } from '../../../common/names';
 import { codebeamerItemSchema } from '../schema/codebeamerItemSchema';
-import { codebeamerItemDataToLucidFormat } from '../schema/codebeamerItemDataToLucidFormat';
+import { getCollectionsData } from './importaction';
+import { userSchema } from '../schema/userSchema';
+import { teamSchema } from '../schema/teamSchema';
+import { statusSchema } from '../schema/statusSchema';
 
 export const hardRefreshAction: (
 	action: DataConnectorAsynchronousAction
@@ -24,13 +27,17 @@ export const hardRefreshAction: (
 		return { success: true };
 	}
 
-	const fullTaskData = await fetchItemsByIds(
+	const fullItemData = await fetchItemsByIds(
 		new Set(itemIds),
 		action.context.userCredential
 	);
 
-	if (fullTaskData.length > 0) {
-		const itemsToAdd = fullTaskData.map(codebeamerItemDataToLucidFormat);
+	const { items, foundUsers, foundTeams, foundStatuses } = getCollectionsData(
+		fullItemData,
+		action.context.userCredential
+	);
+
+	if (fullItemData.length > 0) {
 		action.client.update({
 			dataSourceName: DataSourceName,
 			collections: {
@@ -40,7 +47,34 @@ export const hardRefreshAction: (
 						primaryKey: codebeamerItemSchema.primaryKey.elements,
 					},
 					patch: {
-						items: codebeamerItemSchema.fromItems(itemsToAdd),
+						items: codebeamerItemSchema.fromItems(items),
+					},
+				},
+				users: {
+					schema: {
+						fields: userSchema.array,
+						primaryKey: userSchema.primaryKey.elements,
+					},
+					patch: {
+						items: userSchema.fromItems([...foundUsers.values()]),
+					},
+				},
+				teams: {
+					schema: {
+						fields: teamSchema.array,
+						primaryKey: teamSchema.primaryKey.elements,
+					},
+					patch: {
+						items: teamSchema.fromItems([...foundTeams.values()]),
+					},
+				},
+				statuses: {
+					schema: {
+						fields: statusSchema.array,
+						primaryKey: statusSchema.primaryKey.elements,
+					},
+					patch: {
+						items: statusSchema.fromItems([...foundStatuses.values()]),
 					},
 				},
 			},

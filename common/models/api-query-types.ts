@@ -1,4 +1,5 @@
 import { CodeBeamerItem } from './codebeamer-item.if';
+import { CodeBeamerReference } from './codebeamer-reference.if';
 import TrackerDetails from './trackerDetails.if';
 
 export interface ItemQueryPage {
@@ -20,6 +21,7 @@ export interface UserQueryPage {
 	pageSize: number;
 	total: number;
 	users: {
+		id: number;
 		name: string;
 		firstName: string;
 		lastName: string;
@@ -43,7 +45,8 @@ export interface CodeBeamerItemFields {
 export interface CodeBeamerItemField {
 	fieldId: number;
 	name: string;
-	values: FieldOptions[];
+	values?: FieldOptions[];
+	value?: unknown;
 	type: string;
 }
 
@@ -55,12 +58,6 @@ export interface FieldOptions {
 	uri?: string;
 	name: string;
 	type?: string;
-}
-export interface FieldValue {
-	fieldId: number;
-	type: string;
-	name: string;
-	value: unknown;
 }
 
 /**
@@ -102,4 +99,42 @@ export interface AssociationDetails {
 interface CodeBeamerEntityReference {
 	id: number;
 	name: string;
+}
+
+/**
+ * Structure of a response from the google token info endpoint with openid, profile and email scopes
+ */
+export interface tokenInfo {
+	iss: string;
+	azp: string;
+	aud: string;
+	sub: string;
+	hd: string;
+	email: string;
+	email_verified: string;
+	at_hash: string;
+	name: string;
+	picture: string;
+	given_name: string;
+	family_name: string;
+	locale: string;
+	iat: string;
+	exp: string;
+	alg: string;
+	kid: string;
+	typ: string;
+}
+
+/**
+ * Structure of a transition / received in an array from the items/{itemId}/transitions endpoint
+ */
+export interface TransitionDetails {
+	id: number;
+	name: string;
+	description: string;
+	descriptionFormat: string;
+	fromStatus: CodeBeamerReference;
+	toStatus: CodeBeamerReference;
+	hidden: boolean;
+	permissions: unknown[];
 }

@@ -7,6 +7,7 @@ import {
 	LucidCardIntegrationRegistry,
 	ScalarFieldTypeEnum,
 	SerializedFieldType,
+	Viewport,
 	isNumber,
 } from 'lucid-extension-sdk';
 import { CodebeamerClient } from './net/codebeamerclient';
@@ -14,7 +15,6 @@ import {
 	CollectionName,
 	DataAction,
 	DataConnectorName,
-	DataSourceName,
 	DefaultFieldNames,
 } from '../../../common/names';
 import getCbqlString from '../../../common/util/updateCbqlString';
@@ -27,10 +27,12 @@ import { SemanticFields } from 'lucid-extension-sdk/core/data/fieldtypedefinitio
 export class CodebeamerImportModal {
 	private readonly client: EditorClient;
 	private readonly codebeamerClient: CodebeamerClient;
+	private readonly viewport: Viewport;
 
 	constructor(client: EditorClient) {
 		this.client = client;
 		this.codebeamerClient = new CodebeamerClient(client);
+		this.viewport = new Viewport(client);
 	}
 
 	private readonly projectField = 'project';
@@ -77,7 +79,6 @@ export class CodebeamerImportModal {
 				label: 'Tracker',
 				type: ScalarFieldTypeEnum.NUMBER,
 				options: trackerOptionsCallback,
-				// default: this.cachedTrackerId,
 				constraints: [
 					{
 						type: FieldConstraintType.REQUIRED, // this seems to also need separate enforcement in the search()
@@ -139,7 +140,7 @@ export class CodebeamerImportModal {
 				{
 					name: DefaultFieldNames.Id,
 					label: DefaultFieldNames.Id,
-					type: ScalarFieldTypeEnum.STRING,
+					type: ScalarFieldTypeEnum.NUMBER,
 				},
 				{
 					name: DefaultFieldNames.Name,
@@ -176,6 +177,7 @@ export class CodebeamerImportModal {
 			actionData: {
 				itemIds: primaryKeys.map((pk) => JSON.parse(pk)),
 				trackerId: trackerId,
+				projectId: projectId,
 			},
 			asynchronous: true,
 		});
@@ -183,7 +185,7 @@ export class CodebeamerImportModal {
 		// Wait for the import to complete
 		const collection = await this.client.awaitDataImport(
 			DataConnectorName,
-			DataSourceName,
+			projectId.toString(),
 			CollectionName,
 			primaryKeys
 		);

@@ -5,7 +5,6 @@ import { updateCodebeamerItem } from '../utils/updatecodebeameritem';
 export const patchAction: (
 	action: DataConnectorPatchAction
 ) => Promise<PatchChange[]> = async (action) => {
-	console.log('patch action', action);
 	return await Promise.all(
 		action.patches.map(async (patch) => {
 			const change = patch.getChange();
@@ -24,7 +23,6 @@ export const patchAction: (
 								primaryKey,
 								'Failed to update item in Codebeamer'
 							);
-							console.warn('error patching', err);
 						}
 					}
 				),
