@@ -13,14 +13,6 @@ import {
 	DEFAULT_RESULT_PAGE,
 } from '../../../common/constants/cb-import-defaults';
 import { CodeBeamerItem } from '../../../common/models/codebeamer-item.if';
-import {
-	SchemaDefinition,
-	FieldConstraintDefinition,
-} from 'lucid-extension-sdk/data/schemadefinition';
-import { SemanticFields } from 'lucid-extension-sdk/core/data/fieldtypedefinition/semanticfields';
-import { FieldConstraintType } from 'lucid-extension-sdk/core/data/serializedfield/serializedfielddefinition';
-import { ScalarFieldTypeEnum } from 'lucid-extension-sdk/core/data/fieldtypedefinition/scalarfieldtype';
-import { SerializedFields } from 'lucid-extension-sdk/core/data/serializedfield/serializedfields';
 import { RequestCollections, oAuthToken } from '../utils/helper.test';
 import { baseUrl } from '../../../common/names';
 import TrackerDetails from '../../../common/models/trackerDetails.if';
