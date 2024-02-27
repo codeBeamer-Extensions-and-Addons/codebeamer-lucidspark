@@ -12,6 +12,7 @@ import { baseUrl } from '../../../common/names';
 import { CodeBeamerItem } from '../../../common/models/codebeamer-item.if';
 import { CodeBeamerItemFields } from '../../../common/models/api-query-types';
 import { CodeBeamerUserReference } from '../../../common/models/codebeamer-user-reference.if';
+import TrackerDetails from '../../../common/models/trackerDetails.if';
 
 export class CodebeamerClient {
 	constructor(private readonly oAuthToken: string) {}
@@ -28,6 +29,13 @@ export class CodebeamerClient {
 			`${this.baseUrl}/api/v3/projects`
 		);
 		return rawResponse as any as ProjectListView[];
+	}
+
+	public async getTracker(trackerId: number): Promise<TrackerDetails> {
+		const rawResponse = await this.makeGetRequest(
+			`${this.baseUrl}/api/v3/trackers/${trackerId}`
+		);
+		return rawResponse as any as TrackerDetails;
 	}
 
 	public async getTrackers(projectId: number): Promise<TrackerListView[]> {

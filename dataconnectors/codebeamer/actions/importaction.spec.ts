@@ -21,16 +21,23 @@ import { SemanticFields } from 'lucid-extension-sdk/core/data/fieldtypedefinitio
 import { FieldConstraintType } from 'lucid-extension-sdk/core/data/serializedfield/serializedfielddefinition';
 import { ScalarFieldTypeEnum } from 'lucid-extension-sdk/core/data/fieldtypedefinition/scalarfieldtype';
 import { SerializedFields } from 'lucid-extension-sdk/core/data/serializedfield/serializedfields';
+import { RequestCollections, oAuthToken } from '../utils/helper.test';
+import { baseUrl } from '../../../common/names';
+import TrackerDetails from '../../../common/models/trackerDetails.if';
 
 describe('import action', () => {
 	it('imports a single item from id', async () => {
 		const mockDataConnectorClient = new MockDataConnectorClient();
 		const dataConnector = makeDataConnector(mockDataConnectorClient);
 
-		const trackerId = 1;
 		const itemIds = [1];
-		const action = { name: 'Import', data: { itemIds, trackerId } };
-		const oAuthToken = 'test token';
+		const trackerId = 1;
+		const projectId = 1;
+
+		const action = {
+			name: 'Import',
+			data: { itemIds, trackerId, projectId },
+		};
 		const cbqlString = `tracker.id IN (${trackerId}) AND item.id IN (${itemIds.join(
 			', '
 		)})`;
@@ -52,10 +59,10 @@ describe('import action', () => {
 				})
 			);
 
-		const postedCollections = new RequestCollections().codebeamerItems([
-			'1',
-			{ Id: 1, Name: 'Test Item 1' },
-		]).collectionPatches;
+		const postedCollections = new RequestCollections()
+			.items([1, structuredTestItem])
+			.users(['1', structuredTestUser])
+			.statuses(['1', structuredStatus]).collectionPatches;
 		mockDataConnectorClient.dataSourceClient.gotUpdate =
 			successUpdateFunctionForWithExpectedRequest(postedCollections);
 
@@ -85,22 +92,27 @@ describe('import action', () => {
 		const dataConnector = makeDataConnector(mockDataConnectorClient);
 
 		const action = { name: 'HardRefresh', data: null };
-		const oAuthToken = 'test token';
-		const itemId = 1;
-		const documentCollections = { items: [`${itemId}`] };
+		const documentCollections = { items: [`${testItem.id}`] };
 
-		const postedCollections = new RequestCollections().codebeamerItems([
-			'1',
-			{ Id: 1, Name: 'Test Item 1' },
-		]).collectionPatches;
+		const postedCollections = new RequestCollections()
+			.items([1, structuredTestItem])
+			.users(['1', structuredTestUser])
+			.statuses(['1', structuredStatus]).collectionPatches;
 		mockDataConnectorClient.dataSourceClient.gotUpdate =
 			successUpdateFunctionForWithExpectedRequest(postedCollections);
 
 		spyOn(CodebeamerClient.prototype, 'getItem')
-			.withArgs(itemId)
+			.withArgs(testItem.id)
 			.and.returnValue(
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				Promise.resolve(testItem as any as CodeBeamerItem)
+			);
+
+		spyOn(CodebeamerClient.prototype, 'getTracker')
+			.withArgs(testItem.tracker.id)
+			.and.returnValue(
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				Promise.resolve(testTracker as any as TrackerDetails)
 			);
 
 		const result = await dataConnector.runAction(
@@ -119,7 +131,9 @@ describe('import action', () => {
 		);
 
 		expect(result).toEqual({ status: 200, body: { success: true } });
-		expect(CodebeamerClient.prototype.getItem).toHaveBeenCalledWith(itemId);
+		expect(CodebeamerClient.prototype.getItem).toHaveBeenCalledWith(
+			testItem.id
+		);
 	});
 });
 
@@ -136,18 +150,63 @@ const testItem = {
 	descriptionFormat: 'Wiki',
 	id: 1,
 	name: 'Test Item 1',
-	status: [
+	owners: [
 		{
+			email: 'test@test.test',
 			id: 1,
-			name: 'Test Status',
-			type: 'Test Type',
+			name: 'Test User',
 		},
 	],
+	status: {
+		id: 1,
+		name: 'Test Status',
+		type: 'Test Type',
+	},
+
 	storyPoints: 5,
+	teams: [],
 	tracker: {
 		id: 1,
 		name: 'Test Tracker',
 	},
+	version: 1,
+};
+
+const testTracker = {
+	color: '#007AC2',
+	id: 1,
+	keyName: 'testKey',
+	name: 'Test Tracker',
+	project: {
+		id: 1,
+		name: 'Test Project',
+	},
+};
+
+const structuredTestItem = {
+	Id: 1,
+	Summary: 'Test Item 1',
+	Description: 'Test Description',
+	'Assigned To': '1',
+	Link: `${baseUrl}/item/1`,
+	'Project Id': 1,
+	'Tracker Id': 1,
+	Team: null,
+	'Story Points': 5,
+	Version: 1,
+	Status: '1',
+	Owner: '1',
+};
+
+const structuredTestUser = {
+	id: '1',
+	name: 'Test User',
+	iconUrl: null,
+};
+
+const structuredStatus = {
+	id: '1',
+	name: 'Test Status',
 };
 
 const successUpdateFunctionForWithExpectedRequest = (
@@ -159,50 +218,3 @@ const successUpdateFunctionForWithExpectedRequest = (
 		return { data: { success: true }, status: 200 };
 	};
 };
-
-const lockedFieldConstraint: FieldConstraintDefinition = {
-	type: FieldConstraintType.LOCKED,
-};
-const itemSchema: SchemaDefinition = {
-	fields: [
-		{
-			name: 'Id',
-			type: ScalarFieldTypeEnum.NUMBER,
-			constraints: [lockedFieldConstraint],
-			mapping: undefined,
-		},
-		{
-			name: 'Name',
-			type: ScalarFieldTypeEnum.STRING,
-			constraints: undefined,
-			mapping: [SemanticFields.Title],
-		},
-	],
-	primaryKey: ['Id'],
-};
-
-class RequestCollections {
-	public collectionPatches: Record<string, CollectionPatch> = {
-		items: {
-			patch: { items: new Map() },
-			schema: itemSchema,
-		},
-	};
-	public items(
-		collection: string,
-		...primaryKeysAndItems: [string, SerializedFields][]
-	): RequestCollections {
-		for (const [pk, serializedFields] of primaryKeysAndItems) {
-			this.collectionPatches[collection].patch.items.set(
-				pk,
-				serializedFields
-			);
-		}
-		return this;
-	}
-	public codebeamerItems(
-		...primaryKeysAndItems: [string, SerializedFields][]
-	): RequestCollections {
-		return this.items('items', ...primaryKeysAndItems);
-	}
-}

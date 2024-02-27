@@ -17,6 +17,7 @@ import { importBodyValidator } from '../utils/validators';
 import { UserType, userSchema } from '../schema/userSchema';
 import { TeamType, teamSchema } from '../schema/teamSchema';
 import { StatusType, statusSchema } from '../schema/statusSchema';
+import { CodeBeamerItem } from '../../../common/models/codebeamer-item.if';
 
 export const importAction: (
 	action: DataConnectorAsynchronousAction
@@ -24,14 +25,20 @@ export const importAction: (
 	if (!importBodyValidator(action.data)) {
 		throw new DataConnectorRunError(
 			404,
-			'Body must be of type {itemIds: number[], trackerId: number}'
+			'Body must be of type {itemIds: number[], trackerId: number, projectId: number}'
 		);
 	}
 	const { itemIds, projectId, trackerId } = action.data;
-	const { items, foundUsers, foundTeams, foundStatuses } = await getTaskData(
+	const itemData = await getItemData(
 		itemIds,
-		projectId,
 		trackerId,
+		action.context.userCredential
+	);
+	const fullItemData = itemData.map((item) => {
+		return { item, projectId };
+	});
+	const { items, foundUsers, foundTeams, foundStatuses } = getCollectionsData(
+		fullItemData,
 		action.context.userCredential
 	);
 
@@ -80,9 +87,8 @@ export const importAction: (
 	return { success: true };
 };
 
-const getTaskData = async (
+const getItemData = async (
 	itemIds: number[],
-	projectId: number,
 	trackerId: number,
 	oAuthToken: string
 ) => {
@@ -97,12 +103,19 @@ const getTaskData = async (
 		queryString: cbqlString,
 	};
 	const fullItemData = (await codebeamerClient.getItems(cbqlQuery)).items;
+	return fullItemData;
+};
 
+export const getCollectionsData = (
+	fullItemData: { item: CodeBeamerItem; projectId: number }[],
+	oAuthToken: string
+) => {
 	const foundUsers = new Map<string, UserType>();
 	const foundTeams = new Map<string, TeamType>();
 	const foundStatuses = new Map<string, StatusType>();
 
-	const items = fullItemData.map((item) => {
+	const items = fullItemData.map((itemWithProjectId) => {
+		const { item, projectId } = itemWithProjectId;
 		const formattedItemData = codebeamerItemDataToLucidFormat(
 			item,
 			projectId
@@ -154,9 +167,6 @@ const getTaskData = async (
 			foundStatuses.set(JSON.stringify(item.status.id.toString()), {
 				[CollectionEnumFieldNames.Id]: item.status.id.toString(),
 				[CollectionEnumFieldNames.Name]: item.status.name,
-				[CollectionEnumFieldNames.Description]: null,
-				[CollectionEnumFieldNames.Color]: null,
-				[CollectionEnumFieldNames.IconUrl]: null,
 			});
 		}
 
