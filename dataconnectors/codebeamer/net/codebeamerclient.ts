@@ -60,6 +60,17 @@ export class CodebeamerClient {
 		return rawResponse as any as CodeBeamerItem;
 	}
 
+	public async createItem(
+		trackerId: number,
+		body: unknown
+	): Promise<CodeBeamerItem> {
+		const rawResponse = await this.makePostRequest(
+			`${this.baseUrl}/api/v3/trackers/${trackerId}/items`,
+			body
+		);
+		return rawResponse as any as CodeBeamerItem;
+	}
+
 	public async getItemFields(itemId: number): Promise<CodeBeamerItemFields> {
 		const rawResponse = await this.makeGetRequest(
 			`${this.baseUrl}/api/v3/items/${itemId}/fields`

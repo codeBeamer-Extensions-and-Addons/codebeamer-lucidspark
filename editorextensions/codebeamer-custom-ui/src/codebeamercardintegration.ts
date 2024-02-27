@@ -11,8 +11,17 @@ import {
 	DataItemProxy,
 	ExtensionCardFieldOption,
 	VerticalBadgePos,
+	FieldConstraintType,
+	ScalarFieldTypeEnum,
+	SerializedFieldType,
+	ExtensionCardFieldDefinition,
+	CollectionProxy,
 } from 'lucid-extension-sdk';
-import { DataConnectorName, DefaultFieldNames } from '../../../common/names';
+import {
+	CollectionName,
+	DataConnectorName,
+	DefaultFieldNames,
+} from '../../../common/names';
 import { CodebeamerImportModal } from './CodebeamerImportModal';
 import { CodebeamerClient } from './net/codebeamerclient';
 import { CbqlApiQuery } from '../../../common/models/cbqlApiQuery';
@@ -389,6 +398,144 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 				],
 			},
 		});
+	};
+
+	public addCard = {
+		/**
+		 * Given the values entered by the user so far into input fields, return the list of all input fields
+		 * to display in the create-card form.
+		 */
+		getInputFields: async (
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			inputSoFar: Map<string, SerializedFieldType>
+		): Promise<ExtensionCardFieldDefinition[]> => {
+			const projects = await this.codebeamerClient.getProjects();
+			const trackerOptionsCallback =
+				LucidCardIntegrationRegistry.registerFieldOptionsCallback(
+					this.client,
+					async (inputSoFar: Map<string, SerializedFieldType>) => {
+						const selectedProjectId = inputSoFar.get(
+							DefaultFieldNames.ProjectId
+						);
+						if (!selectedProjectId) return [];
+						const trackers = await this.codebeamerClient.getTrackers(
+							selectedProjectId as number
+						);
+						return trackers.map((tracker) => ({
+							label: tracker.name,
+							value: tracker.id,
+						}));
+					}
+				);
+
+			const fields: ExtensionCardFieldDefinition[] = [
+				{
+					name: DefaultFieldNames.Name,
+					label: 'Item Summary',
+					type: ScalarFieldTypeEnum.STRING,
+					constraints: [{ type: FieldConstraintType.REQUIRED }],
+				},
+				{
+					name: DefaultFieldNames.Description,
+					label: 'Item Description',
+					type: ScalarFieldTypeEnum.STRING,
+				},
+				{
+					name: DefaultFieldNames.ProjectId,
+					label: 'Project',
+					type: ScalarFieldTypeEnum.NUMBER,
+					default: projects[0]?.id,
+					constraints: [{ type: FieldConstraintType.REQUIRED }],
+					options: projects.map((project) => ({
+						label: project.name,
+						value: project.id,
+					})),
+				},
+				{
+					name: DefaultFieldNames.TrackerId,
+					label: 'Tracker',
+					type: ScalarFieldTypeEnum.NUMBER,
+					options: trackerOptionsCallback,
+					constraints: [
+						{
+							type: FieldConstraintType.REQUIRED,
+						},
+					],
+				},
+			];
+
+			return fields;
+		},
+
+		/**
+		 * Given the values entered by the user into input fields, create a new data record to represent the
+		 * created card, and return information about that record.
+		 */
+		createCardData: async (
+			input: Map<string, SerializedFieldType>
+		): Promise<{ collection: CollectionProxy; primaryKey: string }> => {
+			const projectId = input.get(DefaultFieldNames.ProjectId);
+			const trackerId = input.get(DefaultFieldNames.TrackerId);
+			if (
+				!isNumber(trackerId) ||
+				!trackerId ||
+				!isNumber(projectId) ||
+				!projectId
+			) {
+				throw new Error('No tracker or project selected');
+			}
+			let collection: CollectionProxy;
+			try {
+				//Short timeout: If we haven't done an import yet, this will fail pretty much immediately.
+				//If we HAVE done an import it'll give the collection immediately.
+				collection = await this.editorClient.awaitDataImport(
+					DataConnectorName,
+					trackerId.toString(),
+					CollectionName,
+					[],
+					1
+				);
+			} catch {
+				//If the import wasn't already ready, go ahead and import in the correct data source, but
+				//an empty list of ote,s. This will get the collection & source set up correctly.
+				await this.editorClient.performDataAction({
+					dataConnectorName: DataConnectorName,
+					syncDataSourceIdNonce: trackerId.toString(),
+					actionName: 'Import',
+					actionData: { itemIds: [], projectId, trackerId },
+					asynchronous: true,
+				});
+				collection = await this.editorClient.awaitDataImport(
+					DataConnectorName,
+					trackerId.toString(),
+					CollectionName,
+					[]
+				);
+			}
+
+			const primaryKeys = collection.patchItems({
+				added: [
+					{
+						[DefaultFieldNames.ProjectId]: input.get(
+							DefaultFieldNames.ProjectId
+						),
+						[DefaultFieldNames.TrackerId]: input.get(
+							DefaultFieldNames.TrackerId
+						),
+						[DefaultFieldNames.Name]: input.get(DefaultFieldNames.Name),
+						[DefaultFieldNames.Description]: input.get(
+							DefaultFieldNames.Description
+						),
+					},
+				],
+			});
+
+			if (primaryKeys.length != 1) {
+				throw new Error('Failed to add new card data');
+			}
+
+			return { collection, primaryKey: primaryKeys[0] };
+		},
 	};
 
 	public importModal = new CodebeamerImportModal(this.editorClient);
