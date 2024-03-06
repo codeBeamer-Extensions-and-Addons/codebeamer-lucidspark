@@ -44,12 +44,9 @@ export const userSettingsSlice = createSlice({
 	name: 'userSettings',
 	initialState,
 	reducers: {
-		setOAuthToken: (state, action: PayloadAction<{ oAuthToken: string }>) => {
-			state.oAuthToken = action.payload.oAuthToken;
-			sessionStorage.setItem(
-				UserSetting.OAuth_Token,
-				action.payload.oAuthToken
-			);
+		setOAuthToken: (state, action: PayloadAction<string>) => {
+			state.oAuthToken = action.payload;
+			sessionStorage.setItem(UserSetting.OAuth_Token, action.payload);
 		},
 		setCbqlString: (state, action: PayloadAction<string>) => {
 			state.cbqlString = action.payload;

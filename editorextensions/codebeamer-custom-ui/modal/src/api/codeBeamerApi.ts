@@ -4,6 +4,7 @@ import {
 	FetchArgs,
 	fetchBaseQuery,
 	FetchBaseQueryError,
+	FetchBaseQueryMeta,
 } from '@reduxjs/toolkit/query/react';
 import { RootState } from '../store/store';
 import { ProjectListView } from '../models/projectListView.if';
@@ -25,6 +26,26 @@ import {
 	CodeBeamerItem,
 	CodeBeamerLegacyItem,
 } from '../models/codebeamer-item.if';
+import { CodeBeamerUserReference } from '../models/codebeamer-user-reference.if';
+import { LucidGateway } from './lucidGateway';
+import { setOAuthToken } from '../store/slices/userSettingsSlice';
+import { useDispatch } from 'react-redux';
+import {
+	BaseQueryApi,
+	QueryReturnValue,
+} from '@reduxjs/toolkit/dist/query/baseQueryTypes';
+
+// Function to obtain a new OAuth token
+const refreshOAuthToken = async (api: BaseQueryApi) => {
+	try {
+		const token = await LucidGateway.getOAuthToken();
+		api.dispatch(setOAuthToken(token));
+		return token;
+	} catch (error) {
+		console.error('Failed to get OAuth token:', error);
+		throw error;
+	}
+};
 
 const dynamicBaseQuery: BaseQueryFn<
 	string | FetchArgs,
@@ -51,7 +72,23 @@ const dynamicBaseQuery: BaseQueryFn<
 			return headers;
 		},
 	});
-	return rawBaseQuery(args, api, extraOptions);
+	const response = (await rawBaseQuery(
+		args,
+		api,
+		extraOptions
+	)) as QueryReturnValue<unknown, FetchBaseQueryError, FetchBaseQueryMeta>;
+
+	// Check for 401 Unauthorized response
+	if (response.error && response.error.status === 401) {
+		// Attempt to refresh the token
+		const newToken = await refreshOAuthToken(api);
+		if (newToken) {
+			// Retry the request with the new token
+			return rawBaseQuery(args, api, extraOptions);
+		}
+	}
+
+	return response;
 };
 
 /**
@@ -60,19 +97,20 @@ const dynamicBaseQuery: BaseQueryFn<
 export const codeBeamerApi = createApi({
 	baseQuery: dynamicBaseQuery,
 	endpoints: (builder) => ({
-		testAuthentication: builder.query<ProjectListView, { cbAddress: string }>(
-			{
-				query: () => {
-					return {
-						url: `/api/v3/projects`,
-						method: 'GET',
-						responseHandler: async (response) => {
-							return (await response.json()) as ProjectListView;
-						},
-					};
-				},
-			}
-		),
+		testAuthentication: builder.query<
+			CodeBeamerUserReference,
+			{ cbAddress: string; email: string }
+		>({
+			query: (payload) => {
+				return {
+					url: `/api/v3/users/findByEmail?email=${payload.email}`,
+					method: 'GET',
+					responseHandler: async (response) => {
+						return (await response.json()) as CodeBeamerUserReference;
+					},
+				};
+			},
+		}),
 		getUserByName: builder.query<string, string>({
 			query: (name) => `/api/v3/users/findByName?name=${name}`,
 		}),
