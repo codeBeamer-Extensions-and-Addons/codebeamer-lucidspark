@@ -8,6 +8,11 @@ import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 
 import './importer.css';
 import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
+import { useGetItemsQuery } from '../../../../api/codeBeamerApi';
+import {
+	DEFAULT_RESULT_PAGE,
+	MAX_ITEMS_PER_IMPORT,
+} from '../../../../constants/cb-import-defaults';
 
 export default function Importer(props: {
 	items: string[];
@@ -20,7 +25,10 @@ export default function Importer(props: {
 	isLoadingRelations?: boolean;
 	importedItems?: CardBlockToCodebeamerItemMapping[];
 }) {
-	const { cbqlString } = useSelector((state: RootState) => state.userSettings);
+	const { cbqlString, trackerId } = useSelector(
+		(state: RootState) => state.userSettings
+	);
+	const { projectId } = useSelector((state: RootState) => state.boardSettings);
 
 	/**
 	 * Produces the "main query string", which defines what should be imported.
@@ -43,16 +51,43 @@ export default function Importer(props: {
 		}
 	};
 
+	//* we require to pass all item ids when importing to lucid
+	//* if no items were selected, we fetch the items ourself to get their ids
+
+	const { data, error, isLoading } =
+		props.mode === 'import' && !props.items.length
+			? useGetItemsQuery({
+					page: DEFAULT_RESULT_PAGE,
+					pageSize: MAX_ITEMS_PER_IMPORT,
+					queryString: getMainQueryString(),
+			  })
+			: { data: undefined, error: undefined, isLoading: false };
+
 	React.useEffect(() => {
 		const processImport = async () => {
-			const queryString = getMainQueryString();
-			LucidGateway.import(queryString);
+			if (error) {
+				if (props.onClose) props.onClose();
+			}
+			if (props.items.length > 0) {
+				const selectedItems = props.items.map(Number);
+				LucidGateway.import(
+					selectedItems,
+					Number(trackerId),
+					Number(projectId)
+				);
+			} else {
+				// import all
+				if (data) {
+					const items = data.items.map((item) => item.id);
+					LucidGateway.import(items, Number(trackerId), Number(projectId));
+				}
+			}
 		};
 
 		if (props.mode === 'import') {
 			processImport().catch((err) => console.error(err));
 		}
-	}, [props.mode]);
+	}, [data, props.mode]);
 
 	React.useEffect(() => {
 		const processLines = async () => {
@@ -62,7 +97,7 @@ export default function Importer(props: {
 				const _relations: BlockRelation[] = structuredClone(relations);
 				for (let i = 0; i < _relations.length; i++) {
 					const relation = _relations[i];
-					await LucidGateway.createLine(
+					LucidGateway.createLine(
 						importId,
 						relation.sourceBlockId,
 						relation.targetBlockId,
@@ -77,7 +112,7 @@ export default function Importer(props: {
 				const _relations: LucidLineData[] = structuredClone(relations);
 				for (let i = 0; i < _relations.length; i++) {
 					const relation = _relations[i];
-					await LucidGateway.deleteLine(importId, relation.id);
+					LucidGateway.deleteLine(importId, relation.id);
 				}
 			};
 
@@ -103,7 +138,6 @@ export default function Importer(props: {
 		}
 	}, [props.mode]);
 
-	const isLoading = true;
 	return (
 		<Modal show centered>
 			<Modal.Header

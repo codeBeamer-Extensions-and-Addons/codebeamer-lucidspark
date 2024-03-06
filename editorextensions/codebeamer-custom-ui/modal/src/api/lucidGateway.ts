@@ -11,7 +11,7 @@ export class LucidGateway {
 	 * @param targetBlockId - The ID of the target card block.
 	 * @param relationshipType - The type of relationship between the codebeamer items on the two card blocks.
 	 */
-	public static async createLine(
+	public static createLine(
 		importId: number,
 		sourceBlockId: string,
 		targetBlockId: string,
@@ -45,12 +45,22 @@ export class LucidGateway {
 
 	/**
 	 * Start an import with query string
-	 * @param queryString - The CBQL query string.
+	 * @param itemIds - The ids of the Codebeamer Items to import
+	 * @param trackerId - The id of the tracker that the items belong to
+	 * @param projectId - The id of the project that the tracker belongs to
 	 */
-	public static import(queryString: string) {
+	public static import(
+		itemIds: number[],
+		trackerId: number,
+		projectId: number
+	) {
 		this.postMessage({
 			action: MessageAction.IMPORT,
-			payload: { queryString: queryString },
+			payload: {
+				itemIds: itemIds,
+				trackerId: trackerId,
+				projectId: projectId,
+			},
 		});
 	}
 

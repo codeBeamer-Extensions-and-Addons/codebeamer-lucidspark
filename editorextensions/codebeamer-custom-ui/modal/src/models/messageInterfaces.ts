@@ -45,7 +45,9 @@ export interface StartLineImportPayload {
 
 // Interface for payload specific to the IMPORT action
 export interface ImportPayload {
-	queryString: string;
+	itemIds: number[];
+	trackerId: number;
+	projectId: number;
 }
 
 /**

@@ -8,6 +8,11 @@ import {
 } from 'lucid-extension-sdk';
 import { CardData } from '../modal/src/models/lucidCardData';
 import { LucidCardIntegrationCustomImportModal } from 'lucid-extension-sdk/core/cardintegration/lucidcardintegrationcustomimportmodal';
+import {
+	CollectionName,
+	DataAction,
+	DataConnectorName,
+} from '../../../common/names';
 
 export interface Message {
 	action: string;
@@ -24,7 +29,7 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 				height: 680,
 				url: 'modal/index.html',
 			},
-			'cbcards'
+			'cb-cards'
 		);
 
 		this.client.loadBlockClasses(['LucidCardBlock']);
@@ -47,7 +52,7 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 	protected async messageFromFrame(message: Message): Promise<void> {
 		switch (message.action) {
 			case 'import':
-				console.log('payload: ', message.payload);
+				await this.import(message);
 				break;
 			case 'startLineImport':
 				this.imports.set(message.payload.id, {
@@ -92,6 +97,43 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 						message.payload.lineColor
 					);
 		}
+	}
+
+	/**
+	 * Handles the import of items using a data connector
+	 * @param {Message} message - The import message
+	 */
+	private async import(message: Message): Promise<void> {
+		const itemIds = message.payload.itemIds as number[];
+		const trackerId = message.payload.trackerId;
+		const projectId = message.payload.projectId;
+
+		await this.client.performDataAction({
+			actionName: DataAction.Import,
+			dataConnectorName: DataConnectorName,
+			syncDataSourceIdNonce: projectId.toString(),
+			actionData: {
+				itemIds: itemIds,
+				trackerId: trackerId,
+				projectId: projectId,
+			},
+			asynchronous: true,
+		});
+
+		// Wait for the import to complete
+		const collection = await this.client.awaitDataImport(
+			DataConnectorName,
+			projectId.toString(),
+			CollectionName,
+			itemIds.map((pk) => JSON.stringify(pk))
+		);
+
+		this.createCards(
+			collection.id,
+			itemIds.map((pk) => JSON.stringify(pk))
+		);
+
+		this.hide();
 	}
 
 	/**
