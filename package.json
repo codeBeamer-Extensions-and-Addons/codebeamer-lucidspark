@@ -28,7 +28,7 @@
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
-		"lucid-extension-sdk": "^0.0.259",
+		"lucid-extension-sdk": "^0.0.264",
 		"webpack-shell-plugin-next": "^2.3.1"
 	}
 }
