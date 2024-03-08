@@ -1,12 +1,11 @@
 import {
 	BlockProxy,
 	CardBlockProxy,
+	DataProxy,
 	EditorClient,
 	LineProxy,
-	Modal,
 	Viewport,
 } from 'lucid-extension-sdk';
-import { CardData } from '../modal/src/models/lucidCardData';
 import { LucidCardIntegrationCustomImportModal } from 'lucid-extension-sdk/core/cardintegration/lucidcardintegrationcustomimportmodal';
 import {
 	CollectionName,
@@ -20,6 +19,7 @@ export interface Message {
 }
 
 export class ImportModal extends LucidCardIntegrationCustomImportModal {
+	private data: DataProxy;
 	constructor(client: EditorClient) {
 		super(
 			client,
@@ -33,6 +33,7 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 		);
 
 		this.client.loadBlockClasses(['LucidCardBlock']);
+		this.data = new DataProxy(client);
 	}
 
 	protected viewport = new Viewport(this.client);
@@ -60,15 +61,6 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 					initialTotalItems: message.payload.totalItems,
 					finished: false,
 				});
-				break;
-			case 'importItem':
-				this.importItem(message);
-				break;
-			case 'updateCard':
-				this.updateCard(
-					message.payload.cardData,
-					message.payload.cardBlockId
-				);
 				break;
 			case 'getCardBlocks':
 				this.getCardBlocks();
@@ -137,37 +129,6 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 	}
 
 	/**
-	 * Handles the import of an item, creating a LucidCardBlock and updating import status.
-	 *
-	 * @param {Message} message - The import item message.
-	 */
-	private importItem(message: Message): void {
-		this.createLucidCardBlock(
-			message.payload.cardData,
-			this.imports.get(message.payload.importId)!.initialTotalItems
-		);
-		this.imports.get(message.payload.importId)!.totalItems--;
-		if (this.imports.get(message.payload.importId)!.totalItems <= 0) {
-			this.imports.delete(message.payload.importId);
-			this.hide();
-		}
-	}
-
-	/**
-	 * Updates an existing LucidCardBlock with new data.
-	 *
-	 * @param {CardData} cardData - The updated card data.
-	 * @param {string} cardBlockId - The ID of the card block to update.
-	 */
-	private updateCard(cardData: CardData, cardBlockId: string): void {
-		const block = this.getCardById(cardBlockId);
-
-		if (block instanceof CardBlockProxy) {
-			this.setCardData(block, cardData);
-		}
-	}
-
-	/**
 	 * Retrieves a CardBlockProxy by its ID.
 	 *
 	 * @param {string} id - The ID of the card block to find.
@@ -184,113 +145,50 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 	}
 
 	/**
-	 * Generates coordinates for a new card with consideration for the size of the viewport
-	 * and existing card blocks.
-	 *
-	 * @param {number} w - The width of the card.
-	 * @param {number} h - The height of the card.
-	 * @returns An object with 'x' and 'y' properties representing the coordinates.
-	 */
-	private generateCoordinates(
-		w: number,
-		h: number,
-		totalItems: number
-	): { x: number; y: number } {
-		const visibleRect = this.viewport.getVisibleRect();
-		let areaWidth = Math.ceil(Math.sqrt(totalItems)) * w;
-		let areaHeight = Math.ceil(Math.sqrt(totalItems)) * h;
-
-		//set areaWidth and areaHeight to 80% of viewport size if they are bigger than 80% of the viewport
-		if (areaWidth > visibleRect.w * 0.8) {
-			areaWidth = visibleRect.w * 0.8;
-		}
-		if (areaHeight > visibleRect.h * 0.8) {
-			areaHeight = visibleRect.h * 0.8;
-		}
-
-		const minX = visibleRect.x + (visibleRect.w - areaWidth) / 2 - w / 2;
-		const minY = visibleRect.y + (visibleRect.h - areaHeight) / 2 - h / 2;
-		const maxX = visibleRect.x + (visibleRect.w + areaWidth) / 2 - w / 2;
-		const maxY = visibleRect.y + (visibleRect.h + areaHeight) / 2 - h / 2;
-		const x = Math.random() * (maxX - minX) + minX;
-		const y = Math.random() * (maxY - minY) + minY;
-
-		return { x, y };
-	}
-
-	/**
-	 * Creates a LucidCardBlock with the provided card data.
-	 *
-	 * @param {CardData} cardData - The data for creating the LucidCardBlock.
-	 */
-	protected async createLucidCardBlock(
-		cardData: CardData,
-		totalItems: number
-	) {
-		const page = this.viewport.getCurrentPage()!;
-		const widthOfCard = 420;
-		const heightOfCard = 160;
-		const { x, y } =
-			cardData.coordinates ??
-			this.generateCoordinates(widthOfCard, heightOfCard, totalItems);
-
-		const block = page.addBlock({
-			className: 'LucidCardBlock',
-			boundingBox: {
-				x,
-				y,
-				w: widthOfCard,
-				h: heightOfCard,
-			},
-		});
-
-		if (block instanceof CardBlockProxy) {
-			this.setCardData(block, cardData);
-			block.setDescription(' '); // Add empty description to disable 'Description' placeholder on created cards
-			block.shapeData.set('codebeamerItemId', cardData.codebeamerItemId);
-			block.shapeData.set(
-				'codebeamerTrackerId',
-				cardData.codebeamerTrackerId
-			);
-		}
-	}
-
-	/**
-	 * Sets the data for a CardBlockProxy based on the provided card data.
-	 *
-	 * @param {CardBlockProxy} block - The CardBlockProxy to update.
-	 * @param {CardData} cardData - The card data to set.
-	 */
-	private setCardData(block: CardBlockProxy, cardData: CardData): void {
-		if (cardData.title) block.setTitle(cardData.title);
-		if (cardData.description)
-			block.properties.set('NoteHint', cardData.description);
-		if (cardData.assignee) block.setAssignee(cardData.assignee);
-		if (cardData.estimate) block.setEstimate(cardData.estimate);
-		if (cardData.style)
-			block.properties.set('LineColor', cardData.style.cardTheme);
-	}
-
-	/**
 	 * Retrieves and sends the list of LucidCardBlocks to the modal.
 	 */
 	private getCardBlocks(): void {
-		const cardBlocks = (
-			this.viewport
-				.getCurrentPage()
-				?.allBlocks.filter(
-					(block) => block instanceof CardBlockProxy
-				) as CardBlockProxy[]
-		).filter((cardBlock) => cardBlock.shapeData.get('codebeamerItemId'));
+		const itemsInCollection = this.data.dataSources
+			.find((source) => source.getName() === DataConnectorName)
+			?.collections.find(
+				(collection) => collection.getName() === 'items'
+			)?.items;
+
+		const cardBlocks = this.viewport
+			.getCurrentPage()
+			?.allBlocks.filter(
+				(block) => block instanceof CardBlockProxy
+			) as CardBlockProxy[];
+
+		const itemsOnBoard =
+			itemsInCollection?.filter((itemInCollection) =>
+				cardBlocks.some(
+					(cardBlock) =>
+						(
+							cardBlock.properties.get('RK_1') as {
+								cid: string;
+								pk: string;
+							}
+						).pk === itemInCollection.primaryKey
+				)
+			) || [];
 
 		// Save card blocks to the class to be able to access them later
 		this.cardBlocks = cardBlocks;
 
 		// Map the card blocks to the codebeamer item ids and send them to the modal
-		const data = cardBlocks.map((cardBlock) => ({
-			cardBlockId: cardBlock.id,
-			codebeamerItemId: cardBlock.shapeData.get('codebeamerItemId'),
-			codebeamerTrackerId: cardBlock.shapeData.get('codebeamerTrackerId'),
+		const data = itemsOnBoard.map((item) => ({
+			cardBlockId: cardBlocks.find(
+				(cardBlock) =>
+					(
+						cardBlock.properties.get('RK_1') as {
+							cid: string;
+							pk: string;
+						}
+					).pk === item.primaryKey
+			)?.id,
+			codebeamerItemId: item.fields.get('Id'),
+			codebeamerTrackerId: item.fields.get('Tracker Id'),
 		}));
 		const message = { payload: data, action: 'getCardBlocks' };
 		this.sendMessage(JSON.stringify(message));

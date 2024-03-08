@@ -38,8 +38,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 
 	/**
 	 * Helper function to format dataItemProxy for search results
-	 * @param dataItemProxy
-	 * @returns
+	 * @param dataItemProxy - The data item proxy to format
 	 */
 	private formatDataItemProxyForSearch = (dataItemProxy: DataItemProxy) => ({
 		label: dataItemProxy.fields.get('name') as string,
@@ -321,7 +320,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 								linkFormula: '=@Link',
 								horizontalPosition: HorizontalBadgePos.RIGHT,
 								tooltipFormula:
-									'=IF(ISNOTEMPTY(LASTSYNCTIME), "Last synced " & RELATIVETIMEFORMAT(LASTSYNCTIME), "Open in Todoist")',
+									'=IF(ISNOTEMPTY(LASTSYNCTIME), "Last synced " & RELATIVETIMEFORMAT(LASTSYNCTIME), "Open in Codebeamer")',
 								backgroundColor: '#00000000',
 							},
 						},

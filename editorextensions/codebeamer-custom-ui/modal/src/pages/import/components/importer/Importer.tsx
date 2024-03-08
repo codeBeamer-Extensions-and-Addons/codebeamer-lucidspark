@@ -77,10 +77,25 @@ export default function Importer(props: {
 				);
 			} else {
 				// import all
-				if (data) {
-					const items = data.items.map((item) => item.id);
-					LucidGateway.import(items, Number(trackerId), Number(projectId));
+				if (!data) return;
+
+				const items = data.items.map((item) => item.id);
+				let itemsToImport = items;
+
+				if (props.importedItems) {
+					const importedItems = props.importedItems.map(
+						(i) => i.codebeamerItemId
+					);
+					itemsToImport = items.filter(
+						(item) => !importedItems.includes(item)
+					);
 				}
+
+				LucidGateway.import(
+					itemsToImport,
+					Number(trackerId),
+					Number(projectId)
+				);
 			}
 		};
 
