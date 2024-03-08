@@ -29,7 +29,6 @@ import {
 import { CodeBeamerUserReference } from '../models/codebeamer-user-reference.if';
 import { LucidGateway } from './lucidGateway';
 import { setOAuthToken } from '../store/slices/userSettingsSlice';
-import { useDispatch } from 'react-redux';
 import {
 	BaseQueryApi,
 	QueryReturnValue,

@@ -22,7 +22,6 @@ import {
 	DataConnectorName,
 	DefaultFieldNames,
 } from '../../../common/names';
-import { CodebeamerImportModal } from './CodebeamerImportModal';
 import { ImportModal } from './importmodal';
 import { CodebeamerClient } from './net/codebeamerclient';
 import { CbqlApiQuery } from '../../../common/models/cbqlApiQuery';

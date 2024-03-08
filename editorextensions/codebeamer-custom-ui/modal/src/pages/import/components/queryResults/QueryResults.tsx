@@ -11,7 +11,6 @@ import { RootState } from '../../../../store/store';
 import ImportActions from '../importActions/ImportActions';
 import Importer from '../importer/Importer';
 import QueryResult from '../queryResult/QueryResult';
-import Updater from '../updater/Updater';
 
 import './queryResults.css';
 import { useImportedItems } from '../../../../hooks/useImportedItems';
@@ -25,7 +24,6 @@ export default function QueryResults() {
 	const [itemsToImport, setItemsToImport] = useState<string[]>([]);
 	const [eos, setEos] = useState(false);
 	const [importing, setImporting] = useState(false);
-	const [synchronizing, setSynchronizing] = useState(false);
 	const [missingRelations, setMissingRelations] = useState<BlockRelation[]>(
 		[]
 	);
@@ -175,10 +173,6 @@ export default function QueryResults() {
 		setItemsToImport([]);
 		setImportingMode('import');
 		setImporting(true);
-	};
-
-	const handleSync = () => {
-		setSynchronizing(true);
 	};
 
 	const handleRelations = async () => {
@@ -334,7 +328,6 @@ export default function QueryResults() {
 						isLoadingRelations={isLoadingRelations}
 					/>
 				)}
-				{synchronizing && <Updater items={importedItems} />}
 			</div>
 		);
 	} else {

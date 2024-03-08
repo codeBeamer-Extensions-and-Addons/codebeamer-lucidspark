@@ -12,11 +12,13 @@ import {
 	DataAction,
 	DataConnectorName,
 } from '../../../common/names';
-
-export interface Message {
-	action: string;
-	payload: any;
-}
+import {
+	CreateLinePayload,
+	DeleteLinePayload,
+	ImportPayload,
+	Message,
+	StartLineImportPayload,
+} from '../modal/src/models/messageInterfaces';
 
 export class ImportModal extends LucidCardIntegrationCustomImportModal {
 	private data: DataProxy;
@@ -55,13 +57,15 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 			case 'import':
 				await this.import(message);
 				break;
-			case 'startLineImport':
-				this.imports.set(message.payload.id, {
-					totalItems: message.payload.totalItems,
-					initialTotalItems: message.payload.totalItems,
+			case 'startLineImport': {
+				const payload = message.payload as StartLineImportPayload;
+				this.imports.set(payload.id, {
+					totalItems: payload.totalItems,
+					initialTotalItems: payload.totalItems,
 					finished: false,
 				});
 				break;
+			}
 			case 'getCardBlocks':
 				this.getCardBlocks();
 				break;
@@ -71,23 +75,29 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 			case 'getOAuthToken':
 				await this.getOAuthToken();
 				break;
-			case 'deleteLine':
-				this.deleteLine(message.payload.importId, message.payload.lineId);
+			case 'deleteLine': {
+				const payload = message.payload as DeleteLinePayload;
+				this.deleteLine(payload.importId, payload.lineId);
 				break;
+			}
 			case 'closeModal':
 				this.hide();
 				break;
-			case 'createLine':
-				const sourceBlock = this.getCardById(message.payload.sourceBlockId);
-				const targetBlock = this.getCardById(message.payload.targetBlockId);
-				if (sourceBlock && targetBlock)
+			case 'createLine': {
+				const payload = message.payload as CreateLinePayload;
+				const sourceBlock = this.getCardById(payload.sourceBlockId);
+				const targetBlock = this.getCardById(payload.targetBlockId);
+				if (sourceBlock && targetBlock) {
 					this.createLine(
-						message.payload.importId,
+						payload.importId,
 						sourceBlock,
 						targetBlock,
-						message.payload.relationshipType,
-						message.payload.lineColor
+						payload.relationshipType,
+						payload.lineColor
 					);
+				}
+				break;
+			}
 		}
 	}
 
@@ -96,9 +106,10 @@ export class ImportModal extends LucidCardIntegrationCustomImportModal {
 	 * @param {Message} message - The import message
 	 */
 	private async import(message: Message): Promise<void> {
-		const itemIds = message.payload.itemIds as number[];
-		const trackerId = message.payload.trackerId;
-		const projectId = message.payload.projectId;
+		const payload = message.payload as ImportPayload;
+		const itemIds = payload.itemIds as number[];
+		const trackerId = payload.trackerId;
+		const projectId = payload.projectId;
 
 		await this.client.performDataAction({
 			actionName: DataAction.Import,
