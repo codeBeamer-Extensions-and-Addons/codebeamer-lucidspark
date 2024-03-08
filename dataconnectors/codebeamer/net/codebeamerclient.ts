@@ -160,9 +160,9 @@ export class CodebeamerClient {
 			if (axios.isAxiosError(error)) {
 				console.log(
 					'error message: ',
-					(error.response?.data as any)?.message
+					(error.response?.data as any)?.message ?? error.message
 				);
-				return (error.response?.data as any)?.message;
+				return (error.response?.data as any)?.message ?? error.message;
 			} else {
 				console.log('unexpected error: ', error);
 				return 'An unexpected error occurred';

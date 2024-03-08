@@ -17,7 +17,6 @@ import './queryResults.css';
 import { useImportedItems } from '../../../../hooks/useImportedItems';
 import { useLines } from '../../../../hooks/useLines';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
-import SyncButton from '../syncButton/syncButton';
 import RelationsButton from '../relationsButton/relationsButton';
 
 export default function QueryResults() {
@@ -310,10 +309,6 @@ export default function QueryResults() {
 										);
 								  }).length ?? 0)
 						}
-					/>
-					<SyncButton
-						importedItemsCount={importedItems.length}
-						onSync={handleSync}
 					/>
 					<RelationsButton
 						relationsCount={relations.length}
