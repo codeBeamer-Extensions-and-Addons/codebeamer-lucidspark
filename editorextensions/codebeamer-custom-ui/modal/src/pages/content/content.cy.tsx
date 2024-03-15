@@ -29,15 +29,15 @@ describe('<Content>', () => {
 
 	describe('uses cached values to automate procedures', () => {
 		beforeEach(() => {
-			cy.intercept('GET', `**/api/v3/projects`, {
+			cy.intercept('GET', `**/api/v3/users/findByEmail?email=`, {
 				statusCode: 200,
-				body: [{ id: 1, name: 'Test Project' }],
+				body: { id: 1, name: 'Test User' },
 			}).as('auth');
 		});
 
 		it('checks whether it can connect to the cached codeBeamer instance when opened', () => {
 			const store = getStore();
-			store.dispatch(setOAuthToken({ oAuthToken: 'test token' }));
+			store.dispatch(setOAuthToken('test token'));
 
 			cy.mountWithStore(<Content />, { reduxStore: store });
 
@@ -46,8 +46,7 @@ describe('<Content>', () => {
 
 		it('proceeds to the project selection when authenticated successfully', () => {
 			const store = getStore();
-			store.dispatch(setOAuthToken({ oAuthToken: 'test token' }));
-
+			store.dispatch(setOAuthToken('test token'));
 			cy.mountWithStore(<Content />, { reduxStore: store });
 
 			cy.getBySel('project-selection').should('exist');
@@ -55,7 +54,7 @@ describe('<Content>', () => {
 
 		it('proceeds to the import component when authenticated & a project is already selected', () => {
 			const store = getStore();
-			store.dispatch(setOAuthToken({ oAuthToken: 'test token' }));
+			store.dispatch(setOAuthToken('test token'));
 			store.dispatch(setProjectId(1));
 
 			cy.mountWithStore(<Content />, { reduxStore: store });
