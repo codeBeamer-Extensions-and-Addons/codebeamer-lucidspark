@@ -91,6 +91,10 @@ export default function Importer(props: {
 					);
 				}
 
+				console.log('importing items:', itemsToImport);
+				console.log('trackerId:', trackerId);
+				console.log('projectId:', projectId);
+
 				LucidGateway.import(
 					itemsToImport,
 					Number(trackerId),

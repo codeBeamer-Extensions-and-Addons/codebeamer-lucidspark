@@ -5,6 +5,11 @@ import Importer from './Importer';
 import { CardBlockToCodebeamerItemMapping } from '../../../../models/lucidCardData';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
 import { RelationshipType } from '../../../../enums/associationRelationshipType.enum';
+import { setProjectId } from '../../../../store/slices/boardSettingsSlice';
+import {
+	DEFAULT_RESULT_PAGE,
+	MAX_ITEMS_PER_IMPORT,
+} from '../../../../constants/cb-import-defaults';
 
 describe('<Importer>', () => {
 	it('mounts', () => {
@@ -36,10 +41,10 @@ describe('<Importer>', () => {
 	it('sends the items to the editor extension  passed as props', () => {
 		cy.stub(window.parent, 'postMessage').as('postMessageStub');
 		const items: string[] = ['1', '2', '3'];
+		const itemsToImport = items.map((i) => parseInt(i));
 		const store = getStore();
+		store.dispatch(setProjectId('1'));
 		store.dispatch(setTrackerId('1'));
-
-		const expectedQuery = `tracker.id IN (1) AND item.id IN (1,2,3)`;
 
 		cy.mountWithStore(<Importer items={items} mode="import" />, {
 			reduxStore: store,
@@ -49,7 +54,7 @@ describe('<Importer>', () => {
 			'have.been.calledWith',
 			{
 				action: 'import',
-				payload: { queryString: expectedQuery },
+				payload: { itemIds: itemsToImport, trackerId: 1, projectId: 1 },
 			},
 			'*'
 		);
@@ -58,34 +63,66 @@ describe('<Importer>', () => {
 	it('send all items in the selected tracker to the editor extension (without any additional filter criteria) when passing an empty array as prop', () => {
 		cy.stub(window.parent, 'postMessage').as('postMessageStub');
 		const items: string[] = [];
+		const itemsToImport = [1, 2, 3];
+		const itemsInTracker: { id: number }[] = [
+			{ id: 1 },
+			{ id: 2 },
+			{ id: 3 },
+		];
 		const store = getStore();
+		store.dispatch(setProjectId('1'));
 		store.dispatch(setTrackerId('1'));
 
-		const expectedQuery = `tracker.id IN (1)`;
+		cy.intercept('POST', `**/api/v3/items/query`, {
+			statusCode: 200,
+			body: {
+				page: DEFAULT_RESULT_PAGE,
+				pageSize: MAX_ITEMS_PER_IMPORT,
+				total: itemsInTracker.length,
+				items: itemsInTracker,
+			},
+		}).as('itemsQuery');
 
 		cy.mountWithStore(<Importer items={items} mode="import" />, {
 			reduxStore: store,
 		});
 
+		cy.wait('@itemsQuery');
+
 		cy.get('@postMessageStub').should(
 			'have.been.calledWith',
 			{
 				action: 'import',
-				payload: { queryString: expectedQuery },
+				payload: { itemIds: itemsToImport, trackerId: 1, projectId: 1 },
 			},
 			'*'
 		);
 	});
 
-	it('appends what items are already imported to the queryString so as not to duplicate them', () => {
+	it('removes the already imported items from the passed props so as not to duplicate them', () => {
 		cy.stub(window.parent, 'postMessage').as('postMessageStub');
-		const items: string[] = ['1', '2', '3'];
+		const items: string[] = [];
+		const itemsToImport = [1, 2, 3];
+		const itemsInTracker: { id: number }[] = [
+			{ id: 1 },
+			{ id: 2 },
+			{ id: 3 },
+			{ id: 569657 },
+			{ id: 569527 },
+		];
 		const store = getStore();
+		store.dispatch(setProjectId('1'));
 		store.dispatch(setTrackerId('1'));
 
-		const expectedQuery = `tracker.id IN (1) AND item.id IN (${items.join(
-			','
-		)}) AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
+		cy.intercept('POST', `**/api/v3/items/query`, {
+			statusCode: 200,
+			body: {
+				page: DEFAULT_RESULT_PAGE,
+				pageSize: MAX_ITEMS_PER_IMPORT,
+				total: itemsInTracker.length,
+				items: itemsInTracker,
+			},
+		}).as('itemsQuery');
 
 		cy.mountWithStore(
 			<Importer
@@ -97,11 +134,14 @@ describe('<Importer>', () => {
 				reduxStore: store,
 			}
 		);
+
+		cy.wait('@itemsQuery');
+
 		cy.get('@postMessageStub').should(
 			'have.been.calledWith',
 			{
 				action: 'import',
-				payload: { queryString: expectedQuery },
+				payload: { itemIds: itemsToImport, trackerId: 1, projectId: 1 },
 			},
 			'*'
 		);
@@ -111,16 +151,45 @@ describe('<Importer>', () => {
 		it('fetches the details of the items specified in the queryString if one is specified', () => {
 			cy.stub(window.parent, 'postMessage').as('postMessageStub');
 			const mockQueryString = 'item.id IN (1,2,3,4)';
+			const fetchedItems: { id: number }[] = [
+				{ id: 1 },
+				{ id: 2 },
+				{ id: 3 },
+				{ id: 4 },
+			];
+			const itemsToImport = [1, 2, 3, 4];
+			const store = getStore();
+			store.dispatch(setProjectId('1'));
+			store.dispatch(setTrackerId('1'));
+
+			cy.intercept('POST', `**/api/v3/items/query`, {
+				statusCode: 200,
+				body: {
+					page: DEFAULT_RESULT_PAGE,
+					pageSize: MAX_ITEMS_PER_IMPORT,
+					total: fetchedItems.length,
+					items: fetchedItems,
+				},
+			}).as('itemsQuery');
 
 			cy.mountWithStore(
-				<Importer items={[]} mode="import" queryString={mockQueryString} />
+				<Importer items={[]} mode="import" queryString={mockQueryString} />,
+				{
+					reduxStore: store,
+				}
 			);
+
+			cy.wait('@itemsQuery');
 
 			cy.get('@postMessageStub').should(
 				'have.been.calledWith',
 				{
 					action: 'import',
-					payload: { queryString: mockQueryString },
+					payload: {
+						itemIds: itemsToImport,
+						trackerId: 1,
+						projectId: 1,
+					},
 				},
 				'*'
 			);
@@ -129,8 +198,29 @@ describe('<Importer>', () => {
 		it('still appends what items are already imported to the queryString so as not to duplicate them', () => {
 			cy.stub(window.parent, 'postMessage').as('postMessageStub');
 			const mockQueryString = 'item.id IN (1,2,3,4)';
+			const itemsToImport = [1, 2, 3, 4];
+			const itemsInTracker: { id: number }[] = [
+				{ id: 1 },
+				{ id: 2 },
+				{ id: 3 },
+				{ id: 4 },
+				{ id: 569657 },
+				{ id: 569527 },
+			];
 
-			const expectedQuery = `${mockQueryString} AND item.id NOT IN (569657,569527)`; //the latter two are from down in the mockImportedItems
+			const store = getStore();
+			store.dispatch(setProjectId('1'));
+			store.dispatch(setTrackerId('1'));
+
+			cy.intercept('POST', `**/api/v3/items/query`, {
+				statusCode: 200,
+				body: {
+					page: DEFAULT_RESULT_PAGE,
+					pageSize: MAX_ITEMS_PER_IMPORT,
+					total: itemsInTracker.length,
+					items: itemsInTracker,
+				},
+			}).as('itemsQuery');
 
 			cy.mountWithStore(
 				<Importer
@@ -138,14 +228,23 @@ describe('<Importer>', () => {
 					mode="import"
 					queryString={mockQueryString}
 					importedItems={mockImportedItems}
-				/>
+				/>,
+				{
+					reduxStore: store,
+				}
 			);
+
+			cy.wait('@itemsQuery');
 
 			cy.get('@postMessageStub').should(
 				'have.been.calledWith',
 				{
 					action: 'import',
-					payload: { queryString: expectedQuery },
+					payload: {
+						itemIds: itemsToImport,
+						trackerId: 1,
+						projectId: 1,
+					},
 				},
 				'*'
 			);
