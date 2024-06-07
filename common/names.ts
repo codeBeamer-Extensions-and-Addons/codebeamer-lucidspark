@@ -5,6 +5,7 @@ export const DataSourceName = 'codebeamer';
 export const CollectionName = 'items';
 export const OAuthProvider = 'google';
 
+// todo use the entered url in the custom modal login instead of this constant
 export const baseUrl =
 	'https://mocked-codebeamer-oauth-fd59eb404ed5.herokuapp.com/cb';
 

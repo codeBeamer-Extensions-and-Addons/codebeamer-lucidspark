@@ -10,6 +10,6 @@
 		"build:watch": "webpack --watch"
 	},
 	"dependencies": {
-		"lucid-extension-sdk": "^0.0.259"
+		"lucid-extension-sdk": "^0.0.264"
 	}
 }

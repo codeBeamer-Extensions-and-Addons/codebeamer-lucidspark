@@ -22,7 +22,7 @@ import {
 	DataConnectorName,
 	DefaultFieldNames,
 } from '../../../common/names';
-import { CodebeamerImportModal } from './CodebeamerImportModal';
+import { ImportModal } from './importmodal';
 import { CodebeamerClient } from './net/codebeamerclient';
 import { CbqlApiQuery } from '../../../common/models/cbqlApiQuery';
 
@@ -37,8 +37,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 
 	/**
 	 * Helper function to format dataItemProxy for search results
-	 * @param dataItemProxy
-	 * @returns
+	 * @param dataItemProxy - The data item proxy to format
 	 */
 	private formatDataItemProxyForSearch = (dataItemProxy: DataItemProxy) => ({
 		label: dataItemProxy.fields.get('name') as string,
@@ -320,7 +319,7 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 								linkFormula: '=@Link',
 								horizontalPosition: HorizontalBadgePos.RIGHT,
 								tooltipFormula:
-									'=IF(ISNOTEMPTY(LASTSYNCTIME), "Last synced " & RELATIVETIMEFORMAT(LASTSYNCTIME), "Open in Todoist")',
+									'=IF(ISNOTEMPTY(LASTSYNCTIME), "Last synced " & RELATIVETIMEFORMAT(LASTSYNCTIME), "Open in Codebeamer")',
 								backgroundColor: '#00000000',
 							},
 						},
@@ -538,5 +537,5 @@ export class CodebeamerCardIntegration extends LucidCardIntegration {
 		},
 	};
 
-	public importModal = new CodebeamerImportModal(this.editorClient);
+	public importModal = new ImportModal(this.editorClient);
 }
