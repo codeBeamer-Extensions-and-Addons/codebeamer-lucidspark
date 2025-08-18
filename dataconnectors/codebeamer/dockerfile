@@ -1,0 +1,38 @@
+# Stage 1: Build the TypeScript application
+FROM node:22-alpine AS build
+
+WORKDIR /app
+
+# Copy package.json
+COPY dataconnectors/codebeamer/package.json ./dataconnectors/codebeamer/
+
+# Install dependencies.
+RUN cd dataconnectors/codebeamer && npm install && npm install -g typescript
+RUN cd /app
+
+# Copy the rest of your application code
+# This should include your TypeScript source files (e.g., src/, index.ts, etc.)
+COPY ./dataconnectors ./dataconnectors
+COPY ./common ./common
+
+RUN cd dataconnectors/codebeamer && tsc || true
+
+# Stage 2: Create the production-ready image
+# We no longer need the build tools or development dependencies.
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+# Copy only the necessary files from the build stage:
+COPY --from=build /app/dataconnectors/codebeamer/package.json ./
+
+# Install prod dependencies
+RUN npm install --production
+
+# Copy built app from stage 1
+COPY --from=build /app/dataconnectors/codebeamer/bin ./bin
+
+# Make sure this matches what's defined in the server
+EXPOSE 3000
+
+CMD ["node", "bin/dataconnectors/codebeamer/debug-server.js"]
