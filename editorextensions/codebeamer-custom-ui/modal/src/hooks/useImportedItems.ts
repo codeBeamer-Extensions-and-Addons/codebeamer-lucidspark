@@ -20,14 +20,13 @@ export const useImportedItems = (trackerId?: string) => {
 	const [areAllRelationsLoaded, setAreAllRelationsLoaded] = useState(false);
 	const itemsThreshold = 50;
 
-	const username = store.getState().userSettings.cbUsername;
-	const password = store.getState().userSettings.cbPassword;
+	const oAuthToken = store.getState().userSettings.oAuthToken;
 
 	const requestArgs = {
 		method: 'GET',
 		headers: new Headers({
 			'Content-Type': 'text/plain',
-			Authorization: `Basic ${btoa(username + ':' + password)}`,
+			Authorization: `Bearer ${oAuthToken}`,
 		}),
 	};
 

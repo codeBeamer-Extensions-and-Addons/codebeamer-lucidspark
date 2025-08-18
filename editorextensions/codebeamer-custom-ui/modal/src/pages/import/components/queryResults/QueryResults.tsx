@@ -11,13 +11,11 @@ import { RootState } from '../../../../store/store';
 import ImportActions from '../importActions/ImportActions';
 import Importer from '../importer/Importer';
 import QueryResult from '../queryResult/QueryResult';
-import Updater from '../updater/Updater';
 
 import './queryResults.css';
 import { useImportedItems } from '../../../../hooks/useImportedItems';
 import { useLines } from '../../../../hooks/useLines';
 import { BlockRelation, LucidLineData } from '../../../../models/lucidLineData';
-import SyncButton from '../syncButton/syncButton';
 import RelationsButton from '../relationsButton/relationsButton';
 
 export default function QueryResults() {
@@ -26,7 +24,6 @@ export default function QueryResults() {
 	const [itemsToImport, setItemsToImport] = useState<string[]>([]);
 	const [eos, setEos] = useState(false);
 	const [importing, setImporting] = useState(false);
-	const [synchronizing, setSynchronizing] = useState(false);
 	const [missingRelations, setMissingRelations] = useState<BlockRelation[]>(
 		[]
 	);
@@ -178,10 +175,6 @@ export default function QueryResults() {
 		setImporting(true);
 	};
 
-	const handleSync = () => {
-		setSynchronizing(true);
-	};
-
 	const handleRelations = async () => {
 		let blockRelations = relations;
 
@@ -311,10 +304,6 @@ export default function QueryResults() {
 								  }).length ?? 0)
 						}
 					/>
-					<SyncButton
-						importedItemsCount={importedItems.length}
-						onSync={handleSync}
-					/>
 					<RelationsButton
 						relationsCount={relations.length}
 						missingRelationsCount={getMissingRelations(relations).length}
@@ -339,7 +328,6 @@ export default function QueryResults() {
 						isLoadingRelations={isLoadingRelations}
 					/>
 				)}
-				{synchronizing && <Updater items={importedItems} />}
 			</div>
 		);
 	} else {

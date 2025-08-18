@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { useTestAuthenticationQuery } from '../api/codeBeamerApi';
 import { RootState } from '../store/store';
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * Custom hook to check whether with the currently stored data, the user is authenticated.
@@ -14,14 +15,19 @@ export const useIsAuthenticated = () => {
 		(state: RootState) => state.boardSettings
 	);
 
-	const { cbUsername, cbPassword } = useSelector(
-		(state: RootState) => state.userSettings
-	);
+	const { oAuthToken } = useSelector((state: RootState) => state.userSettings);
+
+	let email = '';
+	try {
+		const decodedToken = jwtDecode(oAuthToken) as { email: string };
+		email = decodedToken.email;
+	} catch (e) {
+		console.error('Failed to decode token:', e);
+	}
 
 	const { data, error, isLoading } = useTestAuthenticationQuery({
 		cbAddress,
-		cbUsername,
-		cbPassword,
+		email,
 	});
 
 	if (error || !data || !data.id) return [false, loading || isLoading];

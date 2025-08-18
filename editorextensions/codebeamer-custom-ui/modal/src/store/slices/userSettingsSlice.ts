@@ -9,8 +9,7 @@ import getQueryEntityNameForCriteria from '../util/getQueryEntityNameForCriteria
 export interface UserSettingsState {
 	cbAddress: string;
 	cbqlString: string;
-	cbUsername: string;
-	cbPassword: string;
+	oAuthToken: string;
 	trackerId: string;
 	advancedSearch: boolean;
 	activeFilters: IFilterCriteria[];
@@ -23,8 +22,7 @@ export interface UserSettingsState {
 const initialState: UserSettingsState = {
 	cbAddress: localStorage.getItem(UserSetting.CB_ADDRESS) ?? '',
 	cbqlString: localStorage.getItem(UserSetting.CBQL_STRING) ?? '',
-	cbUsername: localStorage.getItem(UserSetting.CB_USERNAME) ?? '',
-	cbPassword: sessionStorage.getItem(UserSetting.CB_PASSWORD) ?? '',
+	oAuthToken: sessionStorage.getItem(UserSetting.OAuth_Token) ?? '',
 	trackerId: localStorage.getItem(UserSetting.SELECTED_TRACKER) ?? '',
 	advancedSearch: localStorage.getItem(UserSetting.ADVANCED_SEARCH_ENABLED)
 		? localStorage.getItem(UserSetting.ADVANCED_SEARCH_ENABLED) == 'true'
@@ -46,21 +44,9 @@ export const userSettingsSlice = createSlice({
 	name: 'userSettings',
 	initialState,
 	reducers: {
-		setCredentials: (
-			state,
-			action: PayloadAction<{ username: string; password: string }>
-		) => {
-			state.cbUsername = action.payload.username;
-			state.cbPassword = action.payload.password;
-
-			localStorage.setItem(
-				UserSetting.CB_USERNAME,
-				action.payload.username
-			);
-			sessionStorage.setItem(
-				UserSetting.CB_PASSWORD,
-				action.payload.password
-			);
+		setOAuthToken: (state, action: PayloadAction<string>) => {
+			state.oAuthToken = action.payload;
+			sessionStorage.setItem(UserSetting.OAuth_Token, action.payload);
 		},
 		setCbqlString: (state, action: PayloadAction<string>) => {
 			state.cbqlString = action.payload;
@@ -198,7 +184,7 @@ export const userSettingsSlice = createSlice({
 });
 
 export const {
-	setCredentials,
+	setOAuthToken,
 	setTrackerId,
 	setAdvancedSearch,
 	addFilter,

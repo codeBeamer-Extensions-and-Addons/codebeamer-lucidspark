@@ -3,10 +3,7 @@ import {
 	setCbAddress,
 	setProjectId,
 } from '../../store/slices/boardSettingsSlice';
-import {
-	setCredentials,
-	setTrackerId,
-} from '../../store/slices/userSettingsSlice';
+import { setTrackerId } from '../../store/slices/userSettingsSlice';
 import { getStore } from '../../store/store';
 import Auth from './auth';
 
@@ -23,12 +20,6 @@ describe('<Auth>', () => {
 		it('has an input for the CodeBeamer Address', () => {
 			cy.getBySel('cbAddress').type('address');
 		});
-		it('has an input for the CodeBeamer Username', () => {
-			cy.getBySel('cbUsername').type('user');
-		});
-		it('has an input for the CodeBeamer Password', () => {
-			cy.getBySel('cbPassword').type('pass');
-		});
 		it('has a button to connect with', () => {
 			cy.getBySel('submit');
 		});
@@ -37,23 +28,16 @@ describe('<Auth>', () => {
 	it('saves values in store when submitting the form', () => {
 		const store = getStore();
 		const cbAddress = 'https://codebeamer.com/cb';
-		const username = 'user';
-		const password = 'pass';
 
 		cy.mountWithStore(<Auth />, { reduxStore: store });
 
 		cy.spy(store, 'dispatch').as('dispatch');
 
 		cy.getBySel('cbAddress').type(cbAddress);
-		cy.getBySel('cbUsername').type(username);
-		cy.getBySel('cbPassword').type(password);
 
 		cy.getBySel('submit').click();
 
 		cy.get('@dispatch').then((dispatch) => {
-			expect(dispatch).to.be.calledWith(
-				setCredentials({ username: username, password: password })
-			);
 			expect(dispatch).to.be.calledWith(setCbAddress(cbAddress));
 		});
 	});
@@ -61,8 +45,6 @@ describe('<Auth>', () => {
 	it('resets the stored project- and trackerId when updating the cbAddress', () => {
 		const store = getStore();
 		const cbAddress = 'https://codebeamer.com/cb';
-		const username = 'user';
-		const password = 'pass';
 
 		const projectId = '';
 		const trackerId = '';
@@ -73,55 +55,12 @@ describe('<Auth>', () => {
 
 		cy.getBySel('cbAddress').type(cbAddress);
 
-		//* need to fill these in or else the submit is disabled
-		cy.getBySel('cbUsername').type(username);
-		cy.getBySel('cbPassword').type(password);
-
 		cy.getBySel('submit').click();
 
 		cy.get('@dispatch').then((dispatch) => {
 			expect(dispatch).to.have.been.calledWith(setCbAddress(cbAddress));
 			expect(dispatch).to.have.been.calledWith(setProjectId(projectId));
 			expect(dispatch).to.have.been.calledWith(setTrackerId(trackerId));
-		});
-	});
-
-	it('does not reset the stored project- and trackerId when only updating name and/or password', () => {
-		const store = getStore();
-		const cbAddress = 'https://codebeamer.com/cb';
-		const username = 'user';
-		const password = 'pass';
-
-		const newUsername = 'userinho';
-		const newPassword = 'passinho';
-
-		const projectId = '';
-		const trackerId = '';
-
-		store.dispatch(setCbAddress(cbAddress));
-		store.dispatch(
-			setCredentials({ username: username, password: password })
-		);
-
-		cy.mountWithStore(<Auth />, { reduxStore: store });
-
-		cy.spy(store, 'dispatch').as('dispatch');
-
-		cy.getBySel('cbUsername').clear().type(newUsername);
-		cy.getBySel('cbPassword').clear().type(newPassword);
-
-		cy.getBySel('submit').click();
-
-		cy.get('@dispatch').then((dispatch) => {
-			expect(dispatch).to.have.been.calledWith(
-				setCredentials({ username: newUsername, password: newPassword })
-			);
-			expect(dispatch).not.to.have.been.calledWith(
-				setProjectId(projectId)
-			);
-			expect(dispatch).not.to.have.been.calledWith(
-				setTrackerId(trackerId)
-			);
 		});
 	});
 
@@ -155,21 +94,14 @@ describe('<Auth>', () => {
 
 	it('loads cached values into the form', () => {
 		const cbAddress = 'https://retina.roche.com/cb';
-		const username = 'anon';
-		const password = 'pass';
 
 		const store = getStore();
 		//"cache" is mocked by manually loading the values into store
 		store.dispatch(setCbAddress(cbAddress));
-		store.dispatch(
-			setCredentials({ username: username, password: password })
-		);
 
 		cy.mountWithStore(<Auth />, { reduxStore: store });
 
 		cy.getBySel('cbAddress').should('have.value', cbAddress);
-		cy.getBySel('cbUsername').should('have.value', username);
-		cy.getBySel('cbPassword').should('have.value', password);
 	});
 
 	afterEach(() => {

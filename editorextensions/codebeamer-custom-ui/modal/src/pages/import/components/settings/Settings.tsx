@@ -3,7 +3,6 @@ import Modal from 'react-bootstrap/Modal';
 import Tabs, { ITab } from '../../../../components/tabs/Tabs';
 import AuthForm from '../../../auth/auth';
 import ProjectSelection from '../projectSelection/ProjectSelection';
-import MiroImport from './miroImport/MiroImport';
 
 import './settings.css';
 
@@ -21,11 +20,6 @@ export default function Settings(props: { onClose: () => void }) {
 			title: 'Connection',
 			// icon: 'plug',
 			tab: <AuthForm headerLess={true} successAnimation={true} />,
-		},
-		{
-			title: 'Miro Import',
-			// icon: 'download',
-			tab: <MiroImport />,
 		},
 	];
 

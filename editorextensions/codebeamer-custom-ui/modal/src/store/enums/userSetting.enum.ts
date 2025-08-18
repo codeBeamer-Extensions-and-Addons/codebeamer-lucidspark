@@ -1,6 +1,5 @@
 export enum UserSetting {
-	CB_USERNAME = 'cbUsername',
-	CB_PASSWORD = 'CB_PASSWORD',
+	OAuth_Token = 'OAuthToken',
 	CB_ADDRESS = 'cbAddress',
 	ADVANCED_SEARCH_ENABLED = 'ADVANCED_SEARCH_ENABLED',
 	SELECTED_TRACKER = 'SELECTED_TRACKER',

@@ -1,31 +1,27 @@
 name: Build and bundle
 
 on:
-    push:
-        branches: ["main"]
-    pull_request:
-        branches: ["main"]
+   push:
+      branches: ['main']
+   pull_request:
+      branches: ['main']
 
 jobs:
-    package:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v3
-              with:
-                    node-version: 18
-            - name: Install dependencies
-              run: npm ci && cd editorextensions/codebeamer-custom-ui/modal && npm ci && cd ../../..
+   package:
+      runs-on: ubuntu-latest
+      steps:
+         - uses: actions/checkout@v4
+         - uses: actions/setup-node@v3
+           with:
+              node-version: 18
+         - name: Install dependencies
+           run: npm ci
 
-            - name: Build custom UI
-              run: cd editorextensions/codebeamer-custom-ui/modal && npm run build && cd ../../..
+         - name: Bundle editor extension
+           run: npm run bundle
 
-            - name: Bundle editor extension
-              run: npm run bundle
-            
-            - name: Upload artifact
-              uses: actions/upload-artifact@v2
-              with:
-                name: Bundle
-                path: package.zip
-
+         - name: Upload artifact
+           uses: actions/upload-artifact@v2
+           with:
+              name: Bundle
+              path: package.zip

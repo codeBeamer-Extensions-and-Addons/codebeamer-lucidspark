@@ -1,47 +1,9 @@
-import { CodeBeamerItem } from '../models/codebeamer-item.if';
-import getItemColorField from './utils/getItemColorField';
-import { store } from '../store/store';
-import TrackerDetails from '../models/trackerDetails.if';
-import { CardData } from '../models/lucidCardData';
 import { RelationshipType } from '../enums/associationRelationshipType.enum';
 import { getColorForRelationshipType } from './utils/getColorForRelationshipType';
 import { Message, MessageAction } from '../models/messageInterfaces';
+import { MessageHandler } from './messageHandler';
 
 export class LucidGateway {
-	/**
-	 * Create an application card with import details.
-	 * @param importId - The import ID.
-	 * @param item - The CodeBeamerItem.
-	 * @param coordinates - Optional coordinates for the card.
-	 */
-	public static async createAppCard(
-		importId: number,
-		item: CodeBeamerItem,
-		coordinates?: { x: number; y: number }
-	) {
-		const cardData = await this.convertToCardData(item, coordinates);
-		this.postMessage({
-			action: MessageAction.IMPORT_ITEM,
-			payload: { importId, cardData },
-		});
-	}
-
-	/**
-	 * Update an application card with item details.
-	 * @param item - The CodeBeamerItem to update the card with.
-	 * @param cardBlockId - The ID of the card block to update.
-	 */
-	public static async updateAppCard(
-		item: CodeBeamerItem,
-		cardBlockId: string
-	) {
-		const cardData = await this.convertToCardData(item);
-		this.postMessage({
-			action: MessageAction.UPDATE_CARD,
-			payload: { cardData, cardBlockId },
-		});
-	}
-
 	/**
 	 * Create a line between two card blocks
 	 * @param importId - The ID of the import.
@@ -49,7 +11,7 @@ export class LucidGateway {
 	 * @param targetBlockId - The ID of the target card block.
 	 * @param relationshipType - The type of relationship between the codebeamer items on the two card blocks.
 	 */
-	public static async createLine(
+	public static createLine(
 		importId: number,
 		sourceBlockId: string,
 		targetBlockId: string,
@@ -70,97 +32,35 @@ export class LucidGateway {
 	}
 
 	/**
-	 * Convert a CodeBeamer item to card data.
-	 * @param item - The CodeBeamerItem to convert.
-	 * @param coordinates - Optional coordinates for the card.
-	 * @returns The CardData representing the item.
-	 */
-	private static async convertToCardData(
-		item: CodeBeamerItem,
-		coordinates?: { x: number; y: number }
-	): Promise<CardData> {
-		const description = item.description;
-		const username = store.getState().userSettings.cbUsername;
-		const password = store.getState().userSettings.cbPassword;
-		const cbBaseAddress = store.getState().boardSettings.cbAddress;
-
-		const headers = new Headers({
-			'Content-Type': 'text/plain',
-			Authorization: `Basic ${btoa(username + ':' + password)}`,
-		});
-
-		// if (item.descriptionFormat == DescriptionFormat.WIKI) {
-		// 	//get the formatted description
-		// 	try {
-		// 		const wiki2htmlRes = await fetch(
-		// 			`${cbBaseAddress}/rest/item/${item.id}/wiki2html`,
-		// 			{ method: 'POST', body: item.description, headers }
-		// 		);
-		// 		const html = await wiki2htmlRes.text();
-		// 		description = html;
-		// 	} catch (e: any) {
-		// 		//* It can in fact take ~1 minute until the request actually fails.
-		// 		//* Issue lies with codeBeamers inability to accept its failure in converting some wiki2html
-		// 		//* and a custom timeout seams impossible
-		// 		const message = `Failed fetching formatted description for Item ${item.name}.`;
-		// 		console.warn(message);
-		// 	}
-		// }
-
-		//get the tracker details
-		try {
-			const trackerRes = await fetch(
-				`${cbBaseAddress}/api/v3/trackers/${item.tracker.id}`,
-				{ method: 'GET', headers }
-			);
-			const trackerJson = (await trackerRes.json()) as TrackerDetails;
-			item.tracker.keyName = trackerJson.keyName;
-			item.tracker.color = trackerJson.color;
-		} catch (error) {
-			const message = `Failed fetching tracker details for Item ${item.name}.`;
-			console.warn(message);
-		}
-
-		const cardData: CardData = {
-			// id: item.id.toString(),
-			// title: getCardTitle(
-			// 	item.id.toString(),
-			// 	item.name,
-			// 	item.tracker.keyName
-			// ),
-			codebeamerItemId: item.id,
-			codebeamerTrackerId: item.tracker.id,
-			title: item.name,
-			description: description,
-			coordinates: coordinates,
-		};
-
-		if (item.assignedTo[0]) cardData.assignee = item.assignedTo[0].name;
-		if (item.storyPoints) cardData.estimate = item.storyPoints;
-
-		// background Color
-		const colorFieldValue = getItemColorField(item);
-		const backgroundColor = colorFieldValue
-			? colorFieldValue
-			: item.tracker.color
-			? item.tracker.color
-			: null;
-		if (backgroundColor) {
-			cardData.style = { cardTheme: backgroundColor };
-		}
-
-		return cardData;
-	}
-
-	/**
 	 * Start an import with specified ID and total items.
 	 * @param id - The import ID.
 	 * @param items - The total number of items to import.
 	 */
-	public static startImport(id: number, items: number) {
+	public static startLineImport(id: number, items: number) {
 		this.postMessage({
-			action: MessageAction.START_IMPORT,
+			action: MessageAction.START_LINE_IMPORT,
 			payload: { id: id, totalItems: items },
+		});
+	}
+
+	/**
+	 * Start an import with query string
+	 * @param itemIds - The ids of the Codebeamer Items to import
+	 * @param trackerId - The id of the tracker that the items belong to
+	 * @param projectId - The id of the project that the tracker belongs to
+	 */
+	public static import(
+		itemIds: number[],
+		trackerId: number,
+		projectId: number
+	) {
+		this.postMessage({
+			action: MessageAction.IMPORT,
+			payload: {
+				itemIds: itemIds,
+				trackerId: trackerId,
+				projectId: projectId,
+			},
 		});
 	}
 
@@ -179,6 +79,32 @@ export class LucidGateway {
 	public static requestLineData() {
 		this.postMessage({
 			action: MessageAction.GET_LINES,
+		});
+	}
+
+	/**
+	 * Request the OAuth token from the parent window.
+	 */
+	public static requestOAuthToken() {
+		this.postMessage({
+			action: MessageAction.GET_OAUTH_TOKEN,
+		});
+	}
+
+	/**
+	 * Get the OAuth token from Lucid.
+	 * @returns The OAuth token.
+	 */
+	public static async getOAuthToken(): Promise<string> {
+		return new Promise((resolve, reject) => {
+			MessageHandler.getInstance().getOAuthToken((data) => {
+				if (data && data.length > 0) {
+					const token = data[0];
+					return resolve(token);
+				} else {
+					return reject(new Error('OAuth token not received from Lucid.'));
+				}
+			});
 		});
 	}
 
